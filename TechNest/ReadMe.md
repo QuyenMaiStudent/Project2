@@ -38,8 +38,13 @@ Giới thiệu ngắn gọn về dự án.
    DB_PASSWORD=your_password
    ```
 
-## Sử dụng
-Hướng dẫn sử dụng dự án.
+## Tạo Database
+Chạy lệnh
+```
+ php artisan migrate --path=database/migrations/2025_09_21_091131_create_roles_table.php
+```
 
-## Tác giả
-Thông tin liên hệ hoặc nhóm phát triển.
+Sau đó chạy lệnh 
+```
+php artisan migrate
+```
