@@ -16,10 +16,34 @@ class CategoryFactory extends Factory
      */
     public function definition(): array
     {
+        $categories = [
+            'Laptop',
+            'Điện thoại',
+            'Máy tính bảng',
+            'Tai nghe',
+            'Chuột máy tính',
+            'Bàn phím',
+            'Màn hình',
+            'Ổ cứng di động',
+            'Pin dự phòng',
+            'Cáp sạc',
+            'Loa Bluetooth',
+            'Webcam',
+            'Balo laptop',
+            'Miếng dán màn hình',
+            'Ốp lưng điện thoại',
+            'Sạc nhanh',
+            'Hub chuyển đổi',
+            'Thẻ nhớ',
+            'USB',
+            'Router WiFi',
+            'Phụ kiện khác'
+        ];
+
         return [
-            'name' => $this->faker->unique()->word(),
+            'name' => $this->faker->unique()->randomElement($categories),
             'description' => $this->faker->sentence(),
-            'parent_id' => null,
+            'parent_id' => null, // Sẽ gán trong seeder nếu cần
         ];
     }
 }

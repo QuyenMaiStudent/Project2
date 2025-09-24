@@ -16,8 +16,14 @@ class BrandFactory extends Factory
      */
     public function definition(): array
     {
+        $brands = [
+            'Apple', 'Samsung', 'Dell', 'HP', 'Lenovo', 'Asus', 'Acer', 'MSI', 'Sony', 'Xiaomi',
+            'Oppo', 'Vivo', 'Realme', 'Huawei', 'Logitech', 'Razer', 'Corsair', 'Kingston', 'Anker', 'JBL'
+        ];
+
         return [
-            'name' => $this->faker->unique()->company(),
+            'name' => $this->faker->unique()->randomElement($brands),
+            'logo' => $this->faker->imageUrl(200, 200, 'business', true, 'Brand'),
             'description' => $this->faker->sentence(),
         ];
     }

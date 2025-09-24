@@ -3,6 +3,7 @@
 namespace Database\Factories;
 
 use Illuminate\Database\Eloquent\Factories\Factory;
+use App\Models\User;
 
 /**
  * @extends \Illuminate\Database\Eloquent\Factories\Factory<\App\Models\Order>
@@ -17,11 +18,10 @@ class OrderFactory extends Factory
     public function definition(): array
     {
         return [
-            'user_id' => 1, // Có thể truyền khi gọi factory trong seeder
-            'total_amount' => $this->faker->numberBetween(1000000, 20000000),
-            'discount' => 0,
-            'shipping_fee' => 50000,
-            'status' => 'pending',
+            // 'user_id' => User::inRandomOrder()->first()?->id ?? User::factory(),
+            'status' => $this->faker->randomElement(['draft', 'placed', 'processing', 'shipped', 'delivered', 'cancelled']),
+            'total_amount' => 0,
+            'placed_at' => $this->faker->optional(80)->dateTimeBetween('-1 month', 'now'),
         ];
     }
 }
