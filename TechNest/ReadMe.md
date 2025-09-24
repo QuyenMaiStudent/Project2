@@ -41,10 +41,11 @@ Giới thiệu ngắn gọn về dự án.
 ## Tạo Database
 Chạy lệnh
 ```
- php artisan migrate --path=database/migrations/2025_09_21_091131_create_roles_table.php
+php artisan migrate --path=database/migrations/2025_09_21_091131_create_roles_table.php
 ```
 
 Sau đó chạy lệnh 
 ```
 php artisan migrate
 ```
+Chạy ```php artisan db:seed``` để seeder dữ liệu

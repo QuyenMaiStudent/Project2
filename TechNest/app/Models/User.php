@@ -86,16 +86,6 @@ class User extends Authenticatable
         return $this->hasMany(ReviewModerationLog::class, 'moderator_id');
     }
 
-    public function questions()
-    {
-        return $this->hasMany(Question::class);
-    }
-
-    public function answers()
-    {
-        return $this->hasMany(Answer::class);
-    }
-
     public function cart()
     {
         return $this->hasOne(Cart::class);
@@ -144,5 +134,10 @@ class User extends Authenticatable
     public function supportTicketReplies()
     {
         return $this->hasMany(SupportTicketReply::class);
+    }
+
+    public function comments()
+    {
+        return $this->hasMany(Comment::class);
     }
 }

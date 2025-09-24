@@ -10,4 +10,9 @@ class WarrantyPolicy extends Model
     use HasFactory;
 
     protected $fillable = ['title', 'content', 'duration_months'];
+
+    public function products()
+    {
+        return $this->hasMany(Product::class);
+    }
 }
