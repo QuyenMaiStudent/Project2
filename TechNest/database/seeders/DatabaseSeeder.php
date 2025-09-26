@@ -128,13 +128,25 @@ class DatabaseSeeder extends Seeder
             'role_id' => $customerRole->id,
             'is_active' => true,
         ]);
-        
-        $roleIds = Role::pluck('id')->toArray();
+
+        // Sửa seed cho bảng user_role theo yêu cầu
         foreach (User::all() as $user) {
-            DB::table('user_role')->insert([
-                'user_id' => $user->id,
-                'role_id' => $roleIds[array_rand($roleIds)],
-            ]);
+            if ($user->id == 1) {
+                DB::table('user_role')->insert([
+                    'user_id' => $user->id,
+                    'role_id' => $adminRole->id,
+                ]);
+            } elseif ($user->id >= 2 && $user->id <= 6) {
+                DB::table('user_role')->insert([
+                    'user_id' => $user->id,
+                    'role_id' => $sellerRole->id,
+                ]);
+            } else {
+                DB::table('user_role')->insert([
+                    'user_id' => $user->id,
+                    'role_id' => $customerRole->id,
+                ]);
+            }
         }
 
         $parent = Category::factory(5)->create();
