@@ -80,22 +80,7 @@ export default function Register() {
                                 <InputError message={errors.password_confirmation} />
                             </div>
 
-                            <div className="grid gap-2">
-                                <Label htmlFor="role">Role</Label>
-                                <select
-                                    id="role"
-                                    name="role"
-                                    required
-                                    tabIndex={5}
-                                    className="border rounded px-3 py-2"
-                                >
-                                    <option value="customer">Customer</option>
-                                    <option value="seller">Seller</option>
-                                </select>
-                                <InputError message={errors.role} />
-                            </div>
-
-                            <Button type="submit" className="mt-2 w-full" tabIndex={6} data-test="register-user-button">
+                            <Button type="submit" className="mt-2 w-full" tabIndex={5} data-test="register-user-button">
                                 {processing && <LoaderCircle className="h-4 w-4 animate-spin" />}
                                 Create account
                             </Button>
@@ -103,7 +88,7 @@ export default function Register() {
 
                         <div className="text-center text-sm text-muted-foreground">
                             Already have an account?{' '}
-                            <TextLink href={login()} tabIndex={7}>
+                            <TextLink href={login()} tabIndex={6}>
                                 Log in
                             </TextLink>
                         </div>
