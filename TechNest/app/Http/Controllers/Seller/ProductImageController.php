@@ -7,13 +7,18 @@ use Illuminate\Http\Request;
 use App\Models\Product;
 use App\Models\ProductImage;
 use Illuminate\Support\Facades\DB;
+use Inertia\Inertia;
 
 class ProductImageController extends Controller
 {
     public function showUploadImages()
     {
-        $products = Product::where('created_by', auth()->id())->get(['id', 'name']);
-        return inertia('Products/UploadImages', [
+        $products = Product::with('images')
+            ->where('created_by', auth()->id())
+            ->orderByDesc('id')
+            ->paginate(6);
+
+        return Inertia::render('Products/UploadImages', [
             'products' => $products
         ]);
     }

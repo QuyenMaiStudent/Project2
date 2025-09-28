@@ -19,6 +19,7 @@ class ProductController extends Controller
         // Chỉ xem sản phẩm do seller hiện tại tạo
         $products = Product::with(['brand', 'primaryImage', 'images'])
             ->where('created_by', auth()->id())
+            ->orderByDesc('id')
             ->paginate(12);
 
         return Inertia::render('Products/ViewProduct', [
