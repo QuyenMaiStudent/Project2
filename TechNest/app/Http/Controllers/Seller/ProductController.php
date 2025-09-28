@@ -17,7 +17,7 @@ class ProductController extends Controller
     public function index()
     {
         // Chỉ xem sản phẩm do seller hiện tại tạo
-        $products = Product::with(['brand', 'primaryImage'])
+        $products = Product::with(['brand', 'primaryImage', 'images'])
             ->where('created_by', auth()->id())
             ->paginate(12);
 

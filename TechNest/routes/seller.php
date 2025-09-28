@@ -1,5 +1,6 @@
 <?php
 use App\Http\Controllers\Seller\ProductController;
+use App\Http\Controllers\Seller\ProductImageController;
 use App\Http\Controllers\Seller\SellerController;
 use Illuminate\Support\Facades\Route;
 // Seller routes
@@ -12,4 +13,9 @@ Route::middleware(['auth', 'seller'])->group(function () {
 
     // View product list
     Route::get('/seller/products', [ProductController::class, 'index'])->name('seller.products.index');
+
+    // Upload nhiều ảnh
+    Route::get('/seller/products/upload-images', [ProductImageController::class, 'showUploadImages'])->name('seller.products.show-upload-images');
+    Route::post('/seller/products/{product}/upload-images', [ProductImageController::class, 'uploadImages'])->name('seller.products.upload-images');
+    Route::delete('/seller/products/{product}/images/{image}', [ProductImageController::class, 'deleteImage'])->name('seller.products.delete-image');
 });
