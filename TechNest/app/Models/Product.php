@@ -11,7 +11,7 @@ class Product extends Model
 
     protected $fillable = [
         'name', 'description', 'price', 'stock', 
-        'brand_id', 'warranty_id', 'is_active', 'created_by' // Dùng created_by thay vì user_id
+        'brand_id', 'warranty_id', 'is_active', 'created_by', 'status' // Dùng created_by thay vì user_id
     ];
 
     protected $casts = [
@@ -87,5 +87,13 @@ class Product extends Model
     public function seller()
     {
         return $this->belongsTo(User::class, 'created_by');
+    }
+
+    public function canSubmitForApproval()
+    {
+        return 
+            $this->images()->count() > 0 &&
+            $this->specs()->count() > 0 &&
+            $this->variants()->count() > 0;
     }
 }

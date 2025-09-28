@@ -187,4 +187,23 @@ class ProductController extends Controller
             return back()->with('error', 'Có lỗi xảy ra: ' . $e->getMessage());
         }
     }
+
+    public function submitForApproval (Product $product)
+    {
+        if ($product->created_by !== auth()->id()) {
+            abort(403, "Bạn không có quyền thao tác với sản phẩm này");
+        }
+
+        if (
+            $product->images()->count() === 0 ||
+            $product->specs()->count() === 0 ||
+            $product->variants()->count() === 0
+        ) {
+            return back()->with('error', 'Sản phẩm phải có ít nhất 1 ảnh, 1 thông số kỹ thuật và 1 biến thể trước khi gửi duyệt.');
+        }
+
+        $product->update(['status' => 'pending']);
+
+        return back()->with('success', 'Sản phẩm đã được gửi duyệt thành công và đang chờ xét duyệt.');
+    }
 }
