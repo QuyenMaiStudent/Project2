@@ -8,8 +8,6 @@ use App\Models\ProductSpec;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
 
-use function Laravel\Prompts\alert;
-
 class ProductSpecController extends Controller
 {
     //Hiển thị danh sách thông số của sản phẩm
@@ -19,7 +17,7 @@ class ProductSpecController extends Controller
 
         $specs = $product->specs()->get();
 
-        return Inertia::render('Seller/ProductSpecs/Index', [
+        return Inertia::render('Products/ProductSpecs', [
             'product' => $product,
             'specs' => $specs,
         ]);
@@ -31,7 +29,7 @@ class ProductSpecController extends Controller
         $this->authorizeProduct($product);
 
         $validated = $request->validate([
-            'name' => 'required|string|max:255',
+            'key' => 'required|string|max:255',
             'value' => 'required|string|max:255',
         ]);
 
@@ -50,7 +48,7 @@ class ProductSpecController extends Controller
         }
 
         $validated = $request->validate([
-            'name' => 'required|string|max:255',
+            'key' => 'required|string|max:255',
             'value' => 'required|string|max:255',
         ]);
 

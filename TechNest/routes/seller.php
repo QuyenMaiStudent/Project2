@@ -4,6 +4,7 @@ use App\Http\Controllers\Seller\ProductImageController;
 use App\Http\Controllers\Seller\ProductSpecController;
 use App\Http\Controllers\Seller\ProductVariantController;
 use App\Http\Controllers\Seller\SellerController;
+use App\Models\Product;
 use Illuminate\Support\Facades\Route;
 // Seller routes
 Route::middleware(['auth', 'seller'])->group(function () {
@@ -23,7 +24,7 @@ Route::middleware(['auth', 'seller'])->group(function () {
 
     // Thông số sản phẩm
     Route::get('/seller/products/{product}/specs', [ProductSpecController::class, 'index'])->name('seller.products.specs.index');
-    Route::post('/seller/products/{product}/specs', [ProductSpecController::class, 'store'])->name('seller.products.specs.store');
+    Route::post('/seller/products/{product}/specs', [ProductSpecController::class, 'store',])->name('seller.products.specs.store');
     Route::put('/seller/products/{product}/specs/{spec}', [ProductSpecController::class, 'update'])->name('seller.products.specs.update');
     Route::delete('/seller/products/{product}/specs/{spec}', [ProductSpecController::class, 'destroy'])->name('seller.products.specs.destroy');
 

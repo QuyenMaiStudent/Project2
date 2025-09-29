@@ -156,6 +156,12 @@ export default function ViewProduct({ products }: Props) {
                                             <span>Edit</span>
                                         </Link>
                                     </div>
+                                    <Link
+                                        href={`/seller/products/${product.id}/specs`}
+                                        className="flex-1 px-3 py-2 bg-yellow-100 text-yellow-700 rounded-md hover:bg-yellow-200 transition-colors flex items-center justify-center space-x-1 mt-2"
+                                    >
+                                        <span>Quản lý thông số</span>
+                                    </Link>
                                 </div>
                             </div>
                         ))}
