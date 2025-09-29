@@ -17,7 +17,7 @@ class ProductVariantController extends Controller
 
         $variants = $product->variants()->get();
 
-        return Inertia::render('Seller/ProductVariants/Index', [
+        return Inertia::render('Products/ProductVariants', [
             'product' => $product,
             'variants' => $variants,
         ]);
@@ -29,7 +29,7 @@ class ProductVariantController extends Controller
         $this->authorizeProduct($product);
 
         $validated = $request->validate([
-            'name' => 'required|string|max:255',
+            'variant_name' => 'required|string|max:255',
             'additional_price' => 'required|numeric|min:0',
             'stock' => 'required|integer|min:0',
         ]);

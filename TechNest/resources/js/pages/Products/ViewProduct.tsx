@@ -162,6 +162,13 @@ export default function ViewProduct({ products }: Props) {
                                     >
                                         <span>Quản lý thông số</span>
                                     </Link>
+                                    <Link
+                                        href={`/seller/products/${product.id}/variants`}
+                                        className="flex-1 px-3 py-2 bg-pink-100 text-pink-700 rounded-md hover:bg-pink-200 transition-colors flex items-center justify-center space-x-1 mt-2"
+                                    >
+                                        <Package className="h-4 w-4" />
+                                        <span>Quản lý biến thể</span>
+                                    </Link>
                                 </div>
                             </div>
                         ))}
