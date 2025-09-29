@@ -141,11 +141,11 @@ export default function ViewProduct({ products }: Props) {
                                     
                                     <div className="flex space-x-2">
                                         <Link
-                                            href={`/products/${product.id}`}
+                                            href={`/seller/products/${product.id}/preview`}
                                             className="flex-1 px-3 py-2 bg-gray-100 text-gray-700 rounded-md hover:bg-gray-200 transition-colors flex items-center justify-center space-x-1"
                                         >
                                             <Eye className="h-4 w-4" />
-                                            <span>View</span>
+                                            <span>Xem trước</span>
                                         </Link>
                                         
                                         <Link

@@ -34,6 +34,10 @@ Route::middleware(['auth', 'seller'])->group(function () {
     Route::put('/seller/products/{product}/variants/{variant}', [ProductVariantController::class, 'update'])->name('seller.products.variants.update');
     Route::delete('/seller/products/{product}/variants/{variant}', [ProductVariantController::class, 'destroy'])->name('seller.products.variants.destroy');
 
+    // Xem trước
+    Route::get('seller/products/{product}/preview', [ProductController::class, 'preview'])->name('seller.products.preview');
     //Duyệt
     Route::post('seller/products/{product}/submit', [ProductController::class, 'submitForApproval'])->name('seller.products.submit');
+
+
 });
