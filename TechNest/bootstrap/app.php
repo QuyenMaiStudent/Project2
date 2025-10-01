@@ -4,6 +4,7 @@ use App\Http\Middleware\CheckSellerRole;
 use App\Http\Middleware\HandleAppearance;
 use App\Http\Middleware\HandleInertiaRequests;
 use App\Http\Middleware\CheckAdminRole;
+use App\Http\Middleware\CheckCustomer;
 use Illuminate\Foundation\Application;
 use Illuminate\Foundation\Configuration\Exceptions;
 use Illuminate\Foundation\Configuration\Middleware;
@@ -27,6 +28,7 @@ return Application::configure(basePath: dirname(__DIR__))
         $middleware->alias([
             'seller' => CheckSellerRole::class,
             'admin' => CheckAdminRole::class,
+            'customer' => CheckCustomer::class,
         ]);
     })
     ->withExceptions(function (Exceptions $exceptions) {

@@ -164,6 +164,14 @@ class User extends Authenticatable
         return $this->roles()->where('name', 'admin')->exists();
     }
 
+    public function isCustomer()
+    {
+        if ($this->role && $this->role->name === 'customer') {
+            return true;
+        }
+        return $this->roles()->where('name', 'customer')->exists();
+    }
+
     public function hasRole($roleName)
     {
         if ($this->role && $this->role->name === $roleName) {

@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Auth;
 
 use App\Http\Controllers\Controller;
+use App\Models\Cart;
 use App\Models\Role;
 use App\Models\User;
 use Illuminate\Auth\Events\Registered;
@@ -53,6 +54,10 @@ class RegisteredUserController extends Controller
         event(new Registered($user));
 
         Auth::login($user);
+
+        if ($user->hasRole('customer')) {
+            Cart::firstOrCreate(['user_id' => $user->id]);
+        }
 
         return redirect()->intended(route('dashboard', absolute: false));
     }
