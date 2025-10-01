@@ -38,6 +38,10 @@ class AuthenticatedSessionController extends Controller
             return redirect()->intended(route('seller.dashboard'));
         };
 
+        if ($user->isAdmin()) {
+            return redirect()->intended(route('admin.dashboard'));
+        };
+
         return redirect()->intended(route('dashboard', absolute: false));
     }
 
