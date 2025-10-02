@@ -13,14 +13,21 @@ interface Address {
     is_default: boolean;
 }
 
+interface Province { id: number; name: string; }
+interface District { id: number; name: string; province_id: number; }
+interface Ward { id: number; name: string; district_id: number; }
+
 interface Props {
     addresses: {
         data: Address[];
         links: { url: string | null; label: string; active: boolean }[];
     };
+    provinces: Province[];
+    districts: District[];
+    wards: Ward[];
 }
 
-export default function Index({ addresses }: Props) {
+export default function Index({ addresses, provinces, districts, wards }: Props) {
     const { flash } = usePage().props as any;
     const [showForm, setShowForm] = useState(false);
     const [isEdit, setIsEdit] = useState(false);
@@ -93,6 +100,11 @@ export default function Index({ addresses }: Props) {
         }
     };
 
+    // Lọc quận theo tỉnh
+    const filteredDistricts = districts.filter(d => d.province_id == form.province_id);
+    // Lọc phường theo quận
+    const filteredWards = wards.filter(w => w.district_id == form.district_id);
+
     return (
         <AppLayout
             breadcrumbs={[
@@ -164,7 +176,66 @@ export default function Index({ addresses }: Props) {
                             />
                             {errors.address_line && <div className="text-red-600 text-sm">{errors.address_line}</div>}
                         </div>
-                        {/* Có thể thêm select cho province/district/ward nếu cần */}
+                        <div>
+                            <label className="block font-medium mb-1">Tỉnh/Thành phố</label>
+                            <select
+                                className="border rounded px-3 py-2 w-full"
+                                value={form.province_id}
+                                onChange={e => {
+                                    setForm(f => ({
+                                        ...f,
+                                        province_id: e.target.value,
+                                        district_id: '',
+                                        ward_id: '',
+                                    }));
+                                }}
+                                required
+                            >
+                                <option value="">-- Chọn tỉnh/thành --</option>
+                                {provinces.map(p => (
+                                    <option key={p.id} value={p.id}>{p.name}</option>
+                                ))}
+                            </select>
+                            {errors.province_id && <div className="text-red-600 text-sm">{errors.province_id}</div>}
+                        </div>
+                        <div>
+                            <label className="block font-medium mb-1">Quận/Huyện</label>
+                            <select
+                                className="border rounded px-3 py-2 w-full"
+                                value={form.district_id}
+                                onChange={e => {
+                                    setForm(f => ({
+                                        ...f,
+                                        district_id: e.target.value,
+                                        ward_id: '',
+                                    }));
+                                }}
+                                required
+                                disabled={!form.province_id}
+                            >
+                                <option value="">-- Chọn quận/huyện --</option>
+                                {filteredDistricts.map(d => (
+                                    <option key={d.id} value={d.id}>{d.name}</option>
+                                ))}
+                            </select>
+                            {errors.district_id && <div className="text-red-600 text-sm">{errors.district_id}</div>}
+                        </div>
+                        <div>
+                            <label className="block font-medium mb-1">Phường/Xã</label>
+                            <select
+                                className="border rounded px-3 py-2 w-full"
+                                value={form.ward_id}
+                                onChange={e => setForm(f => ({ ...f, ward_id: e.target.value }))}
+                                required
+                                disabled={!form.district_id}
+                            >
+                                <option value="">-- Chọn phường/xã --</option>
+                                {filteredWards.map(w => (
+                                    <option key={w.id} value={w.id}>{w.name}</option>
+                                ))}
+                            </select>
+                            {errors.ward_id && <div className="text-red-600 text-sm">{errors.ward_id}</div>}
+                        </div>
                         <div>
                             <label className="block font-medium mb-1">Mặc định</label>
                             <input
