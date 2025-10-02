@@ -141,11 +141,11 @@ export default function ViewProduct({ products }: Props) {
                                     
                                     <div className="flex space-x-2">
                                         <Link
-                                            href={`/products/${product.id}`}
+                                            href={`/seller/products/${product.id}/preview`}
                                             className="flex-1 px-3 py-2 bg-gray-100 text-gray-700 rounded-md hover:bg-gray-200 transition-colors flex items-center justify-center space-x-1"
                                         >
                                             <Eye className="h-4 w-4" />
-                                            <span>View</span>
+                                            <span>Xem trước</span>
                                         </Link>
                                         
                                         <Link
@@ -156,6 +156,19 @@ export default function ViewProduct({ products }: Props) {
                                             <span>Edit</span>
                                         </Link>
                                     </div>
+                                    <Link
+                                        href={`/seller/products/${product.id}/specs`}
+                                        className="flex-1 px-3 py-2 bg-yellow-100 text-yellow-700 rounded-md hover:bg-yellow-200 transition-colors flex items-center justify-center space-x-1 mt-2"
+                                    >
+                                        <span>Quản lý thông số</span>
+                                    </Link>
+                                    <Link
+                                        href={`/seller/products/${product.id}/variants`}
+                                        className="flex-1 px-3 py-2 bg-pink-100 text-pink-700 rounded-md hover:bg-pink-200 transition-colors flex items-center justify-center space-x-1 mt-2"
+                                    >
+                                        <Package className="h-4 w-4" />
+                                        <span>Quản lý biến thể</span>
+                                    </Link>
                                 </div>
                             </div>
                         ))}

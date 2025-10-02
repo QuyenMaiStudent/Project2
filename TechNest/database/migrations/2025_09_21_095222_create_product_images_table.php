@@ -17,6 +17,7 @@ return new class extends Migration
             $table->string('url');
             $table->string('alt_text')->nullable();
             $table->boolean('is_primary')->default(false);
+            $table->string('status')->default('draft'); // draft, pending, approved, rejected
             $table->timestamps();
 
             $table->index('product_id');

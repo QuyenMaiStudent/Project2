@@ -3,6 +3,8 @@
 namespace App\Http\Controllers\Auth;
 
 use App\Http\Controllers\Controller;
+use App\Models\Cart;
+use App\Models\Role;
 use App\Models\User;
 use Illuminate\Auth\Events\Registered;
 use Illuminate\Http\RedirectResponse;
@@ -34,17 +36,28 @@ class RegisteredUserController extends Controller
             'name' => 'required|string|max:255',
             'email' => 'required|string|lowercase|email|max:255|unique:'.User::class,
             'password' => ['required', 'confirmed', Rules\Password::defaults()],
+            'role' => 'required|in:customer,seller',
         ]);
+
+        $roleId = Role::where('name', $request->role)->value('id');
 
         $user = User::create([
             'name' => $request->name,
             'email' => $request->email,
             'password' => Hash::make($request->password),
+            'role_id' => $roleId,
         ]);
+
+        // Gán vào bảng user_role (nếu dùng quan hệ n-n)
+        $user->roles()->attach($roleId);
 
         event(new Registered($user));
 
         Auth::login($user);
+
+        if ($user->hasRole('customer')) {
+            Cart::firstOrCreate(['user_id' => $user->id]);
+        }
 
         return redirect()->intended(route('dashboard', absolute: false));
     }

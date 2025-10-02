@@ -1,6 +1,5 @@
 import { PlaceholderPattern } from '@/components/ui/placeholder-pattern';
 import AppLayout from '@/layouts/app-layout';
-import { dashboard } from '@/routes';
 import { type BreadcrumbItem } from '@/types';
 import { Head, Link } from '@inertiajs/react';
 import { Package, Plus, Eye } from 'lucide-react';
@@ -45,6 +44,16 @@ export default function SellerDashboard({ stats }: Props) {
                             >
                                 <Eye className="h-5 w-5 text-green-600" />
                                 <span className="text-gray-700">View Products</span>
+                            </Link>
+
+                            <Link 
+                                href='/seller/products/upload-images'
+                                className='flex items-center space-x-3 p-3 rounded-b-lg hover:bg-gray-100 transition-colors'
+                                >
+
+                                <Package className='h-5 w-5 text-purple-600' />
+                                <span className='text-gray-700'>Thêm ảnh cho sản phẩm</span>
+
                             </Link>
                         </nav>
                     </div>

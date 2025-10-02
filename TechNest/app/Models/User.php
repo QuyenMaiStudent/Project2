@@ -42,13 +42,13 @@ class User extends Authenticatable
      */
     protected $casts = [
         'email_verified_at' => 'datetime',
-        'password_hash' => 'hashed',
+        'password' => 'hashed',
         'is_active' => 'boolean',
     ];
 
     public function role()
     {
-        return $this->belongsTo(Role::class);
+        return $this->belongsTo(Role::class, 'role_id');
     }
 
     public function roles()
@@ -155,9 +155,28 @@ class User extends Authenticatable
         return $this->roles()->where('name', 'seller')->exists();
     }
 
+    public function isAdmin()
+    {
+        if ($this->role && $this->role->name === 'admin') {
+            return true;
+        }
+
+        return $this->roles()->where('name', 'admin')->exists();
+    }
+
+    public function isCustomer()
+    {
+        if ($this->role && $this->role->name === 'customer') {
+            return true;
+        }
+        return $this->roles()->where('name', 'customer')->exists();
+    }
+
     public function hasRole($roleName)
     {
-        // Kiểm tra qua bảng user_role
+        if ($this->role && $this->role->name === $roleName) {
+            return true;
+        }
         return $this->roles()->where('name', $roleName)->exists();
     }
 }
