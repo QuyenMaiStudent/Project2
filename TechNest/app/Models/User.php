@@ -46,9 +46,14 @@ class User extends Authenticatable
         'is_active' => 'boolean',
     ];
 
-    public function roles()
+    public function role()
     {
         return $this->belongsTo(Role::class);
+    }
+
+    public function roles()
+    {
+        return $this->belongsToMany(Role::class, 'user_role');
     }
 
     public function profile()
@@ -139,5 +144,20 @@ class User extends Authenticatable
     public function comments()
     {
         return $this->hasMany(Comment::class);
+    }
+
+    public function isSeller()
+    {
+        if ($this->role && $this->role->name === 'seller') {
+            return true;
+        }
+
+        return $this->roles()->where('name', 'seller')->exists();
+    }
+
+    public function hasRole($roleName)
+    {
+        // Kiểm tra qua bảng user_role
+        return $this->roles()->where('name', $roleName)->exists();
     }
 }

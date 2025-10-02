@@ -20,6 +20,7 @@ return new class extends Migration
             $table->foreignId('brand_id')->nullable()->constrained('brands')->onDelete('set null');
             $table->foreignId('warranty_id')->nullable()->constrained('warranty_policies')->onDelete('set null');
             $table->boolean('is_active')->default(true);
+            $table->foreignId('created_by')->constrained('users')->onDelete('cascade');
             $table->timestamps();
 
             $table->index('brand_id');

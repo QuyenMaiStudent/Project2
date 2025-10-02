@@ -17,9 +17,8 @@ class ProductController extends Controller
     public function index()
     {
         // Chỉ xem sản phẩm do seller hiện tại tạo
-        $products = Product::with(['brand', 'primaryImage', 'images'])
+        $products = Product::with(['brand', 'primaryImage'])
             ->where('created_by', auth()->id())
-            ->orderByDesc('id')
             ->paginate(12);
 
         return Inertia::render('Products/ViewProduct', [
@@ -101,7 +100,10 @@ class ProductController extends Controller
 
     public function edit(Product $product)
     {
-        $this->authorizeProduct($product);
+        // Chỉ seller tạo sản phẩm mới được edit
+        if ($product->created_by !== auth()->id()) {
+            return back()->with('error', 'Bạn không có quyền chỉnh sửa sản phẩm này');
+        }
 
         $brands = Brand::all();
         $warranties = WarrantyPolicy::all();
@@ -111,7 +113,9 @@ class ProductController extends Controller
 
     public function update(Request $request, Product $product)
     {
-        $this->authorizeProduct($product);
+        if ($product->created_by !== auth()->id()) {
+            return back()->with('error', 'Bạn không có quyền chỉnh sửa sản phẩm này');
+        }
 
         $validated = $request->validate([
             'name' => 'required|string|max:255',
@@ -169,7 +173,9 @@ class ProductController extends Controller
 
     public function destroy(Product $product)
     {
-        $this->authorizeProduct($product);
+        if ($product->created_by !== auth()->id()) {
+            return back()->with('error', 'Bạn không có quyền xóa sản phẩm này');
+        }
 
         try {
             $product->delete();
@@ -179,46 +185,6 @@ class ProductController extends Controller
                            
         } catch (\Exception $e) {
             return back()->with('error', 'Có lỗi xảy ra: ' . $e->getMessage());
-        }
-    }
-
-    public function preview(Product $product)
-    {
-        $this->authorizeProduct($product);
-
-        $product->load([
-            'brand',
-            'images',
-            'specs',
-            'variants',
-        ]);
-
-        return Inertia::render('Products/PreviewProduct', [
-            'product' => $product
-        ]);
-    }
-
-    public function submitForApproval(Product $product)
-    {
-        $this->authorizeProduct($product);
-
-        if (
-            $product->images()->count() === 0 ||
-            $product->specs()->count() === 0 ||
-            $product->variants()->count() === 0
-        ) {
-            return back()->with('error', 'Sản phẩm phải có ít nhất 1 ảnh, 1 thông số kỹ thuật và 1 biến thể trước khi gửi duyệt.');
-        }
-
-        $product->update(['status' => 'pending']);
-
-        return back()->with('success', 'Sản phẩm đã được gửi duyệt thành công và đang chờ xét duyệt.');
-    }
-
-    private function authorizeProduct(Product $product)
-    {
-        if ($product->created_by !== auth()->id()) {
-            abort(403, 'Bạn không có quyền thao tác với sản phẩm này');
         }
     }
 }

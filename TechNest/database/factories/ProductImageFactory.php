@@ -20,6 +20,7 @@ class ProductImageFactory extends Factory
         return [
             'product_id' => Product::inRandomOrder()->first()?->id ?? Product::factory(),
             'url' => $this->faker->imageUrl(600, 600, 'products', true, 'Product'),
+            'alt_text' => $this->faker->sentence(3),
             'is_primary' => $this->faker->boolean(20), // 20% chance to be primary
         ];
     }

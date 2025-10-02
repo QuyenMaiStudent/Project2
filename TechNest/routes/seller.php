@@ -4,7 +4,6 @@ use App\Http\Controllers\Seller\ProductImageController;
 use App\Http\Controllers\Seller\ProductSpecController;
 use App\Http\Controllers\Seller\ProductVariantController;
 use App\Http\Controllers\Seller\SellerController;
-use App\Models\Product;
 use Illuminate\Support\Facades\Route;
 // Seller routes
 Route::middleware(['auth', 'seller'])->group(function () {

@@ -11,7 +11,12 @@ class Product extends Model
 
     protected $fillable = [
         'name', 'description', 'price', 'stock', 
-        'brand_id', 'warranty_id', 'is_active'
+        'brand_id', 'warranty_id', 'is_active', 'created_by' // Dùng created_by thay vì user_id
+    ];
+
+    protected $casts = [
+        'is_active' => 'boolean',
+        'price' => 'decimal:2',
     ];
 
     public function brand()
@@ -21,12 +26,17 @@ class Product extends Model
 
     public function warrantyPolicy()
     {
-        return $this->belongsTo(WarrantyPolicy::class);
+        return $this->belongsTo(WarrantyPolicy::class, 'warranty_id');
     }
 
     public function images()
     {
         return $this->hasMany(ProductImage::class);
+    }
+
+    public function primaryImage()
+    {
+        return $this->hasOne(ProductImage::class)->where('is_primary', true);
     }
 
     public function variants()
@@ -51,7 +61,7 @@ class Product extends Model
 
     public function reviews()
     {
-        return $this->hasMany(ProductVersion::class);
+        return $this->hasMany(Review::class); // Sửa lại từ ProductVersion thành Review
     }
 
     public function cartItems()
@@ -72,5 +82,10 @@ class Product extends Model
     public function comments()
     {
         return $this->hasMany(Comment::class);
+    }
+
+    public function seller()
+    {
+        return $this->belongsTo(User::class, 'created_by');
     }
 }
