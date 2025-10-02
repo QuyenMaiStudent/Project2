@@ -1,7 +1,10 @@
 import { Head, Link, router } from '@inertiajs/react';
 import AppLayout from '@/layouts/app-layout';
+import { useState } from 'react';
 
-export default function ShowProduct({ product }: any) {
+export default function ShowProduct({ product, allCategories }: any) {
+    const [selectedCategories, setSelectedCategories] = useState(product.categories.map((cat: any) => cat.id));
+
     return (
         <AppLayout
             breadcrumbs={[
@@ -98,6 +101,30 @@ export default function ShowProduct({ product }: any) {
                             </tbody>
                         </table>
                     </div>
+                    {/* Phân loại danh mục */}
+                    <form
+                        onSubmit={e => {
+                            e.preventDefault();
+                            router.post(`/admin/products/${product.id}/categories`, { categories: selectedCategories });
+                        }}
+                        className="mb-6"
+                    >
+                        <label className="block font-semibold mb-2">Phân loại danh mục:</label>
+                        <select
+                            multiple
+                            value={selectedCategories}
+                            onChange={e => {
+                                const options = Array.from(e.target.selectedOptions).map(opt => opt.value);
+                                setSelectedCategories(options);
+                            }}
+                            className="border rounded px-3 py-2 w-full"
+                        >
+                            {allCategories.map((cat: any) => (
+                                <option key={cat.id} value={cat.id}>{cat.name}</option>
+                            ))}
+                        </select>
+                        <button type="submit" className="mt-2 bg-blue-600 text-white px-4 py-2 rounded">Lưu danh mục</button>
+                    </form>
                     {/* Nút thao tác */}
                     <div className="flex gap-4 mt-4">
                         <Link

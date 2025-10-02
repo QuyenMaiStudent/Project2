@@ -2,7 +2,9 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
+use App\Models\Category;
 use App\Models\Product;
+use Illuminate\Http\Request;
 use Inertia\Inertia;
 
 class AdminProductController extends Controller
@@ -28,11 +30,14 @@ class AdminProductController extends Controller
             'specs',
             'variants',
             'seller',
-            'warrantyPolicy'
+            'warrantyPolicy',
+            'categories',
         ]);
 
+        $allCategories = Category::all();
         return Inertia::render('Admin/ShowProduct', [
             'product' => $product,
+            'allCategories' => $allCategories,
         ]);
     }
 
@@ -78,5 +83,16 @@ class AdminProductController extends Controller
         return Inertia::render('Admin/RejectedProducts', [
             'products' => $products,
         ]);
+    }
+
+    //Cập nhật category
+    public function updateCategories(Request $request, Product $product)
+    {
+        $request->validate([
+            'categories' => 'array',
+            'categories.*' => 'exists:categories,id',
+        ]);
+        $product->categories()->sync($request->categories ?? []);
+        return back()->with('success', 'Đã cập nhật danh mục cho sản phẩm!');
     }
 }

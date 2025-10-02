@@ -44,6 +44,13 @@ export default function AdminDashboard(props: any) {
                                 <XCircle className="h-5 w-5 text-red-600" />
                                 <span className="text-gray-700">Sản phẩm bị từ chối</span>
                             </Link>
+                            <Link
+                                href="/admin/categories"
+                                className="flex items-center space-x-3 p-3 rounded-lg hover:bg-gray-100 transition-colors"
+                            >
+                                <Package className="h-5 w-5 text-indigo-600" />
+                                <span className="text-gray-700">Quản lý danh mục</span>
+                            </Link>
                         </nav>
                     </div>
                 </div>

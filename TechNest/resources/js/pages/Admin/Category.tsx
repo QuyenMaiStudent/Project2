@@ -1,0 +1,182 @@
+import { Head, Link, router, usePage } from '@inertiajs/react';
+import AppLayout from '@/layouts/app-layout';
+import React, { useState, useRef } from 'react';
+
+interface Category {
+    id: number;
+    name: string;
+    description?: string;
+}
+interface PaginationLink {
+    url: string | null;
+    label: string;
+    active: boolean;
+}
+interface Props {
+    categories: {
+        data: Category[];
+        links: PaginationLink[];
+    };
+}
+
+export default function CategoryPage({ categories }: Props) {
+    const [form, setForm] = useState({ name: '', description: '', id: null as number | null });
+    const [isEdit, setIsEdit] = useState(false);
+    const { flash } = usePage().props as any;
+    const success = flash?.success;
+    const error = flash?.error;
+    const formRef = useRef<HTMLFormElement>(null);
+
+    const handleSubmit = (e: React.FormEvent) => {
+        e.preventDefault();
+        if (isEdit && form.id) {
+            router.put(`/admin/categories/${form.id}/update`, form);
+        } else {
+            router.post('/admin/categories', form);
+        }
+        setForm({ name: '', description: '', id: null });
+        setIsEdit(false);
+    };
+
+    const handleEdit = (cat: Category) => {
+        setForm({ name: cat.name, description: cat.description || '', id: cat.id });
+        setIsEdit(true);
+        setTimeout(() => {
+            formRef.current?.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        }, 100);
+    };
+
+    const handleDelete = (id: number) => {
+        if (confirm('Bạn có chắc muốn xóa danh mục này?')) {
+            router.delete(`/admin/categories/${id}/delete`);
+        }
+    };
+
+    return (
+        <AppLayout
+            breadcrumbs={[
+                { title: 'Admin Dashboard', href: '/admin/dashboard' },
+                { title: 'Quản lý danh mục', href: '/admin/categories' }
+            ]}
+        >
+            <Head title="Quản lý danh mục" />
+            <div className="max-w-3xl mx-auto p-6">
+                {/* Thông báo */}
+                {(success || error) && (
+                    <div className={`mb-4 px-4 py-3 rounded text-white font-semibold ${success ? 'bg-green-600' : 'bg-red-600'}`}>
+                        {success || error}
+                    </div>
+                )}
+                <h1 className="text-2xl font-bold mb-6">Quản lý danh mục sản phẩm</h1>
+                <form
+                    ref={formRef}
+                    onSubmit={handleSubmit}
+                    className="mb-8 bg-white p-4 rounded shadow flex flex-col gap-3"
+                >
+                    <div>
+                        <label className="block font-medium mb-1">Tên danh mục</label>
+                        <input
+                            type="text"
+                            className="border rounded px-3 py-2 w-full"
+                            value={form.name}
+                            onChange={e => setForm(f => ({ ...f, name: e.target.value }))}
+                            required
+                        />
+                    </div>
+                    <div>
+                        <label className="block font-medium mb-1">Mô tả</label>
+                        <textarea
+                            className="border rounded px-3 py-2 w-full"
+                            value={form.description}
+                            onChange={e => setForm(f => ({ ...f, description: e.target.value }))}
+                        />
+                    </div>
+                    <div>
+                        <button
+                            type="submit"
+                            className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700"
+                        >
+                            {isEdit ? 'Cập nhật' : 'Thêm mới'}
+                        </button>
+                        {isEdit && (
+                            <button
+                                type="button"
+                                className="ml-2 px-4 py-2 rounded bg-gray-300 hover:bg-gray-400"
+                                onClick={() => {
+                                    setForm({ name: '', description: '', id: null });
+                                    setIsEdit(false);
+                                }}
+                            >
+                                Hủy
+                            </button>
+                        )}
+                    </div>
+                </form>
+                <div className="bg-white rounded shadow">
+                    <table className="w-full">
+                        <thead>
+                            <tr className="bg-gray-100">
+                                <th className="py-2 px-3 text-left">Tên danh mục</th>
+                                <th className="py-2 px-3 text-left">Mô tả</th>
+                                <th className="py-2 px-3 text-center">Thao tác</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {categories.data.length === 0 ? (
+                                <tr>
+                                    <td colSpan={3} className="text-center py-4 text-gray-500">
+                                        Chưa có danh mục nào.
+                                    </td>
+                                </tr>
+                            ) : (
+                                categories.data.map(cat => (
+                                    <tr key={cat.id}>
+                                        <td className="py-2 px-3">{cat.name}</td>
+                                        <td className="py-2 px-3">{cat.description}</td>
+                                        <td className="py-2 px-3 text-center">
+                                            <div className="flex items-center justify-center gap-2">
+                                                <button
+                                                    onClick={() => handleEdit(cat)}
+                                                    className="bg-yellow-500 text-white px-3 py-1 rounded hover:bg-yellow-600"
+                                                >
+                                                    Sửa
+                                                </button>
+                                                <button
+                                                    onClick={() => handleDelete(cat.id)}
+                                                    className="bg-red-600 text-white px-3 py-1 rounded hover:bg-red-700"
+                                                >
+                                                    Xóa
+                                                </button>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                ))
+                            )}
+                        </tbody>
+                    </table>
+                    {/* Phân trang */}
+                    {categories.links && categories.links.length > 1 && (
+                        <div className="mt-4 flex justify-center gap-1">
+                            {categories.links.map((link, idx) =>
+                                link.url ? (
+                                    <button
+                                        key={idx}
+                                        className={`px-3 py-1 rounded ${link.active ? 'bg-blue-600 text-white' : 'bg-gray-200 text-gray-700 hover:bg-gray-300'}`}
+                                        dangerouslySetInnerHTML={{ __html: link.label }}
+                                        onClick={() => router.visit(link.url!)}
+                                    />
+                                ) : (
+                                    <span
+                                        key={idx}
+                                        className="px-3 py-1 text-gray-400"
+                                        dangerouslySetInnerHTML={{ __html: link.label }}
+                                    />
+                                )
+                            )}
+                        </div>
+                    )}
+                </div>
+            </div>
+        </AppLayout>
+    );
+}
