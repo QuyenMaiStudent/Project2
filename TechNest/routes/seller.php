@@ -1,0 +1,43 @@
+<?php
+use App\Http\Controllers\Seller\ProductController;
+use App\Http\Controllers\Seller\ProductImageController;
+use App\Http\Controllers\Seller\ProductSpecController;
+use App\Http\Controllers\Seller\ProductVariantController;
+use App\Http\Controllers\Seller\SellerController;
+use App\Models\Product;
+use Illuminate\Support\Facades\Route;
+// Seller routes
+Route::middleware(['auth', 'seller'])->group(function () {
+    Route::get('/seller/dashboard', [SellerController::class, 'dashboard'])->name('seller.dashboard');
+
+    // Add product
+    Route::get('/seller/products/create', [ProductController::class, 'create'])->name('seller.products.create');
+    Route::post('/seller/products', [ProductController::class, 'store'])->name('seller.products.store');
+
+    // View product list
+    Route::get('/seller/products', [ProductController::class, 'index'])->name('seller.products.index');
+
+    // Upload nhiều ảnh
+    Route::get('/seller/products/upload-images', [ProductImageController::class, 'showUploadImages'])->name('seller.products.show-upload-images');
+    Route::post('/seller/products/{product}/upload-images', [ProductImageController::class, 'uploadImages'])->name('seller.products.upload-images');
+    Route::delete('/seller/products/{product}/images/{image}', [ProductImageController::class, 'deleteImage'])->name('seller.products.delete-image');
+
+    // Thông số sản phẩm
+    Route::get('/seller/products/{product}/specs', [ProductSpecController::class, 'index'])->name('seller.products.specs.index');
+    Route::post('/seller/products/{product}/specs', [ProductSpecController::class, 'store',])->name('seller.products.specs.store');
+    Route::put('/seller/products/{product}/specs/{spec}', [ProductSpecController::class, 'update'])->name('seller.products.specs.update');
+    Route::delete('/seller/products/{product}/specs/{spec}', [ProductSpecController::class, 'destroy'])->name('seller.products.specs.destroy');
+
+    // Biến thể sản phẩm
+    Route::get('/seller/products/{product}/variants', [ProductVariantController::class, 'index'])->name('seller.products.variants.index');
+    Route::post('/seller/products/{product}/variants', [ProductVariantController::class, 'store'])->name('seller.products.variants.store');
+    Route::put('/seller/products/{product}/variants/{variant}', [ProductVariantController::class, 'update'])->name('seller.products.variants.update');
+    Route::delete('/seller/products/{product}/variants/{variant}', [ProductVariantController::class, 'destroy'])->name('seller.products.variants.destroy');
+
+    // Xem trước
+    Route::get('seller/products/{product}/preview', [ProductController::class, 'preview'])->name('seller.products.preview');
+    //Duyệt
+    Route::post('seller/products/{product}/submit', [ProductController::class, 'submitForApproval'])->name('seller.products.submit');
+
+
+});
