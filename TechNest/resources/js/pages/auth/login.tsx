@@ -78,6 +78,17 @@ export default function Login({ status, canResetPassword }: LoginProps) {
                                 Sign up
                             </TextLink>
                         </div>
+
+                        <div className="mt-4 text-center">
+                            <button
+                                type="button"
+                                onClick={() => window.location.href = '/auth/google'}
+                                className="bg-[#0AC1EF] text-white px-4 py-2 rounded hover:bg-[#0999c2] flex items-center justify-center"
+                            >
+                                {/* Google SVG icon */}
+                                Đăng nhập bằng Google
+                            </button>
+                        </div>
                     </>
                 )}
             </Form>
