@@ -47,10 +47,10 @@ class ProductVariantFactory extends Factory
         $variant = $this->faker->randomElement($variants);
 
         return [
-            'product_id' => $product->id,
+            'product_id' => Product::factory(),
             'variant_name' => $variant['variant_name'],
-            'price' => $product->price,
-            'stock' => $this->faker->numberBetween(1, 30),
+            'additional_price' => $this->faker->numberBetween(0, 500000),
+            'stock' => $this->faker->numberBetween(1, 20),
         ];
     }
 }
