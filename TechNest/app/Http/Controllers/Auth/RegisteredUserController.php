@@ -34,9 +34,27 @@ class RegisteredUserController extends Controller
     {
         $request->validate([
             'name' => 'required|string|max:255',
-            'email' => 'required|string|lowercase|email|max:255|unique:'.User::class,
+            'email' => [
+                'required',
+                'string',
+                'lowercase',
+                'email',
+                'max:255',
+                'unique:' . User::class,
+                'regex:/@gmail.com$/i', //Chỉ cho phép email Google
+            ],
             'password' => ['required', 'confirmed', Rules\Password::defaults()],
             'role' => 'required|in:customer,seller',
+        ], [
+            'name.required' => "Vui lòng nhập họ tên",
+            'email.required' => "Vui lòng nhập email",
+            'email.email' => "Email không đúng định dạng",
+            'email.unique' => "Email đã được sử dụng",
+            'email.regex' => "Chỉ chấp nhận đăng ký bằng email Google (@gmail.com)",
+            'password.required' => "Vui lòng nhập mật khẩu",
+            'password.confirmed' => "Mật khẩu xác nhận không khớp",
+            'role.required' => "Vui lòng chọn vai trò",
+            'role.in' => "Vai trò không hợp lệ",
         ]);
 
         $roleId = Role::where('name', $request->role)->value('id');

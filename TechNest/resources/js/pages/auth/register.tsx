@@ -9,8 +9,23 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import AuthLayout from '@/layouts/auth-layout';
+import { useRef, useState } from 'react';
 
 export default function Register() {
+    const formRef = useRef<HTMLFormElement>(null);
+    const [emailError, setEmailError] = useState<string | null>(null);
+
+    const handleSubmit = (e: React.FormEvent) => {
+        const form = e.target as HTMLFormElement;
+        const email = (form.email as HTMLInputElement).value;
+        if (!email.endsWith('@gmail.com')) {
+            e.preventDefault();
+            setEmailError('Chỉ chấp nhận đăng ký bằng email Google (@gmail.com)');
+        } else {
+            setEmailError(null);
+        }
+    };
+
     return (
         <AuthLayout title="Create an account" description="Enter your details below to create your account">
             <Head title="Register" />
@@ -19,6 +34,7 @@ export default function Register() {
                 resetOnSuccess={['password', 'password_confirmation']}
                 disableWhileProcessing
                 className="flex flex-col gap-6"
+                onSubmit={handleSubmit}
             >
                 {({ processing, errors }) => (
                     <>
@@ -49,7 +65,7 @@ export default function Register() {
                                     name="email"
                                     placeholder="email@example.com"
                                 />
-                                <InputError message={errors.email} />
+                                <InputError message={emailError || errors.email} />
                             </div>
 
                             <div className="grid gap-2">
