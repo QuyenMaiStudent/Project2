@@ -45,7 +45,13 @@ export default function Welcome() {
                     <Link href="/support" className="text-white font-semibold text-lg hover:underline">Hỗ trợ</Link>
                     {auth.user ? (
                         <Link
-                            href={dashboard()}
+                            href={
+                                auth.user.role === 'admin'
+                                    ? '/admin/dashboard'
+                                    : auth.user.role === 'seller'
+                                    ? '/seller/dashboard'
+                                    : '/customer/dashboard'
+                            }
                             className="inline-block rounded-sm border border-white px-6 py-2 text-base leading-normal text-white hover:bg-[#0999c2]"
                         >
                             Dashboard

@@ -205,7 +205,7 @@ class DatabaseSeeder extends Seeder
             foreach ($variantStocks as $stock) {
                 ProductVariant::factory()->create([
                     'product_id' => $product->id,
-                    'price' => $product->price,
+                    'additional_price' => rand(0, 5000000), // hoặc random nếu muốn
                     'stock' => $stock,
                 ]);
             }
