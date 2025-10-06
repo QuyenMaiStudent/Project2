@@ -47,9 +47,8 @@ export default function ProductIndex({ products }: Props) {
                     </div>
                 </div>
                 <nav className="flex items-center gap-6">
-                    <Link href="/products" className="text-white font-semibold text-lg hover:underline">Sản phẩm</Link>
-                    <Link href="/cart" className="text-white font-semibold text-lg hover:underline">Giỏ hàng</Link>
-                    <Link href="/support" className="text-white font-semibold text-lg hover:underline">Hỗ trợ</Link>
+                    <Link href="/products" className="text-black font-semibold text-lg hover:underline">Sản phẩm</Link>
+                    <Link href="/support" className="text-black font-semibold text-lg hover:underline">Hỗ trợ</Link>
                     {auth.user ? (
                         <Link
                             href={

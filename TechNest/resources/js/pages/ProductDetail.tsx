@@ -1,6 +1,7 @@
 import { Head, Link, usePage } from '@inertiajs/react';
 import React, { useState } from 'react';
 import { type SharedData } from '@/types';
+import { router } from '@inertiajs/react';
 
 interface Image { url: string; alt_text?: string; is_primary?: boolean; }
 interface Variant { id: number; variant_name: string; price: number; stock: number; }
@@ -36,6 +37,24 @@ export default function ProductDetail({ product }: Props) {
     const price = selectedVariant ? selectedVariant.price : product.price;
     const maxStock = selectedVariant ? selectedVariant.stock : product.stock;
 
+    const handleAddToCart = () => {
+        if (!auth.user) {
+            alert('Bạn cần đăng nhập để thêm sản phẩm vào giỏ hàng!');
+            router.visit('/login');
+            return;
+        }
+        router.post('/cart/add', {
+            product_id: product.id,
+            product_variant_id: selectedVariant ? selectedVariant.id : null,
+            quantity,
+        }, {
+            onSuccess: () => alert('Đã thêm vào giỏ hàng!'),
+            onError: (errors) => {
+                alert(errors.msg || 'Có lỗi xảy ra!');
+            }
+        });
+    };
+
     return (
         <>
             <Head title={product.name} />
@@ -67,9 +86,8 @@ export default function ProductDetail({ product }: Props) {
                     </div>
                 </div>
                 <nav className="flex items-center gap-6">
-                    <Link href="/products" className="text-white font-semibold text-lg hover:underline">Sản phẩm</Link>
-                    <Link href="/cart" className="text-white font-semibold text-lg hover:underline">Giỏ hàng</Link>
-                    <Link href="/support" className="text-white font-semibold text-lg hover:underline">Hỗ trợ</Link>
+                    <Link href="/products" className="text-black font-semibold text-lg hover:underline">Sản phẩm</Link>
+                    <Link href="/support" className="text-black font-semibold text-lg hover:underline">Hỗ trợ</Link>
                     {auth.user ? (
                         <Link
                             href={
@@ -179,7 +197,10 @@ export default function ProductDetail({ product }: Props) {
                         </div>
                         {/* Nút mua */}
                         <div className="flex gap-4 mt-2">
-                            <button className="px-8 py-3 bg-[#ee4d2d] text-white rounded font-bold text-lg hover:bg-[#d73211] transition-colors">
+                            <button 
+                                className="px-8 py-3 bg-[#ee4d2d] text-white rounded font-bold text-lg hover:bg-[#d73211] transition-colors"
+                                onClick={handleAddToCart}
+                            >
                                 Thêm vào giỏ hàng
                             </button>
                             <button className="px-8 py-3 bg-[#0AC1EF] text-white rounded font-bold text-lg hover:bg-[#0999c2] transition-colors">
