@@ -1,7 +1,7 @@
 import { queryParams, type RouteQueryOptions, type RouteDefinition, type RouteFormDefinition, applyUrlDefaults } from './../../wayfinder'
 /**
-* @see \App\Http\Controllers\Seller\ProductController::index
- * @see app/Http/Controllers/Seller/ProductController.php:17
+* @see \App\Http\Controllers\ProductIndexController::__invoke
+ * @see app/Http/Controllers/ProductIndexController.php:11
  * @route '/products'
  */
 export const index = (options?: RouteQueryOptions): RouteDefinition<'get'> => ({
@@ -15,8 +15,8 @@ index.definition = {
 } satisfies RouteDefinition<["get","head"]>
 
 /**
-* @see \App\Http\Controllers\Seller\ProductController::index
- * @see app/Http/Controllers/Seller/ProductController.php:17
+* @see \App\Http\Controllers\ProductIndexController::__invoke
+ * @see app/Http/Controllers/ProductIndexController.php:11
  * @route '/products'
  */
 index.url = (options?: RouteQueryOptions) => {
@@ -24,8 +24,8 @@ index.url = (options?: RouteQueryOptions) => {
 }
 
 /**
-* @see \App\Http\Controllers\Seller\ProductController::index
- * @see app/Http/Controllers/Seller/ProductController.php:17
+* @see \App\Http\Controllers\ProductIndexController::__invoke
+ * @see app/Http/Controllers/ProductIndexController.php:11
  * @route '/products'
  */
 index.get = (options?: RouteQueryOptions): RouteDefinition<'get'> => ({
@@ -33,8 +33,8 @@ index.get = (options?: RouteQueryOptions): RouteDefinition<'get'> => ({
     method: 'get',
 })
 /**
-* @see \App\Http\Controllers\Seller\ProductController::index
- * @see app/Http/Controllers/Seller/ProductController.php:17
+* @see \App\Http\Controllers\ProductIndexController::__invoke
+ * @see app/Http/Controllers/ProductIndexController.php:11
  * @route '/products'
  */
 index.head = (options?: RouteQueryOptions): RouteDefinition<'head'> => ({
@@ -43,8 +43,8 @@ index.head = (options?: RouteQueryOptions): RouteDefinition<'head'> => ({
 })
 
     /**
-* @see \App\Http\Controllers\Seller\ProductController::index
- * @see app/Http/Controllers/Seller/ProductController.php:17
+* @see \App\Http\Controllers\ProductIndexController::__invoke
+ * @see app/Http/Controllers/ProductIndexController.php:11
  * @route '/products'
  */
     const indexForm = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
@@ -53,8 +53,8 @@ index.head = (options?: RouteQueryOptions): RouteDefinition<'head'> => ({
     })
 
             /**
-* @see \App\Http\Controllers\Seller\ProductController::index
- * @see app/Http/Controllers/Seller/ProductController.php:17
+* @see \App\Http\Controllers\ProductIndexController::__invoke
+ * @see app/Http/Controllers/ProductIndexController.php:11
  * @route '/products'
  */
         indexForm.get = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
@@ -62,8 +62,8 @@ index.head = (options?: RouteQueryOptions): RouteDefinition<'head'> => ({
             method: 'get',
         })
             /**
-* @see \App\Http\Controllers\Seller\ProductController::index
- * @see app/Http/Controllers/Seller/ProductController.php:17
+* @see \App\Http\Controllers\ProductIndexController::__invoke
+ * @see app/Http/Controllers/ProductIndexController.php:11
  * @route '/products'
  */
         indexForm.head = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
@@ -78,98 +78,93 @@ index.head = (options?: RouteQueryOptions): RouteDefinition<'head'> => ({
     
     index.form = indexForm
 /**
-* @see \App\Http\Controllers\Seller\ProductController::show
- * @see app/Http/Controllers/Seller/ProductController.php:93
- * @route '/products/{product}'
+* @see \App\Http\Controllers\ProductDetailController::__invoke
+ * @see app/Http/Controllers/ProductDetailController.php:11
+ * @route '/products/{id}'
  */
-export const show = (args: { product: number | { id: number } } | [product: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions): RouteDefinition<'get'> => ({
-    url: show.url(args, options),
+export const detail = (args: { id: string | number } | [id: string | number ] | string | number, options?: RouteQueryOptions): RouteDefinition<'get'> => ({
+    url: detail.url(args, options),
     method: 'get',
 })
 
-show.definition = {
+detail.definition = {
     methods: ["get","head"],
-    url: '/products/{product}',
+    url: '/products/{id}',
 } satisfies RouteDefinition<["get","head"]>
 
 /**
-* @see \App\Http\Controllers\Seller\ProductController::show
- * @see app/Http/Controllers/Seller/ProductController.php:93
- * @route '/products/{product}'
+* @see \App\Http\Controllers\ProductDetailController::__invoke
+ * @see app/Http/Controllers/ProductDetailController.php:11
+ * @route '/products/{id}'
  */
-show.url = (args: { product: number | { id: number } } | [product: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions) => {
+detail.url = (args: { id: string | number } | [id: string | number ] | string | number, options?: RouteQueryOptions) => {
     if (typeof args === 'string' || typeof args === 'number') {
-        args = { product: args }
+        args = { id: args }
     }
 
-            if (typeof args === 'object' && !Array.isArray(args) && 'id' in args) {
-            args = { product: args.id }
-        }
     
     if (Array.isArray(args)) {
         args = {
-                    product: args[0],
+                    id: args[0],
                 }
     }
 
     args = applyUrlDefaults(args)
 
     const parsedArgs = {
-                        product: typeof args.product === 'object'
-                ? args.product.id
-                : args.product,
+                        id: args.id,
                 }
 
-    return show.definition.url
-            .replace('{product}', parsedArgs.product.toString())
+    return detail.definition.url
+            .replace('{id}', parsedArgs.id.toString())
             .replace(/\/+$/, '') + queryParams(options)
 }
 
 /**
-* @see \App\Http\Controllers\Seller\ProductController::show
- * @see app/Http/Controllers/Seller/ProductController.php:93
- * @route '/products/{product}'
+* @see \App\Http\Controllers\ProductDetailController::__invoke
+ * @see app/Http/Controllers/ProductDetailController.php:11
+ * @route '/products/{id}'
  */
-show.get = (args: { product: number | { id: number } } | [product: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions): RouteDefinition<'get'> => ({
-    url: show.url(args, options),
+detail.get = (args: { id: string | number } | [id: string | number ] | string | number, options?: RouteQueryOptions): RouteDefinition<'get'> => ({
+    url: detail.url(args, options),
     method: 'get',
 })
 /**
-* @see \App\Http\Controllers\Seller\ProductController::show
- * @see app/Http/Controllers/Seller/ProductController.php:93
- * @route '/products/{product}'
+* @see \App\Http\Controllers\ProductDetailController::__invoke
+ * @see app/Http/Controllers/ProductDetailController.php:11
+ * @route '/products/{id}'
  */
-show.head = (args: { product: number | { id: number } } | [product: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions): RouteDefinition<'head'> => ({
-    url: show.url(args, options),
+detail.head = (args: { id: string | number } | [id: string | number ] | string | number, options?: RouteQueryOptions): RouteDefinition<'head'> => ({
+    url: detail.url(args, options),
     method: 'head',
 })
 
     /**
-* @see \App\Http\Controllers\Seller\ProductController::show
- * @see app/Http/Controllers/Seller/ProductController.php:93
- * @route '/products/{product}'
+* @see \App\Http\Controllers\ProductDetailController::__invoke
+ * @see app/Http/Controllers/ProductDetailController.php:11
+ * @route '/products/{id}'
  */
-    const showForm = (args: { product: number | { id: number } } | [product: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
-        action: show.url(args, options),
+    const detailForm = (args: { id: string | number } | [id: string | number ] | string | number, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
+        action: detail.url(args, options),
         method: 'get',
     })
 
             /**
-* @see \App\Http\Controllers\Seller\ProductController::show
- * @see app/Http/Controllers/Seller/ProductController.php:93
- * @route '/products/{product}'
+* @see \App\Http\Controllers\ProductDetailController::__invoke
+ * @see app/Http/Controllers/ProductDetailController.php:11
+ * @route '/products/{id}'
  */
-        showForm.get = (args: { product: number | { id: number } } | [product: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
-            action: show.url(args, options),
+        detailForm.get = (args: { id: string | number } | [id: string | number ] | string | number, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
+            action: detail.url(args, options),
             method: 'get',
         })
             /**
-* @see \App\Http\Controllers\Seller\ProductController::show
- * @see app/Http/Controllers/Seller/ProductController.php:93
- * @route '/products/{product}'
+* @see \App\Http\Controllers\ProductDetailController::__invoke
+ * @see app/Http/Controllers/ProductDetailController.php:11
+ * @route '/products/{id}'
  */
-        showForm.head = (args: { product: number | { id: number } } | [product: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
-            action: show.url(args, {
+        detailForm.head = (args: { id: string | number } | [id: string | number ] | string | number, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
+            action: detail.url(args, {
                         [options?.mergeQuery ? 'mergeQuery' : 'query']: {
                             _method: 'HEAD',
                             ...(options?.query ?? options?.mergeQuery ?? {}),
@@ -178,10 +173,10 @@ show.head = (args: { product: number | { id: number } } | [product: number | { i
             method: 'get',
         })
     
-    show.form = showForm
+    detail.form = detailForm
 const products = {
     index: Object.assign(index, index),
-show: Object.assign(show, show),
+detail: Object.assign(detail, detail),
 }
 
 export default products

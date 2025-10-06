@@ -1,6 +1,8 @@
 <?php
 
 use App\Http\Controllers\Auth\GoogleController;
+use App\Http\Controllers\ProductDetailController;
+use App\Http\Controllers\ProductIndexController;
 use App\Http\Controllers\Seller\ProductController;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
@@ -21,8 +23,8 @@ Route::get('/auth/google/callback', [GoogleController::class, 'handleGoogleCallb
 
 
 // Public product routes
-Route::get('/products', [ProductController::class, 'index'])->name('products.index');
-Route::get('/products/{product}', [ProductController::class, 'show'])->name('products.show');
+Route::get('/products', ProductIndexController::class)->name('products.index');
+Route::get('/products/{id}', ProductDetailController::class)->name('products.detail');
 
 require __DIR__.'/settings.php';
 require __DIR__.'/auth.php';

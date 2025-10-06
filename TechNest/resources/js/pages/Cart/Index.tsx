@@ -5,6 +5,8 @@ import AppLayout from '@/layouts/app-layout';
 interface Product {
   id: number;
   name: string;
+  image_url?: string;
+  price?: number;
 }
 
 interface Variant {
@@ -55,6 +57,8 @@ export default function Index({ cart }: CartProps) {
               <tr className="bg-gray-100">
                 <th className="py-2 px-3 text-left">Sản phẩm</th>
                 <th className="py-2 px-3 text-left">Biến thể</th>
+                <th className="py-2 px-3 text-center">Giá</th>
+                <th className="py-2 px-3 text-center">Thành tiền</th>
                 <th className="py-2 px-3 text-center">Số lượng</th>
                 <th className="py-2 px-3 text-center">Thao tác</th>
               </tr>
@@ -62,8 +66,15 @@ export default function Index({ cart }: CartProps) {
             <tbody>
               {cart.items.map((item) => (
                 <tr key={item.id}>
-                  <td className="py-2 px-3">{item.product?.name || '-'}</td>
+                  <td className="py-2 px-3 flex items-center gap-2">
+                    {item.product?.image_url && (
+                      <img src={item.product.image_url} alt={item.product.name} className="h-10 w-10 object-contain rounded" />
+                    )}
+                    {item.product?.name || '-'}
+                  </td>
                   <td className="py-2 px-3">{item.variant?.variant_name || '-'}</td>
+                  <td className="py-2 px-3 text-center">{item.product?.price?.toLocaleString() || '-'}</td>
+                  <td className="py-2 px-3 text-center">{(item.product?.price && item.quantity) ? (item.product.price * item.quantity).toLocaleString() : '-'}</td>
                   <td className="py-2 px-3 text-center">
                     <input
                       type="number"

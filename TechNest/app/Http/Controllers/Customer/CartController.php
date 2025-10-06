@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Customer;
 use App\Http\Controllers\Controller;
 use App\Models\Cart;
 use App\Models\CartItem;
+use App\Models\Product;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Inertia\Inertia;
@@ -39,6 +40,14 @@ class CartController extends Controller
     // Thêm sản phẩm
     public function add(Request $request)
     {
+        $product = Product::where('id', $request->product_id)
+            ->where('is_active', true)
+            ->where('status', 'approved')
+            ->first();
+        if (!$product) {
+            return back()->withErrors(['msg' => "Sản phẩm không hợp lệ hoặc đã bị ẩn."]);
+        }
+        
         $cart = Cart::firstOrCreate(['user_id' => Auth::id()]);
         $item = CartItem::where('cart_id', $cart->id)
             ->where('product_id', $request->product_id)
