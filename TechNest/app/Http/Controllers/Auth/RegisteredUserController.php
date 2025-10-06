@@ -77,6 +77,6 @@ class RegisteredUserController extends Controller
             Cart::firstOrCreate(['user_id' => $user->id]);
         }
 
-        return redirect()->intended(route('dashboard', absolute: false));
+        return redirect()->route('verification.notice');
     }
 }

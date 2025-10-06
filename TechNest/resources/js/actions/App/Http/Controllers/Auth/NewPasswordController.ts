@@ -1,7 +1,7 @@
 import { queryParams, type RouteQueryOptions, type RouteDefinition, type RouteFormDefinition, applyUrlDefaults } from './../../../../../wayfinder'
 /**
 * @see \App\Http\Controllers\Auth\NewPasswordController::create
- * @see app/Http/Controllers/Auth/NewPasswordController.php:23
+ * @see app/Http/Controllers/Auth/NewPasswordController.php:26
  * @route '/reset-password/{token}'
  */
 export const create = (args: { token: string | number } | [token: string | number ] | string | number, options?: RouteQueryOptions): RouteDefinition<'get'> => ({
@@ -16,7 +16,7 @@ create.definition = {
 
 /**
 * @see \App\Http\Controllers\Auth\NewPasswordController::create
- * @see app/Http/Controllers/Auth/NewPasswordController.php:23
+ * @see app/Http/Controllers/Auth/NewPasswordController.php:26
  * @route '/reset-password/{token}'
  */
 create.url = (args: { token: string | number } | [token: string | number ] | string | number, options?: RouteQueryOptions) => {
@@ -44,7 +44,7 @@ create.url = (args: { token: string | number } | [token: string | number ] | str
 
 /**
 * @see \App\Http\Controllers\Auth\NewPasswordController::create
- * @see app/Http/Controllers/Auth/NewPasswordController.php:23
+ * @see app/Http/Controllers/Auth/NewPasswordController.php:26
  * @route '/reset-password/{token}'
  */
 create.get = (args: { token: string | number } | [token: string | number ] | string | number, options?: RouteQueryOptions): RouteDefinition<'get'> => ({
@@ -53,7 +53,7 @@ create.get = (args: { token: string | number } | [token: string | number ] | str
 })
 /**
 * @see \App\Http\Controllers\Auth\NewPasswordController::create
- * @see app/Http/Controllers/Auth/NewPasswordController.php:23
+ * @see app/Http/Controllers/Auth/NewPasswordController.php:26
  * @route '/reset-password/{token}'
  */
 create.head = (args: { token: string | number } | [token: string | number ] | string | number, options?: RouteQueryOptions): RouteDefinition<'head'> => ({
@@ -63,7 +63,7 @@ create.head = (args: { token: string | number } | [token: string | number ] | st
 
     /**
 * @see \App\Http\Controllers\Auth\NewPasswordController::create
- * @see app/Http/Controllers/Auth/NewPasswordController.php:23
+ * @see app/Http/Controllers/Auth/NewPasswordController.php:26
  * @route '/reset-password/{token}'
  */
     const createForm = (args: { token: string | number } | [token: string | number ] | string | number, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
@@ -73,7 +73,7 @@ create.head = (args: { token: string | number } | [token: string | number ] | st
 
             /**
 * @see \App\Http\Controllers\Auth\NewPasswordController::create
- * @see app/Http/Controllers/Auth/NewPasswordController.php:23
+ * @see app/Http/Controllers/Auth/NewPasswordController.php:26
  * @route '/reset-password/{token}'
  */
         createForm.get = (args: { token: string | number } | [token: string | number ] | string | number, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
@@ -82,7 +82,7 @@ create.head = (args: { token: string | number } | [token: string | number ] | st
         })
             /**
 * @see \App\Http\Controllers\Auth\NewPasswordController::create
- * @see app/Http/Controllers/Auth/NewPasswordController.php:23
+ * @see app/Http/Controllers/Auth/NewPasswordController.php:26
  * @route '/reset-password/{token}'
  */
         createForm.head = (args: { token: string | number } | [token: string | number ] | string | number, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
@@ -98,7 +98,7 @@ create.head = (args: { token: string | number } | [token: string | number ] | st
     create.form = createForm
 /**
 * @see \App\Http\Controllers\Auth\NewPasswordController::store
- * @see app/Http/Controllers/Auth/NewPasswordController.php:36
+ * @see app/Http/Controllers/Auth/NewPasswordController.php:39
  * @route '/reset-password'
  */
 export const store = (options?: RouteQueryOptions): RouteDefinition<'post'> => ({
@@ -113,7 +113,7 @@ store.definition = {
 
 /**
 * @see \App\Http\Controllers\Auth\NewPasswordController::store
- * @see app/Http/Controllers/Auth/NewPasswordController.php:36
+ * @see app/Http/Controllers/Auth/NewPasswordController.php:39
  * @route '/reset-password'
  */
 store.url = (options?: RouteQueryOptions) => {
@@ -122,7 +122,7 @@ store.url = (options?: RouteQueryOptions) => {
 
 /**
 * @see \App\Http\Controllers\Auth\NewPasswordController::store
- * @see app/Http/Controllers/Auth/NewPasswordController.php:36
+ * @see app/Http/Controllers/Auth/NewPasswordController.php:39
  * @route '/reset-password'
  */
 store.post = (options?: RouteQueryOptions): RouteDefinition<'post'> => ({
@@ -132,7 +132,7 @@ store.post = (options?: RouteQueryOptions): RouteDefinition<'post'> => ({
 
     /**
 * @see \App\Http\Controllers\Auth\NewPasswordController::store
- * @see app/Http/Controllers/Auth/NewPasswordController.php:36
+ * @see app/Http/Controllers/Auth/NewPasswordController.php:39
  * @route '/reset-password'
  */
     const storeForm = (options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
@@ -142,7 +142,7 @@ store.post = (options?: RouteQueryOptions): RouteDefinition<'post'> => ({
 
             /**
 * @see \App\Http\Controllers\Auth\NewPasswordController::store
- * @see app/Http/Controllers/Auth/NewPasswordController.php:36
+ * @see app/Http/Controllers/Auth/NewPasswordController.php:39
  * @route '/reset-password'
  */
         storeForm.post = (options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
