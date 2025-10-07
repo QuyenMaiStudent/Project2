@@ -66,15 +66,19 @@ class ProductController extends Controller
                 'created_by' => auth()->id(),
             ]);
 
-            // Lưu ảnh vào public/products
+            // Lưu ảnh vào public/images/products
             if ($request->hasFile('image')) {
                 $file = $request->file('image');
                 $filename = 'product_' . $product->id . '_' . time() . '.' . $file->getClientOriginalExtension();
-                $path = $file->storeAs('products', $filename, 'public');
+                $destination = public_path('images/products');
+                if (!file_exists($destination)) {
+                    mkdir($destination, 0777, true);
+                }
+                $file->move($destination, $filename);
 
                 ProductImage::create([
                     'product_id' => $product->id,
-                    'url' => '/storage/products/' . $filename,
+                    'url' => env('IMAGE_PRODUCT_PATH') . '/' . $filename, // Đường dẫn public để dùng trong src
                     'alt_text' => $product->name . ' - Ảnh đại diện',
                     'is_primary' => true,
                 ]);

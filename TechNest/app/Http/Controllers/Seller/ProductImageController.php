@@ -41,11 +41,15 @@ class ProductImageController extends Controller
 
             foreach ($request->file('images') as $image) {
                 $filename = 'product_' . $product->id . '_' . time() . '_' . uniqid() . '.' . $image->getClientOriginalExtension();
-                $image->storeAs('products', $filename, 'public');
+                $destination = public_path('images/products');
+                if (!file_exists($destination)) {
+                    mkdir($destination, 0777, true);
+                }
+                $image->move($destination, $filename);
 
                 ProductImage::create([
                     'product_id' => $product->id,
-                    'url' => '/storage/products/' . $filename,
+                    'url' => rtrim(env('IMAGE_PRODUCT_PATH', '/images/products'), '/') . '/' . $filename,
                     'alt_text' => $product->name . ' - Ảnh' . ($uploadedCount + 1),
                     'is_primary' => false,
                 ]);

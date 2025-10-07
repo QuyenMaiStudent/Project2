@@ -98,8 +98,10 @@ export default function ViewProduct({ products }: Props) {
                                 <div className="aspect-w-16 aspect-h-9">
                                     {product.primary_image ? (
                                         <img
-                                            src={product.primary_image ? product.primary_image.url : '/images/no-image.png'}
-                                            alt={product.primary_image ? product.primary_image.alt_text : product.name}
+                                            src={product.primary_image.url
+                                                ? product.primary_image.url
+                                                : '/images/no-image.png'}
+                                            alt={product.primary_image.alt_text || product.name}
                                             className="w-full h-48 object-cover"
                                         />
                                     ) : (

@@ -73,8 +73,16 @@ export default function Index({ cart }: CartProps) {
                     {item.product?.name || '-'}
                   </td>
                   <td className="py-2 px-3">{item.variant?.variant_name || '-'}</td>
-                  <td className="py-2 px-3 text-center">{item.product?.price?.toLocaleString() || '-'}</td>
-                  <td className="py-2 px-3 text-center">{(item.product?.price && item.quantity) ? (item.product.price * item.quantity).toLocaleString() : '-'}</td>
+                  <td className="py-2 px-3 text-center">
+                    {item.product?.price != null
+                      ? Number(item.product.price).toLocaleString() + '₫'
+                      : '-'}
+                  </td>
+                  <td className="py-2 px-3 text-center">
+                    {item.product?.price != null && item.quantity
+                      ? (Number(item.product.price) * item.quantity).toLocaleString() + '₫'
+                      : '-'}
+                  </td>
                   <td className="py-2 px-3 text-center">
                     <input
                       type="number"

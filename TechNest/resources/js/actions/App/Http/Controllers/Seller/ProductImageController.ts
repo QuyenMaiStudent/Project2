@@ -158,7 +158,7 @@ uploadImages.post = (args: { product: number | { id: number } } | [product: numb
     uploadImages.form = uploadImagesForm
 /**
 * @see \App\Http\Controllers\Seller\ProductImageController::deleteImage
- * @see app/Http/Controllers/Seller/ProductImageController.php:65
+ * @see app/Http/Controllers/Seller/ProductImageController.php:69
  * @route '/seller/products/{product}/images/{image}'
  */
 export const deleteImage = (args: { product: string | number, image: number | { id: number } } | [product: string | number, image: number | { id: number } ], options?: RouteQueryOptions): RouteDefinition<'delete'> => ({
@@ -173,7 +173,7 @@ deleteImage.definition = {
 
 /**
 * @see \App\Http\Controllers\Seller\ProductImageController::deleteImage
- * @see app/Http/Controllers/Seller/ProductImageController.php:65
+ * @see app/Http/Controllers/Seller/ProductImageController.php:69
  * @route '/seller/products/{product}/images/{image}'
  */
 deleteImage.url = (args: { product: string | number, image: number | { id: number } } | [product: string | number, image: number | { id: number } ], options?: RouteQueryOptions) => {
@@ -201,7 +201,7 @@ deleteImage.url = (args: { product: string | number, image: number | { id: numbe
 
 /**
 * @see \App\Http\Controllers\Seller\ProductImageController::deleteImage
- * @see app/Http/Controllers/Seller/ProductImageController.php:65
+ * @see app/Http/Controllers/Seller/ProductImageController.php:69
  * @route '/seller/products/{product}/images/{image}'
  */
 deleteImage.delete = (args: { product: string | number, image: number | { id: number } } | [product: string | number, image: number | { id: number } ], options?: RouteQueryOptions): RouteDefinition<'delete'> => ({
@@ -211,7 +211,7 @@ deleteImage.delete = (args: { product: string | number, image: number | { id: nu
 
     /**
 * @see \App\Http\Controllers\Seller\ProductImageController::deleteImage
- * @see app/Http/Controllers/Seller/ProductImageController.php:65
+ * @see app/Http/Controllers/Seller/ProductImageController.php:69
  * @route '/seller/products/{product}/images/{image}'
  */
     const deleteImageForm = (args: { product: string | number, image: number | { id: number } } | [product: string | number, image: number | { id: number } ], options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
@@ -226,7 +226,7 @@ deleteImage.delete = (args: { product: string | number, image: number | { id: nu
 
             /**
 * @see \App\Http\Controllers\Seller\ProductImageController::deleteImage
- * @see app/Http/Controllers/Seller/ProductImageController.php:65
+ * @see app/Http/Controllers/Seller/ProductImageController.php:69
  * @route '/seller/products/{product}/images/{image}'
  */
         deleteImageForm.delete = (args: { product: string | number, image: number | { id: number } } | [product: string | number, image: number | { id: number } ], options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({

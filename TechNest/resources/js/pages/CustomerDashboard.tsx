@@ -15,12 +15,12 @@ export default function CustomerDashboard() {
                 <h1 className="text-3xl font-bold mb-8">Chào mừng bạn đến Customer Dashboard</h1>
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                     <Link
-                        href="/"
+                        href="/products"
                         className="bg-blue-50 border border-blue-200 rounded-lg p-6 hover:bg-blue-100 transition-colors flex items-center space-x-4"
                     >
                         <Home className="h-8 w-8 text-blue-600" />
                         <div>
-                            <h3 className="text-lg font-semibold text-blue-800">Trang chủ</h3>
+                            <h3 className="text-lg font-semibold text-blue-800">Sản phẩm</h3>
                             <p className="text-blue-600">Xem sản phẩm và mua sắm</p>
                         </div>
                     </Link>
