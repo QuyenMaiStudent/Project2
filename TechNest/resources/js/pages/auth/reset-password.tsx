@@ -1,5 +1,5 @@
 import NewPasswordController from '@/actions/App/Http/Controllers/Auth/NewPasswordController';
-import { Form, Head } from '@inertiajs/react';
+import { Form, Head, usePage } from '@inertiajs/react';
 import { LoaderCircle } from 'lucide-react';
 
 import InputError from '@/components/input-error';
@@ -14,9 +14,19 @@ interface ResetPasswordProps {
 }
 
 export default function ResetPassword({ token, email }: ResetPasswordProps) {
+    const { flash, errors } = usePage().props as any;
+
     return (
-        <AuthLayout title="Reset password" description="Please enter your new password below">
-            <Head title="Reset password" />
+        <AuthLayout title="Đặt lại mật khẩu" description="Vui lòng nhập mật khẩu mới bên dưới">
+            <Head title="Đặt lại mật khẩu" />
+
+            {/* Thông báo thành công/lỗi */}
+            {flash?.status && (
+                <div className="mb-4 p-3 bg-green-100 text-green-800 rounded">{flash.status}</div>
+            )}
+            {flash?.error && (
+                <div className="mb-4 p-3 bg-red-100 text-red-800 rounded">{flash.error}</div>
+            )}
 
             <Form
                 {...NewPasswordController.store.form()}
@@ -32,7 +42,7 @@ export default function ResetPassword({ token, email }: ResetPasswordProps) {
                         </div>
 
                         <div className="grid gap-2">
-                            <Label htmlFor="password">Password</Label>
+                            <Label htmlFor="password">Mật khẩu mới</Label>
                             <Input
                                 id="password"
                                 type="password"
@@ -40,27 +50,27 @@ export default function ResetPassword({ token, email }: ResetPasswordProps) {
                                 autoComplete="new-password"
                                 className="mt-1 block w-full"
                                 autoFocus
-                                placeholder="Password"
+                                placeholder="Nhập mật khẩu mới"
                             />
-                            <InputError message={errors.password} />
+                            <InputError message={errors.password} className="mt-2" />
                         </div>
 
                         <div className="grid gap-2">
-                            <Label htmlFor="password_confirmation">Confirm password</Label>
+                            <Label htmlFor="password_confirmation">Xác nhận mật khẩu</Label>
                             <Input
                                 id="password_confirmation"
                                 type="password"
                                 name="password_confirmation"
                                 autoComplete="new-password"
                                 className="mt-1 block w-full"
-                                placeholder="Confirm password"
+                                placeholder="Nhập lại mật khẩu"
                             />
                             <InputError message={errors.password_confirmation} className="mt-2" />
                         </div>
 
                         <Button type="submit" className="mt-4 w-full" disabled={processing} data-test="reset-password-button">
                             {processing && <LoaderCircle className="h-4 w-4 animate-spin" />}
-                            Reset password
+                            Đặt lại mật khẩu
                         </Button>
                     </div>
                 )}
