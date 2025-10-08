@@ -134,7 +134,7 @@ store.post = (options?: RouteQueryOptions): RouteDefinition<'post'> => ({
     store.form = storeForm
 /**
 * @see \App\Http\Controllers\Admin\CategoryController::update
- * @see app/Http/Controllers/Admin/CategoryController.php:36
+ * @see app/Http/Controllers/Admin/CategoryController.php:39
  * @route '/admin/categories/{category}/update'
  */
 export const update = (args: { category: number | { id: number } } | [category: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions): RouteDefinition<'put'> => ({
@@ -149,7 +149,7 @@ update.definition = {
 
 /**
 * @see \App\Http\Controllers\Admin\CategoryController::update
- * @see app/Http/Controllers/Admin/CategoryController.php:36
+ * @see app/Http/Controllers/Admin/CategoryController.php:39
  * @route '/admin/categories/{category}/update'
  */
 update.url = (args: { category: number | { id: number } } | [category: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions) => {
@@ -182,7 +182,7 @@ update.url = (args: { category: number | { id: number } } | [category: number | 
 
 /**
 * @see \App\Http\Controllers\Admin\CategoryController::update
- * @see app/Http/Controllers/Admin/CategoryController.php:36
+ * @see app/Http/Controllers/Admin/CategoryController.php:39
  * @route '/admin/categories/{category}/update'
  */
 update.put = (args: { category: number | { id: number } } | [category: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions): RouteDefinition<'put'> => ({
@@ -192,7 +192,7 @@ update.put = (args: { category: number | { id: number } } | [category: number | 
 
     /**
 * @see \App\Http\Controllers\Admin\CategoryController::update
- * @see app/Http/Controllers/Admin/CategoryController.php:36
+ * @see app/Http/Controllers/Admin/CategoryController.php:39
  * @route '/admin/categories/{category}/update'
  */
     const updateForm = (args: { category: number | { id: number } } | [category: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
@@ -207,7 +207,7 @@ update.put = (args: { category: number | { id: number } } | [category: number | 
 
             /**
 * @see \App\Http\Controllers\Admin\CategoryController::update
- * @see app/Http/Controllers/Admin/CategoryController.php:36
+ * @see app/Http/Controllers/Admin/CategoryController.php:39
  * @route '/admin/categories/{category}/update'
  */
         updateForm.put = (args: { category: number | { id: number } } | [category: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
@@ -223,7 +223,7 @@ update.put = (args: { category: number | { id: number } } | [category: number | 
     update.form = updateForm
 /**
 * @see \App\Http\Controllers\Admin\CategoryController::destroy
- * @see app/Http/Controllers/Admin/CategoryController.php:47
+ * @see app/Http/Controllers/Admin/CategoryController.php:53
  * @route '/admin/categories/{category}/delete'
  */
 export const destroy = (args: { category: number | { id: number } } | [category: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions): RouteDefinition<'delete'> => ({
@@ -238,7 +238,7 @@ destroy.definition = {
 
 /**
 * @see \App\Http\Controllers\Admin\CategoryController::destroy
- * @see app/Http/Controllers/Admin/CategoryController.php:47
+ * @see app/Http/Controllers/Admin/CategoryController.php:53
  * @route '/admin/categories/{category}/delete'
  */
 destroy.url = (args: { category: number | { id: number } } | [category: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions) => {
@@ -271,7 +271,7 @@ destroy.url = (args: { category: number | { id: number } } | [category: number |
 
 /**
 * @see \App\Http\Controllers\Admin\CategoryController::destroy
- * @see app/Http/Controllers/Admin/CategoryController.php:47
+ * @see app/Http/Controllers/Admin/CategoryController.php:53
  * @route '/admin/categories/{category}/delete'
  */
 destroy.delete = (args: { category: number | { id: number } } | [category: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions): RouteDefinition<'delete'> => ({
@@ -281,7 +281,7 @@ destroy.delete = (args: { category: number | { id: number } } | [category: numbe
 
     /**
 * @see \App\Http\Controllers\Admin\CategoryController::destroy
- * @see app/Http/Controllers/Admin/CategoryController.php:47
+ * @see app/Http/Controllers/Admin/CategoryController.php:53
  * @route '/admin/categories/{category}/delete'
  */
     const destroyForm = (args: { category: number | { id: number } } | [category: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
@@ -296,7 +296,7 @@ destroy.delete = (args: { category: number | { id: number } } | [category: numbe
 
             /**
 * @see \App\Http\Controllers\Admin\CategoryController::destroy
- * @see app/Http/Controllers/Admin/CategoryController.php:47
+ * @see app/Http/Controllers/Admin/CategoryController.php:53
  * @route '/admin/categories/{category}/delete'
  */
         destroyForm.delete = (args: { category: number | { id: number } } | [category: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({

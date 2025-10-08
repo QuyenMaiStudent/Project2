@@ -1,20 +1,39 @@
-import { Head, Link, router } from '@inertiajs/react';
+import { Head, Link, router, usePage } from '@inertiajs/react';
 import AppLayout from '@/layouts/app-layout';
 import { useState } from 'react';
 
 export default function ShowProduct({ product, allCategories }: any) {
     const [selectedCategories, setSelectedCategories] = useState(product.categories.map((cat: any) => cat.id));
+    const { flash, errors } = usePage().props as any;
 
     return (
         <AppLayout
             breadcrumbs={[
-                { title: 'Admin Dashboard', href: '/admin/dashboard' },
+                { title: 'Trang quản trị', href: '/admin/dashboard' },
                 { title: 'Sản phẩm chờ duyệt', href: '/admin/products/pending' },
                 { title: product.name, href: `/admin/products/${product.id}` },
             ]}
         >
             <Head title={`Chi tiết: ${product.name}`} />
             <div className="max-w-5xl mx-auto p-8 flex flex-col md:flex-row gap-8 bg-white rounded shadow">
+                {/* Thông báo thành công/lỗi */}
+                <div className="w-full md:absolute md:top-8 md:left-0">
+                    {flash?.success && (
+                        <div className="mb-4 p-3 bg-green-100 text-green-800 rounded">{flash.success}</div>
+                    )}
+                    {flash?.error && (
+                        <div className="mb-4 p-3 bg-red-100 text-red-800 rounded">{flash.error}</div>
+                    )}
+                    {errors && Object.keys(errors).length > 0 && (
+                        <div className="mb-4 p-3 bg-red-100 text-red-800 rounded">
+                            <ul className="list-disc list-inside">
+                                {Object.values(errors).map((err, idx) => (
+                                    <li key={idx}>{String(err)}</li>
+                                ))}
+                            </ul>
+                        </div>
+                    )}
+                </div>
                 {/* Khung ảnh bên trái */}
                 <div className="md:w-1/2 flex flex-col items-center">
                     <div className="w-full aspect-square bg-gray-100 flex items-center justify-center rounded border mb-4 overflow-hidden">

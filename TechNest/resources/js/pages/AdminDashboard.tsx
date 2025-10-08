@@ -14,10 +14,10 @@ export default function AdminDashboard(props: any) {
     return (
         <AppLayout
             breadcrumbs={[
-                { title: 'Admin Dashboard', href: '/admin/dashboard' }
+                { title: 'Bảng điều khiển quản trị', href: '/admin/dashboard' }
             ]}
         >
-            <Head title="Admin Dashboard" />
+            <Head title="Bảng điều khiển quản trị" />
             <div className="flex">
                 {/* Sidebar Menu */}
                 <div className="w-64 bg-white shadow-md h-screen">
@@ -68,7 +68,7 @@ export default function AdminDashboard(props: any) {
                         <div className="bg-white p-6 rounded-lg shadow-md flex items-center">
                             <Package className="h-8 w-8 text-purple-600 mr-3" />
                             <div>
-                                <p className="text-sm text-gray-600">Tổng seller</p>
+                                <p className="text-sm text-gray-600">Tổng người bán</p>
                                 <p className="text-2xl font-semibold text-gray-800">{totalSellers}</p>
                             </div>
                         </div>
@@ -89,7 +89,7 @@ export default function AdminDashboard(props: any) {
                         <div className="bg-white p-6 rounded-lg shadow-md flex items-center">
                             <DollarSign className="h-8 w-8 text-yellow-600 mr-3" />
                             <div>
-                                <p className="text-sm text-gray-600">Doanh thu</p>
+                                <p className="text-sm text-gray-600">Tổng doanh thu</p>
                                 <p className="text-2xl font-semibold text-gray-800">{totalRevenue.toLocaleString()}₫</p>
                             </div>
                         </div>
