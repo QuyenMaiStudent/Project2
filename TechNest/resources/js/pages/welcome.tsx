@@ -73,17 +73,19 @@ export default function Welcome() {
                     )}
                 </nav>
             </header>
-            {/* Main content */}
-            <div className="w-full bg-[#FDFDFC] flex flex-col items-center px-6 md:px-16 xl:px-32 py-8">
-                {/* Banner */}
-                <section
-                    className="w-full max-w-[1200px] rounded-2xl shadow flex items-center p-0 border border-[#0AC1EF] mb-10 bg-cover bg-center relative overflow-hidden"
-                    style={{ backgroundImage: "url('/images/banner_bg.jpg')" }}
-                >
-                    {/* Nội dung bên trái, căn giữa theo chiều dọc, padding lớn hơn */}
-                    <div className="flex-1 flex flex-col justify-center pl-12 pr-4 py-12 bg-white/0">
-                        <h2 className="text-4xl font-bold text-[#1b1b18] mb-4 leading-tight">Những tiện ích<br />công nghệ mới nhất</h2>
-                        <p className="text-gray-700 mb-4 text-lg max-w-xl">
+
+            {/* Full-width banner: flush with header and edges (no side padding) */}
+            <section
+                className="w-full bg-cover bg-center"
+                style={{ backgroundImage: "url('/images/banner_bg.jpg')" }}
+            >
+                <div className="max-w-[1200px] w-full mx-auto flex items-center py-12">
+                    {/* left content */}
+                    <div className="flex-1 flex flex-col justify-center pl-12 pr-4">
+                        <h2 className="text-4xl font-bold text-[#1b1b18] mb-4 leading-tight">
+                            Những tiện ích<br />công nghệ mới nhất
+                        </h2>
+                        <p className="text-black mb-4 text-lg lg:text-xl max-w-xl font-bold leading-snug">
                             Khám phá các sản phẩm công nghệ hiện đại, tiện ích và phù hợp với mọi nhu cầu của bạn.<br />
                             TechNest luôn cập nhật những xu hướng mới nhất để mang đến trải nghiệm mua sắm tốt nhất cho khách hàng.
                         </p>
@@ -94,20 +96,26 @@ export default function Welcome() {
                             Mua ngay
                         </Link>
                     </div>
-                    {/* Ảnh laptop bên phải, căn giữa, không bị sát lề phải */}
+
+                    {/* right image */}
                     <div className="flex items-center justify-center h-full pr-12">
                         <img src="/images/banner-laptop.png" alt="Laptop" className="h-56 w-auto" />
                     </div>
-                </section>
-
-                {/* Sản phẩm mới nhất */}
-                <SectionTitle text="SẢN PHẨM MỚI NHẤT" />
-                <div className="w-full max-w-[1400px] grid grid-cols-2 md:grid-cols-4 gap-8 mb-12">
-                    <ProductCard name="iPhone 17 Pro" price="39.900.000 đ" img="/images/iphone.jpg" />
-                    <ProductCard name="Đồng hồ thông minh" price="2.900.000 đ" img="/images/smartwatch.jpg" />
-                    <ProductCard name="Surface Laptop" price="62.000.000 đ" img="/images/surface_laptop.jpg" />
-                    <ProductCard name="Tai nghe không dây" price="1.500.000 đ" img="/images/headphone.jpg" />
                 </div>
+            </section>
+
+             {/* Main content */}
+            <div className="w-full bg-[#FDFDFC] flex flex-col items-center px-6 md:px-16 xl:px-32 py-8">
+                 {/* Banner */}
+                {/* banner đã di chuyển lên trên để tràn full-width */}
+                 {/* Sản phẩm mới nhất */}
+                <SectionTitle text="SẢN PHẨM MỚI NHẤT" />
+                 <div className="w-full max-w-[1400px] grid grid-cols-2 md:grid-cols-4 gap-8 mb-12">
+                     <ProductCard name="iPhone 17 Pro" price="39.900.000 đ" img="/images/iphone.jpg" />
+                     <ProductCard name="Đồng hồ thông minh" price="2.900.000 đ" img="/images/smartwatch.jpg" />
+                     <ProductCard name="Surface Laptop" price="62.000.000 đ" img="/images/surface_laptop.jpg" />
+                     <ProductCard name="Tai nghe không dây" price="1.500.000 đ" img="/images/headphone.jpg" />
+                 </div>
 
                 {/* Sản phẩm được mua nhiều nhất */}
                 <SectionTitle text="SẢN PHẨM ĐƯỢC MUA NHIỀU NHẤT" />
