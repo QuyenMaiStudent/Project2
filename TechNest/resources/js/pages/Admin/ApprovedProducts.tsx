@@ -1,4 +1,4 @@
-import { Head, usePage } from '@inertiajs/react';
+import { Head, usePage, Link } from '@inertiajs/react';
 import AppLayout from '@/layouts/app-layout';
 
 interface Product {
@@ -94,6 +94,16 @@ export default function ApprovedProducts({ products }: Props) {
                                         </td>
                                         <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
                                             {new Date(product.created_at).toLocaleDateString('vi-VN')}
+                                        </td>
+                                        <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
+                                            <div className="flex space-x-2">
+                                                <Link
+                                                    href={`/admin/products/${product.id}`}
+                                                    className="bg-blue-600 text-white px-3 py-1 rounded hover:bg-blue-700"
+                                                >
+                                                    Gán danh mục
+                                                </Link>
+                                            </div>
                                         </td>
                                     </tr>
                                 ))

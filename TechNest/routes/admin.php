@@ -9,11 +9,18 @@ use Illuminate\Support\Facades\Route;
 Route::middleware(['auth', 'admin'])->group(function () {
     Route::get('/admin/dashboard', [AdminController::class, 'dashboard'])->name('admin.dashboard');
     
+    // product review / admin actions
     Route::get('/admin/products/pending', [AdminProductController::class, 'pending'])->name('admin.products.pending');
     Route::get('/admin/products/approved', [AdminProductController::class, 'approved'])->name('admin.products.approved');
     Route::get('/admin/products/rejected', [AdminProductController::class, 'rejected'])->name('admin.products.rejected');
+
+    // show product detail (admin)
     Route::get('/admin/products/{product}', [AdminProductController::class, 'show'])->name('admin.products.show');
+
+    // cập nhật categories cho product (admin gán sau khi đã duyệt)
     Route::post('/admin/products/{product}/categories', [AdminProductController::class, 'updateCategories'])->name('admin.products.updateCategories');
+
+    // approve / reject
     Route::post('/admin/products/{product}/approve', [AdminProductController::class, 'approve'])->name('admin.products.approve');
     Route::post('/admin/products/{product}/reject', [AdminProductController::class, 'reject'])->name('admin.products.reject');
 
