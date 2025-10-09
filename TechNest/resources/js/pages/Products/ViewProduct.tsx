@@ -92,7 +92,7 @@ export default function ViewProduct({ products }: Props) {
                         </Link>
                     </div>
                 ) : (
-                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 xl:grid-cols-3 gap-6">
                         {products.data.map((product) => (
                             <div key={product.id} className="bg-white rounded-lg shadow-md overflow-hidden">
                                 <div className="aspect-w-16 aspect-h-9">
@@ -141,21 +141,21 @@ export default function ViewProduct({ products }: Props) {
                                         </span>
                                     </div>
                                     
-                                    <div className="flex space-x-2">
+                                    <div className="flex gap-2 flex-wrap">
                                         <Link
                                             href={`/seller/products/${product.id}/preview`}
-                                            className="flex-1 px-3 py-2 bg-gray-100 text-gray-700 rounded-md hover:bg-gray-200 transition-colors flex items-center justify-center space-x-1"
+                                            className="px-3 py-2 bg-gray-100 text-gray-700 rounded-md hover:bg-gray-200 transition-colors inline-flex items-center justify-center gap-2 min-w-[120px] whitespace-nowrap"
                                         >
                                             <Eye className="h-4 w-4" />
-                                            <span>Xem trước</span>
+                                            <span className="whitespace-nowrap">Xem trước</span>
                                         </Link>
                                         
                                         <Link
                                             href={`/seller/products/${product.id}/edit`}
-                                            className="flex-1 px-3 py-2 bg-blue-100 text-blue-700 rounded-md hover:bg-blue-200 transition-colors flex items-center justify-center space-x-1"
+                                            className="px-3 py-2 bg-blue-100 text-blue-700 rounded-md hover:bg-blue-200 transition-colors inline-flex items-center justify-center gap-2 min-w-[100px] whitespace-nowrap"
                                         >
                                             <Edit className="h-4 w-4" />
-                                            <span>Edit</span>
+                                            <span className="whitespace-nowrap">Edit</span>
                                         </Link>
                                     </div>
                                     <Link
