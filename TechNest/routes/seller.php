@@ -4,8 +4,9 @@ use App\Http\Controllers\Seller\ProductImageController;
 use App\Http\Controllers\Seller\ProductSpecController;
 use App\Http\Controllers\Seller\ProductVariantController;
 use App\Http\Controllers\Seller\SellerController;
-use App\Models\Product;
+use App\Http\Controllers\Seller\SellerPromotionController;
 use Illuminate\Support\Facades\Route;
+
 // Seller routes
 Route::middleware(['auth', 'seller'])->group(function () {
     Route::get('/seller/dashboard', [SellerController::class, 'dashboard'])->name('seller.dashboard');
@@ -39,5 +40,13 @@ Route::middleware(['auth', 'seller'])->group(function () {
     //Duyệt
     Route::post('seller/products/{product}/submit', [ProductController::class, 'submitForApproval'])->name('seller.products.submit');
 
-
+    // Seller promotions
+    Route::get('/seller/promotions', [SellerPromotionController::class, 'index'])->name('seller.promotions.index');
+    Route::get('/seller/promotions/create', [SellerPromotionController::class, 'create'])->name('seller.promotions.create');
+    Route::post('/seller/promotions', [SellerPromotionController::class, 'store'])->name('seller.promotions.store');
+    Route::get('/seller/promotions/{id}/edit', [SellerPromotionController::class, 'edit'])->name('seller.promotions.edit');
+    Route::put('/seller/promotions/{id}', [SellerPromotionController::class, 'update'])->name('seller.promotions.update');
+    Route::delete('/seller/promotions/{id}', [SellerPromotionController::class, 'destroy'])->name('seller.promotions.destroy');
+    Route::post('/seller/promotions/{id}/toggle-status', [SellerPromotionController::class, 'toggleStatus'])->name('seller.promotions.toggleStatus');
+    Route::get('/seller/promotions/{id}/usage', [SellerPromotionController::class, 'usageStats'])->name('seller.promotions.usageStats');
 });

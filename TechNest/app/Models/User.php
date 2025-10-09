@@ -179,4 +179,9 @@ class User extends Authenticatable implements MustVerifyEmail
         }
         return $this->roles()->where('name', $roleName)->exists();
     }
+
+    public function sellerPromotions()
+    {
+        return $this->hasMany(Promotion::class, 'seller_id');
+    }
 }

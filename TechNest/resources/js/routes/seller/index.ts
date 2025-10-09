@@ -1,5 +1,6 @@
 import { queryParams, type RouteQueryOptions, type RouteDefinition, type RouteFormDefinition } from './../../wayfinder'
 import products from './products'
+import promotions from './promotions'
 /**
 * @see \App\Http\Controllers\Seller\SellerController::dashboard
  * @see app/Http/Controllers/Seller/SellerController.php:12
@@ -81,6 +82,7 @@ dashboard.head = (options?: RouteQueryOptions): RouteDefinition<'head'> => ({
 const seller = {
     dashboard: Object.assign(dashboard, dashboard),
 products: Object.assign(products, products),
+promotions: Object.assign(promotions, promotions),
 }
 
 export default seller

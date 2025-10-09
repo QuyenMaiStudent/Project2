@@ -11,7 +11,14 @@ class Promotion extends Model
 
     protected $fillable = [
         'code', 'type', 'value', 'min_order_amount', 'usage_limit',
-        'used_count', 'starts_at', 'expires_at', 'is_active'
+        'used_count', 'starts_at', 'expires_at', 'is_active',
+        'seller_id', 'description',
+    ];
+
+    protected $casts = [
+        'starts_at' => 'datetime',
+        'expires_at' => 'datetime',
+        'is_active' => 'boolean',
     ];
 
     public function users()
@@ -22,5 +29,10 @@ class Promotion extends Model
     public function conditions()
     {
         return $this->hasMany(PromotionCondition::class);
+    }
+
+    public function seller()
+    {
+        return $this->belongsTo(User::class, 'seller_id');
     }
 }

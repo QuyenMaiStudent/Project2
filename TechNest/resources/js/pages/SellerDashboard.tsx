@@ -2,7 +2,7 @@ import { PlaceholderPattern } from '@/components/ui/placeholder-pattern';
 import AppLayout from '@/layouts/app-layout';
 import { type BreadcrumbItem } from '@/types';
 import { Head, Link } from '@inertiajs/react';
-import { Package, Plus, Eye } from 'lucide-react';
+import { Package, Plus, Eye, Tag } from 'lucide-react';
 
 const breadcrumbs: BreadcrumbItem[] = [
     {
@@ -55,6 +55,23 @@ export default function SellerDashboard({ stats }: Props) {
                                 <span className='text-gray-700'>Thêm ảnh cho sản phẩm</span>
 
                             </Link>
+
+                            {/* Promotions links */}
+                            <Link
+                                href="/seller/promotions"
+                                className="flex items-center space-x-3 p-3 rounded-lg hover:bg-gray-100 transition-colors mt-2"
+                            >
+                                <Tag className="h-5 w-5 text-yellow-600" />
+                                <span className="text-gray-700">Khuyến mãi của tôi</span>
+                            </Link>
+
+                            <Link
+                                href="/seller/promotions/create"
+                                className="flex items-center space-x-3 p-3 rounded-lg hover:bg-gray-100 transition-colors"
+                            >
+                                <Plus className="h-5 w-5 text-green-600" />
+                                <span className="text-gray-700">Tạo khuyến mãi</span>
+                            </Link>
                         </nav>
                     </div>
                 </div>
@@ -89,6 +106,23 @@ export default function SellerDashboard({ stats }: Props) {
                                     <p className="text-sm text-gray-600">Total Stock</p>
                                     <p className="text-2xl font-semibold text-gray-800">{stats.totalStock}</p>
                                 </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    {/* Quick card linking to promotions */}
+                    <div className="mb-6">
+                        <div className="bg-white p-4 rounded shadow flex items-center justify-between">
+                            <div className="flex items-center gap-4">
+                                <Tag className="h-8 w-8 text-yellow-600" />
+                                <div>
+                                    <p className="text-sm text-gray-600">Khuyến mãi của tôi</p>
+                                    <p className="text-lg font-semibold text-gray-800">Quản lý mã giảm giá và khuyến mãi</p>
+                                </div>
+                            </div>
+                            <div className="flex gap-2">
+                                <Link href="/seller/promotions" className="px-4 py-2 rounded bg-blue-600 text-white">Xem</Link>
+                                <Link href="/seller/promotions/create" className="px-4 py-2 rounded bg-green-600 text-white">Tạo mới</Link>
                             </div>
                         </div>
                     </div>
