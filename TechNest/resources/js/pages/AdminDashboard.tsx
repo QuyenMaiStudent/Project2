@@ -51,6 +51,13 @@ export default function AdminDashboard(props: any) {
                                 <Package className="h-5 w-5 text-indigo-600" />
                                 <span className="text-gray-700">Quản lý danh mục</span>
                             </Link>
+                            <Link
+                                href="/admin/users"
+                                className="flex items-center space-x-3 p-3 rounded-lg hover:bg-gray-100 transition-colors"
+                            >
+                                <Users className="h-5 w-5 text-blue-600" />
+                                <span className="text-gray-700">Quản lý người dùng</span>
+                            </Link>
                         </nav>
                     </div>
                 </div>
