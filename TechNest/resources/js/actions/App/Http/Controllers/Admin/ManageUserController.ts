@@ -393,7 +393,7 @@ update.put = (args: { id: string | number } | [id: string | number ] | string | 
     update.form = updateForm
 /**
 * @see \App\Http\Controllers\Admin\ManageUserController::assignRole
- * @see app/Http/Controllers/Admin/ManageUserController.php:167
+ * @see app/Http/Controllers/Admin/ManageUserController.php:168
  * @route '/admin/users/{id}/assign-role'
  */
 export const assignRole = (args: { id: string | number } | [id: string | number ] | string | number, options?: RouteQueryOptions): RouteDefinition<'post'> => ({
@@ -408,7 +408,7 @@ assignRole.definition = {
 
 /**
 * @see \App\Http\Controllers\Admin\ManageUserController::assignRole
- * @see app/Http/Controllers/Admin/ManageUserController.php:167
+ * @see app/Http/Controllers/Admin/ManageUserController.php:168
  * @route '/admin/users/{id}/assign-role'
  */
 assignRole.url = (args: { id: string | number } | [id: string | number ] | string | number, options?: RouteQueryOptions) => {
@@ -436,7 +436,7 @@ assignRole.url = (args: { id: string | number } | [id: string | number ] | strin
 
 /**
 * @see \App\Http\Controllers\Admin\ManageUserController::assignRole
- * @see app/Http/Controllers/Admin/ManageUserController.php:167
+ * @see app/Http/Controllers/Admin/ManageUserController.php:168
  * @route '/admin/users/{id}/assign-role'
  */
 assignRole.post = (args: { id: string | number } | [id: string | number ] | string | number, options?: RouteQueryOptions): RouteDefinition<'post'> => ({
@@ -446,7 +446,7 @@ assignRole.post = (args: { id: string | number } | [id: string | number ] | stri
 
     /**
 * @see \App\Http\Controllers\Admin\ManageUserController::assignRole
- * @see app/Http/Controllers/Admin/ManageUserController.php:167
+ * @see app/Http/Controllers/Admin/ManageUserController.php:168
  * @route '/admin/users/{id}/assign-role'
  */
     const assignRoleForm = (args: { id: string | number } | [id: string | number ] | string | number, options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
@@ -456,7 +456,7 @@ assignRole.post = (args: { id: string | number } | [id: string | number ] | stri
 
             /**
 * @see \App\Http\Controllers\Admin\ManageUserController::assignRole
- * @see app/Http/Controllers/Admin/ManageUserController.php:167
+ * @see app/Http/Controllers/Admin/ManageUserController.php:168
  * @route '/admin/users/{id}/assign-role'
  */
         assignRoleForm.post = (args: { id: string | number } | [id: string | number ] | string | number, options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({

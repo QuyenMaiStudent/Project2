@@ -155,6 +155,7 @@ class ManageUserController extends Controller
      */
     public function toggleStatus($id)
     {
+        
         $user = User::findOrFail($id);
         $user->update(['is_active' => !$user->is_active]);
 
@@ -166,6 +167,7 @@ class ManageUserController extends Controller
      */
     public function assignRole(Request $request, $id)
     {
+        
         $user = User::findOrFail($id);
 
         $data = $request->validate([

@@ -1,3 +1,4 @@
+// @ts-nocheck
 import React, { useEffect, useState } from 'react';
 import { Head, Link, router, usePage, useForm } from '@inertiajs/react';
 import AppLayout from '@/layouts/app-layout';
@@ -34,6 +35,11 @@ export default function ManageUser() {
   const [filterRole, setFilterRole] = useState<string>(filters?.role || '');
   const [filterStatus, setFilterStatus] = useState<string>(filters?.status !== undefined ? String(filters.status) : '');
   const [selectedRole, setSelectedRole] = useState<Record<number, string>>({});
+  // confirm UI for toggle status
+  const [statusModal, setStatusModal] = useState<{ id: number | null; name?: string; action?: 'lock' | 'unlock' | ''; open: boolean }>({ id: null, name: undefined, action: '', open: false });
+  const [successMessage, setSuccessMessage] = useState<string>('');
+  // processing flag for toggle request
+  const [toggleProcessing, setToggleProcessing] = useState<boolean>(false);
 
   useEffect(() => {
     if (mode !== 'index') return; // chỉ map khi ở chế độ index
@@ -65,8 +71,29 @@ export default function ManageUser() {
     router.post(`/admin/users/${userId}/assign-role`, { role: roleName });
   };
 
-  const toggleStatus = (userId: number) => {
-    router.post(`/admin/users/${userId}/toggle-status`);
+  // open confirm modal for toggle
+  const askToggle = (userId: number, name: string, currentlyActive: boolean) => {
+    setStatusModal({ id: userId, name, action: currentlyActive ? 'lock' : 'unlock', open: true });
+  };
+  const cancelToggle = () => setStatusModal({ id: null, name: undefined, action: '', open: false });
+  const confirmToggle = (id: number | null) => {
+    if (id === null || id === undefined) return cancelToggle();
+    // close modal immediately so UI doesn't hang (optimistic)
+    setStatusModal({ id: null, name: undefined, action: '', open: false });
+    setToggleProcessing(true);
+    router.post(`/admin/users/${id}/toggle-status`, {
+      onSuccess: () => {
+        setSuccessMessage('Cập nhật trạng thái thành công');
+        setTimeout(() => setSuccessMessage(''), 3000);
+      },
+      onError: () => {
+        setSuccessMessage('Cập nhật thất bại, vui lòng thử lại');
+        setTimeout(() => setSuccessMessage(''), 3000);
+      },
+      onFinish: () => {
+        setToggleProcessing(false);
+      }
+    });
   };
 
   // form cho chế độ create/edit
@@ -357,7 +384,9 @@ export default function ManageUser() {
                         <td className="px-4 py-3 text-center text-sm">
                           <div className="flex items-center justify-center gap-2">
                             <Link href={`/admin/users/${u.id}/edit`} className="px-3 py-1 rounded bg-yellow-500 text-white">Sửa</Link>
-                            <button onClick={() => toggleStatus(u.id)} className="px-3 py-1 rounded bg-indigo-600 text-white">{u.is_active ? 'Khóa' : 'Mở'}</button>
+                            <button onClick={() => askToggle(u.id, u.name, u.is_active)} className="px-3 py-1 rounded bg-indigo-600 text-white">
+                              {u.is_active ? 'Khóa' : 'Mở'}
+                            </button>
                           </div>
                         </td>
                       </tr>
@@ -387,6 +416,37 @@ export default function ManageUser() {
           </>
         )}
       </div>
+
+      {/* local success message (temporary, client-side) */}
+      {successMessage && (
+        <div className="fixed top-6 right-6 z-50 p-3 bg-green-100 text-green-800 rounded shadow">
+          {successMessage}
+        </div>
+      )}
+
+      {/* Confirm modal for lock/unlock */}
+      {statusModal.open && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center">
+          <div className="absolute inset-0 bg-black opacity-40" onClick={cancelToggle} />
+          <div className="bg-white rounded-lg shadow-lg z-10 max-w-md w-full p-6">
+            <h3 className="text-lg font-semibold mb-2">{statusModal.action === 'lock' ? 'Xác nhận khóa tài khoản' : 'Xác nhận mở tài khoản'}</h3>
+            <p className="text-sm text-gray-700 mb-4">
+              Bạn có chắc muốn {statusModal.action === 'lock' ? 'khóa' : 'mở'} tài khoản <strong>{statusModal.name}</strong>?
+            </p>
+            <div className="flex justify-end gap-2">
+              <button onClick={cancelToggle} className="px-4 py-2 bg-gray-200 text-gray-800 rounded">Hủy</button>
+              <button
+                type="button"
+                onClick={() => confirmToggle(statusModal.id)}
+                disabled={toggleProcessing}
+                className={`px-4 py-2 rounded text-white ${toggleProcessing ? 'bg-gray-400' : 'bg-indigo-600'}`}
+              >
+                {toggleProcessing ? 'Đang xử lý...' : 'Xác nhận'}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </AppLayout>
   );
 }

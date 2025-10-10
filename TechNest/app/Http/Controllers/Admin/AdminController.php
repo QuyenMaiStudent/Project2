@@ -7,17 +7,22 @@ use App\Http\Controllers\Controller;
 use App\Models\User;
 use App\Models\Product;
 use App\Models\Order;
+use Illuminate\Support\Facades\Auth;
 use Inertia\Inertia;
 
 class AdminController extends Controller
 {
     // Trang dashboard admin
-    public function dashboard()
+    public function dashboard(User $user)
     {
+        if (!Auth::user()->isAdmin()) {
+            return redirect()->route('dashboard')->with('error', 'Chỉ admin mới được truy cập trang này.');
+        }
+        
         $totalUsers = User::count();
 
         // Sửa lại dòng này cho đúng với quan hệ role/roles
-        $totalSellers = User::whereHas('role', function($q) {
+        $totalSellers = User::whereHas('role', function ($q) {
             $q->where('name', 'seller');
         })->count();
 
