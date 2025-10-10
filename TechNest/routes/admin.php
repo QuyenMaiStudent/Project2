@@ -4,6 +4,7 @@ use App\Http\Controllers\Admin\AdminController;
 use App\Http\Controllers\Admin\AdminProductController;
 use App\Http\Controllers\Admin\CategoryController;
 use App\Http\Controllers\Admin\ManageUserController;
+use App\Http\Controllers\Admin\AdminPromotionController;
 use Illuminate\Support\Facades\Route;
 
 Route::middleware(['auth', 'admin'])->group(function () {
@@ -38,5 +39,16 @@ Route::middleware(['auth', 'admin'])->group(function () {
     Route::put('/admin/users/{id}', [ManageUserController::class, 'update'])->name('admin.users.update');
     Route::post('/admin/users/{id}/assign-role', [ManageUserController::class, 'assignRole'])->name('admin.users.assignRole');
     Route::post('/admin/users/{id}/toggle-status', [ManageUserController::class, 'toggleStatus'])->name('admin.users.toggleStatus');
+
+    // Admin promotions
+    Route::get('/admin/promotions', [AdminPromotionController::class, 'index'])->name('admin.promotions.index');
+    Route::get('/admin/promotions/create', [AdminPromotionController::class, 'create'])->name('admin.promotions.create');
+    Route::post('/admin/promotions', [AdminPromotionController::class, 'store'])->name('admin.promotions.store');
+    Route::get('/admin/promotions/{id}/edit', [AdminPromotionController::class, 'edit'])->name('admin.promotions.edit');
+    Route::put('/admin/promotions/{id}', [AdminPromotionController::class, 'update'])->name('admin.promotions.update');
+    Route::delete('/admin/promotions/{id}', [AdminPromotionController::class, 'destroy'])->name('admin.promotions.destroy');
+    Route::post('/admin/promotions/{id}/toggle-status', [AdminPromotionController::class, 'toggleStatus'])->name('admin.promotions.toggleStatus');
+    Route::post('/admin/promotions/{id}/assign-targets', [AdminPromotionController::class, 'assignTargets'])->name('admin.promotions.assignTargets');
+    Route::get('/admin/promotions/{id}/usage', [AdminPromotionController::class, 'usageStats'])->name('admin.promotions.usage');
 });
 ?>

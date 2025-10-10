@@ -52,6 +52,13 @@ export default function AdminDashboard(props: any) {
                                 <span className="text-gray-700">Quản lý danh mục</span>
                             </Link>
                             <Link
+                                href="/admin/promotions"
+                                className="flex items-center space-x-3 p-3 rounded-lg hover:bg-gray-100 transition-colors"
+                            >
+                                <DollarSign className="h-5 w-5 text-green-600" />
+                                <span className="text-gray-700">Quản lý khuyến mãi</span>
+                            </Link>
+                            <Link
                                 href="/admin/users"
                                 className="flex items-center space-x-3 p-3 rounded-lg hover:bg-gray-100 transition-colors"
                             >
