@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Head, Link, router, usePage } from '@inertiajs/react';
 import AppLayout from '@/layouts/app-layout';
 
@@ -15,9 +15,14 @@ export default function Index() {
   ];
 
   const toggle = (id: number) => router.post(`/seller/promotions/${id}/toggle-status`);
-  const remove = (id: number) => {
-    if (!confirm('Xóa mã khuyến mãi?')) return;
+  // modal confirm state
+  const [confirmModal, setConfirmModal] = useState<{ open: boolean; id?: number | null; code?: string }>({ open: false, id: null, code: undefined });
+  const askDelete = (id: number, code?: string) => setConfirmModal({ open: true, id, code });
+  const cancelDelete = () => setConfirmModal({ open: false, id: null, code: undefined });
+  const confirmDelete = (id?: number | null) => {
+    if (!id) return cancelDelete();
     router.delete(`/seller/promotions/${id}`);
+    setConfirmModal({ open: false, id: null, code: undefined });
   };
 
   return (
@@ -78,7 +83,7 @@ export default function Index() {
                           <Link href={`/seller/promotions/${p.id}/edit`} className="px-2 py-1 bg-yellow-500 text-white rounded">Sửa</Link>
                           <button onClick={() => toggle(p.id)} className="px-2 py-1 bg-indigo-600 text-white rounded">{p.is_active ? 'Tắt' : 'Bật'}</button>
                           <Link href={`/seller/promotions/${p.id}/usage`} className="px-2 py-1 bg-blue-600 text-white rounded">Lượt</Link>
-                          <button onClick={() => remove(p.id)} className="px-2 py-1 bg-red-600 text-white rounded">Xóa</button>
+                          <button onClick={() => askDelete(p.id, p.code)} className="px-2 py-1 bg-red-600 text-white rounded">Xóa</button>
                         </div>
                       </td>
                     </tr>
@@ -100,6 +105,21 @@ export default function Index() {
           )}
         </div>
       </div>
+
+      {/* confirm modal (looks like alert but using UI) */}
+      {confirmModal.open && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center">
+          <div className="absolute inset-0 bg-black opacity-40" onClick={cancelDelete} />
+          <div className="bg-white rounded-lg shadow-lg z-10 max-w-md w-full p-6">
+            <h3 className="text-lg font-semibold mb-2">Xác nhận xóa</h3>
+            <p className="text-sm text-gray-700 mb-4">Bạn có chắc muốn xóa mã khuyến mãi <strong>{confirmModal.code}</strong>? Hành động này không thể hoàn tác.</p>
+            <div className="flex justify-end gap-2">
+              <button onClick={cancelDelete} className="px-4 py-2 bg-gray-200 text-gray-800 rounded">Hủy</button>
+              <button onClick={() => confirmDelete(confirmModal.id)} className="px-4 py-2 bg-red-600 text-white rounded">Xác nhận</button>
+            </div>
+          </div>
+        </div>
+      )}
     </AppLayout>
   );
 }
