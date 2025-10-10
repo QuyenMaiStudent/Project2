@@ -23,9 +23,17 @@ class AdminPromotionController extends Controller
 
         $promotions = $query->paginate(20)->withQueryString();
 
+        // trả về map id=>name để frontend hiển thị rõ tên
+        $brands = Brand::pluck('name', 'id')->toArray();
+        $products = Product::pluck('name', 'id')->toArray();
+        $categories = Category::pluck('name', 'id')->toArray();
+
         return Inertia::render('Admin/Promotions/Index', [
             'promotions' => $promotions,
             'filters' => $request->only(['q']),
+            'brands' => $brands,
+            'products' => $products,
+            'categories' => $categories,
         ]);
     }
 
@@ -67,6 +75,7 @@ class AdminPromotionController extends Controller
                 'type' => $data['type'],
                 'value' => $data['value'],
                 'description' => $data['description'] ?? null,
+                // nếu DB không cho NULL, lưu 0 khi không có giá tối thiểu
                 'min_order_amount' => $data['min_order_amount'] ?? 0,
                 'usage_limit' => $data['usage_limit'] ?? null,
                 'starts_at' => $data['starts_at'] ?? null,

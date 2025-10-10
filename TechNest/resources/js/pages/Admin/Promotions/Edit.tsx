@@ -25,6 +25,8 @@ export default function Edit() {
     expires_at: toInputDatetime(promotion?.expires_at),
     is_active: promotion?.is_active ?? true,
     conditions: initialConds,
+    no_min_amount: (promotion?.min_order_amount === 0), // pre-check if stored as 0
+    no_usage_limit: (promotion?.usage_limit === null),
   });
 
   useEffect(()=>{
@@ -40,17 +42,24 @@ export default function Edit() {
         expires_at: toInputDatetime(promotion.expires_at),
         is_active: promotion.is_active ?? true,
         conditions: promotion.conditions ?? [],
+        no_min_amount: (promotion.min_order_amount === 0),
+        no_usage_limit: (promotion.usage_limit === null),
       });
     }
   }, [promotion]);
 
   const submit = (e:any) => {
     e.preventDefault();
-    // convert datetimes
     const starts = form.data.starts_at ? form.data.starts_at.replace('T',' ') + ':00' : null;
     const expires = form.data.expires_at ? form.data.expires_at.replace('T',' ') + ':00' : null;
+    const min = form.data.no_min_amount ? 0 : (form.data.min_order_amount === '' ? null : form.data.min_order_amount);
+    const limit = form.data.no_usage_limit ? null : (form.data.usage_limit === '' ? null : form.data.usage_limit);
+
     form.setData('starts_at', starts);
     form.setData('expires_at', expires);
+    form.setData('min_order_amount', min);
+    form.setData('usage_limit', limit);
+
     form.put(`/admin/promotions/${promotion.id}`);
   };
 
@@ -93,6 +102,52 @@ export default function Edit() {
               <label className="block mb-1">Giá trị</label>
               <input value={form.data.value} onChange={e=>form.setData('value', e.target.value)} className="w-full border rounded px-3 py-2" />
             </div>
+          </div>
+
+          <div className="mb-3 grid grid-cols-2 gap-3">
+            <div>
+              <label className="block mb-1">Giá tối thiểu</label>
+              <input value={form.data.min_order_amount} onChange={e=>form.setData('min_order_amount', e.target.value)} className="w-full border rounded px-3 py-2" />
+              <label className="inline-flex items-center mt-2">
+                <input type="checkbox" checked={form.data.no_min_amount} onChange={e=>form.setData('no_min_amount', e.currentTarget.checked)} />
+                <span className="ml-2 text-sm">Không yêu cầu (0)</span>
+              </label>
+            </div>
+            <div>
+              <label className="block mb-1">Giới hạn lượt</label>
+              <input value={form.data.usage_limit} onChange={e=>form.setData('usage_limit', e.target.value)} className="w-full border rounded px-3 py-2" />
+              <label className="inline-flex items-center mt-2">
+                <input type="checkbox" checked={form.data.no_usage_limit} onChange={e=>form.setData('no_usage_limit', e.currentTarget.checked)} />
+                <span className="ml-2 text-sm">Không giới hạn</span>
+              </label>
+            </div>
+          </div>
+
+          <div className="mb-3">
+            <label className="block mb-1">Thời gian</label>
+            <div className="grid grid-cols-2 gap-3">
+              <div>
+                <label className="block mb-1">Bắt đầu</label>
+                <input type="datetime-local" value={form.data.starts_at} onChange={e=>form.setData('starts_at', e.target.value)} className="w-full border rounded px-3 py-2" />
+              </div>
+              <div>
+                <label className="block mb-1">Kết thúc</label>
+                <input type="datetime-local" value={form.data.expires_at} onChange={e=>form.setData('expires_at', e.target.value)} className="w-full border rounded px-3 py-2" />
+              </div>
+            </div>
+          </div>
+
+          <div className="mb-3">
+            <label className="block mb-1">Trạng thái</label>
+            <select value={form.data.is_active ? '1' : '0'} onChange={e=>form.setData('is_active', e.target.value === '1')} className="w-full border rounded px-3 py-2">
+              <option value="1">Kích hoạt</option>
+              <option value="0">Ngừng kích hoạt</option>
+            </select>
+          </div>
+
+          <div className="mb-3">
+            <label className="block mb-1">Ghi chú</label>
+            <textarea value={form.data.description} onChange={e=>form.setData('description', e.target.value)} className="w-full border rounded px-3 py-2" rows={3}></textarea>
           </div>
 
           <div className="mb-3">

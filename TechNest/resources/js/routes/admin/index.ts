@@ -2,6 +2,7 @@ import { queryParams, type RouteQueryOptions, type RouteDefinition, type RouteFo
 import products from './products'
 import categories from './categories'
 import users from './users'
+import promotions from './promotions'
 /**
 * @see \App\Http\Controllers\Admin\AdminController::dashboard
  * @see app/Http/Controllers/Admin/AdminController.php:15
@@ -85,6 +86,7 @@ const admin = {
 products: Object.assign(products, products),
 categories: Object.assign(categories, categories),
 users: Object.assign(users, users),
+promotions: Object.assign(promotions, promotions),
 }
 
 export default admin

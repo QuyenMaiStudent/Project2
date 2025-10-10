@@ -26,10 +26,28 @@ export default function Create() {
     expires_at: '',
     is_active: true,
     conditions: [],
+    // flags for "no min" / "no limit"
+    no_min_amount: false,
+    no_usage_limit: false,
   });
 
   const submit = (e:any) => {
     e.preventDefault();
+
+    // compute min / limit based on toggles:
+    // - if no_min_amount checked -> send 0 (meaning "no minimum" with current schema)
+    // - if no_usage_limit checked -> send null (meaning "no limit")
+    const min = form.data.no_min_amount ? 0 : (form.data.min_order_amount === '' ? null : form.data.min_order_amount);
+    const limit = form.data.no_usage_limit ? null : (form.data.usage_limit === '' ? null : form.data.usage_limit);
+
+    const starts = form.data.starts_at ? form.data.starts_at.replace('T',' ') + ':00' : null;
+    const expires = form.data.expires_at ? form.data.expires_at.replace('T',' ') + ':00' : null;
+
+    form.setData('min_order_amount', min);
+    form.setData('usage_limit', limit);
+    form.setData('starts_at', starts);
+    form.setData('expires_at', expires);
+
     form.post('/admin/promotions');
   };
 
@@ -72,6 +90,37 @@ export default function Create() {
           <div className="mb-3">
             <label className="block mb-1">Mô tả</label>
             <textarea value={form.data.description} onChange={e=>form.setData('description', e.target.value)} className="w-full border rounded px-3 py-2" />
+          </div>
+
+          <div className="mb-3 grid grid-cols-2 gap-3">
+            <div>
+              <label className="block mb-1">Giá tối thiểu</label>
+              <input value={form.data.min_order_amount} onChange={e=>form.setData('min_order_amount', e.target.value)} className="w-full border rounded px-3 py-2" />
+              <label className="inline-flex items-center mt-2">
+                <input type="checkbox" checked={form.data.no_min_amount} onChange={e=>form.setData('no_min_amount', e.currentTarget.checked)} />
+                <span className="ml-2 text-sm">Không yêu cầu (0)</span>
+              </label>
+            </div>
+            <div>
+              <label className="block mb-1">Giới hạn lượt</label>
+              <input value={form.data.usage_limit} onChange={e=>form.setData('usage_limit', e.target.value)} className="w-full border rounded px-3 py-2" />
+              <label className="inline-flex items-center mt-2">
+                <input type="checkbox" checked={form.data.no_usage_limit} onChange={e=>form.setData('no_usage_limit', e.currentTarget.checked)} />
+                <span className="ml-2 text-sm">Không giới hạn</span>
+              </label>
+            </div>
+          </div>
+
+          <div className="mb-3">
+            <label className="block mb-1">Thời gian áp dụng</label>
+            <div className="grid grid-cols-2 gap-3">
+              <div>
+                <input type="datetime-local" value={form.data.starts_at?.substring(0,16)} onChange={e=>form.setData('starts_at', e.target.value)} className="w-full border rounded px-3 py-2" />
+              </div>
+              <div>
+                <input type="datetime-local" value={form.data.expires_at?.substring(0,16)} onChange={e=>form.setData('expires_at', e.target.value)} className="w-full border rounded px-3 py-2" />
+              </div>
+            </div>
           </div>
 
           <div className="mb-3">
