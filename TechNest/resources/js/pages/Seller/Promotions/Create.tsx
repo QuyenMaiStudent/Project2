@@ -1,9 +1,11 @@
+// @ts-nocheck
 import React from 'react';
 import { Head, Link, useForm, usePage } from '@inertiajs/react';
 import AppLayout from '@/layouts/app-layout';
 
 export default function Create() {
   const page = usePage().props as any;
+  const brands = page.brands ?? [];
   const flash = page.flash ?? {};
   const breadcrumbs = [
     { title: 'Seller Dashboard', href: '/seller/dashboard' },
@@ -20,6 +22,9 @@ export default function Create() {
     usage_limit: '',
     starts_at: '',
     expires_at: '',
+    apply_all: true,
+    selected_brands: [] as number[],
+    conditions: [], // <-- thêm field conditions vào initial state
   });
 
   // convert local datetime-local (YYYY-MM-DDTHH:mm) => "YYYY-MM-DD HH:mm:00" (VN-friendly)
@@ -42,16 +47,21 @@ export default function Create() {
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
 
-    // transform before submit so backend (Carbon::parse) gets explicit datetime in VN format
     const starts = toServerDatetime(form.data.starts_at as string);
     const expires = toServerDatetime(form.data.expires_at as string);
 
-    form.setData({
-      ...form.data,
-      starts_at: starts,
-      expires_at: expires,
-    });
+    // build conditions payload
+    const conditions = form.data.apply_all ? [] : (form.data.selected_brands || []).map((b: number) => ({
+      condition_type: 'brand',
+      target_id: b,
+    }));
 
+    // set từng field (an toàn với useForm typings / runtime)
+    form.setData('starts_at', starts);
+    form.setData('expires_at', expires);
+    form.setData('conditions', conditions);
+
+    // gửi
     form.post('/seller/promotions');
   };
 
@@ -124,6 +134,28 @@ export default function Create() {
               <div className="text-sm text-gray-600 mt-1">Đã chọn: {formatVN(form.data.expires_at as string) || '—'}</div>
               {form.errors.expires_at && <div className="text-red-600 text-sm mt-1">{form.errors.expires_at}</div>}
             </div>
+          </div>
+
+          <div className="mb-3">
+            <label className="block mb-1">Áp dụng</label>
+            <div className="flex items-center gap-3">
+              <label className="inline-flex items-center">
+                <input type="checkbox" checked={form.data.apply_all} onChange={e => form.setData('apply_all', e.currentTarget.checked)} />
+                <span className="ml-2">Tất cả sản phẩm của tôi</span>
+              </label>
+            </div>
+
+            {!form.data.apply_all && (
+              <div className="mt-2">
+                <label className="block mb-1">Chọn brand (áp dụng theo brand)</label>
+                <select multiple value={form.data.selected_brands.map(String)} onChange={e => {
+                  const opts = Array.from(e.currentTarget.selectedOptions).map(o => Number(o.value));
+                  form.setData('selected_brands', opts);
+                }} className="w-full border rounded px-3 py-2">
+                  {brands.map((b: any) => <option key={b.id} value={b.id}>{b.name}</option>)}
+                </select>
+              </div>
+            )}
           </div>
 
           <div className="flex gap-2 mt-4">

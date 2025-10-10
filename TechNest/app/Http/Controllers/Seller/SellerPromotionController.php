@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Seller;
 use App\Http\Controllers\Controller;
 use App\Models\Promotion;
 use App\Models\PromotionCondition;
+use App\Models\Brand;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Inertia\Inertia;
@@ -18,22 +19,32 @@ class SellerPromotionController extends Controller
     {
         $sellerId = Auth::id();
 
-        $query = Promotion::where('seller_id', $sellerId)
+        // cần load `conditions` để biết promotion áp dụng cho brand/product/category hay là áp dụng cho tất cả
+        $query = Promotion::with('conditions')->where('seller_id', $sellerId)
             ->when($request->has('q'), fn($q) => $q->where('code', 'like', "%{$request->q}%"))
             ->orderByDesc('id');
 
         $promotions = $query->paginate(15)->withQueryString();
 
+        // nếu muốn hiển thị tên brand ở list, đưa brands tới frontend
+        $brands = Brand::all();
+
         return Inertia::render('Seller/Promotions/Index', [
             'promotions' => $promotions,
             'filters' => $request->only(['q']),
+            'brands' => $brands,
         ]);
     }
 
     //Hiển thị form tạo mã khuyến mãi
     public function create()
     {
-        return Inertia::render('Seller/Promotions/Create');
+        $sellerId = Auth::id();
+        // brands table hiện không chứa seller_id => trả về tất cả brand
+        $brands = Brand::all();
+        return Inertia::render('Seller/Promotions/Create', [
+            'brands' => $brands,
+        ]);
     }
 
     //Lưu mã khuyến mãi mới
@@ -88,9 +99,12 @@ class SellerPromotionController extends Controller
     {
         $sellerId = Auth::id();
         $promotion = Promotion::with('conditions')->where('seller_id', $sellerId)->findOrFail($id);
+        // brands table hiện không chứa seller_id => trả về tất cả brand
+        $brands = Brand::all();
 
         return Inertia::render('Seller/Promotions/Edit', [
             'promotion' => $promotion,
+            'brands' => $brands,
         ]);
     }
 
