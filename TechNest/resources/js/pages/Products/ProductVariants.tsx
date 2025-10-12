@@ -38,6 +38,10 @@ export default function ProductVariants({ product, variants }: Props) {
         stock: '',
     });
 
+    // image states
+    const [newVariantImage, setNewVariantImage] = useState<File | null>(null);
+    const [editVariantImage, setEditVariantImage] = useState<File | null>(null);
+
     const { data, setData, post, reset, errors } = useForm({
         variant_name: '',
         additional_price: '',
@@ -47,8 +51,19 @@ export default function ProductVariants({ product, variants }: Props) {
     // Thêm mới biến thể
     const handleSubmit = (e: React.FormEvent) => {
         e.preventDefault();
-        post(`/seller/products/${product.id}/variants`, {
-            onSuccess: () => reset(),
+        // submit as FormData to allow file upload
+        const form = new FormData();
+        form.append('variant_name', data.variant_name);
+        form.append('additional_price', data.additional_price);
+        form.append('stock', data.stock);
+        if (newVariantImage) form.append('image', newVariantImage);
+
+        router.post(`/seller/products/${product.id}/variants`, form, {
+            forceFormData: true,
+            onSuccess: () => {
+                reset();
+                setNewVariantImage(null);
+            },
         });
     };
 
@@ -60,16 +75,27 @@ export default function ProductVariants({ product, variants }: Props) {
             additional_price: variant.additional_price.toString(),
             stock: variant.stock.toString(),
         });
+        setEditVariantImage(null);
     };
 
     // Lưu sửa
     const handleUpdate = (e: React.FormEvent, variant: Variant) => {
         e.preventDefault();
-        router.put(
+        const form = new FormData();
+        form.append('variant_name', editData.variant_name);
+        form.append('additional_price', editData.additional_price);
+        form.append('stock', editData.stock);
+        if (editVariantImage) form.append('image', editVariantImage);
+
+        router.post(
             `/seller/products/${product.id}/variants/${variant.id}`,
-            editData,
+            form,
             {
-                onSuccess: () => setEditingId(null),
+                forceFormData: true,
+                onSuccess: () => {
+                    setEditingId(null);
+                    setEditVariantImage(null);
+                }
             }
         );
     };
@@ -106,6 +132,17 @@ export default function ProductVariants({ product, variants }: Props) {
                         />
                         {errors.variant_name && <div className="text-red-500 text-xs mt-1">{errors.variant_name}</div>}
                     </div>
+
+                    <div>
+                        <label className="block text-sm font-medium mb-1">Ảnh biến thể (tuỳ chọn)</label>
+                        <input
+                            type="file"
+                            accept="image/*"
+                            onChange={e => setNewVariantImage(e.target.files ? e.target.files[0] : null)}
+                            className="border rounded px-3 py-2 w-full"
+                        />
+                    </div>
+
                     <div>
                         <label className="block text-sm font-medium mb-1">Giá cộng thêm</label>
                         <input
@@ -140,100 +177,84 @@ export default function ProductVariants({ product, variants }: Props) {
                     </div>
                 </form>
 
-                {/* Danh sách biến thể - bảng mở rộng */}
-                <div className="bg-white rounded border">
-                  <table className="w-full">
-                     <thead>
-                         <tr className="bg-gray-100">
-                             <th className="py-2 px-3 text-left">Tên biến thể</th>
-                             <th className="py-2 px-3 text-left">Giá cộng thêm</th>
-                             <th className="py-2 px-3 text-left">Tồn kho</th>
-                             <th className="py-2 px-3 text-center">Thao tác</th>
-                         </tr>
-                     </thead>
-                     <tbody>
-                         {variants.length === 0 && (
-                             <tr>
-                                 <td colSpan={4} className="text-center py-4 text-gray-500">
-                                     Chưa có biến thể nào.
-                                 </td>
-                             </tr>
-                         )}
-                        {variants.map(variant => (
-                            editingId === variant.id ? (
-                                <tr key={variant.id} className="bg-yellow-50 align-top">
-                                    <td className="py-2 px-3">
-                                        <label className="block text-xs text-gray-500 mb-1">Tên biến thể</label>
-                                        <input
-                                            type="text"
-                                            value={editData.variant_name}
-                                            onChange={e => setEditData({ ...editData, variant_name: e.target.value })}
-                                            className="border rounded px-2 py-1 w-full"
-                                        />
-                                    </td>
-                                    <td className="py-2 px-3">
-                                        <label className="block text-xs text-gray-500 mb-1">Giá cộng thêm</label>
-                                        <input
-                                            type="number"
-                                            value={editData.additional_price}
-                                            onChange={e => setEditData({ ...editData, additional_price: e.target.value })}
-                                            className="border rounded px-2 py-1 w-full"
-                                            min={0}
-                                        />
-                                    </td>
-                                    <td className="py-2 px-3">
-                                        <label className="block text-xs text-gray-500 mb-1">Tồn kho</label>
-                                        <input
-                                            type="number"
-                                            value={editData.stock}
-                                            onChange={e => setEditData({ ...editData, stock: e.target.value })}
-                                            className="border rounded px-2 py-1 w-full"
-                                            min={0}
-                                        />
-                                    </td>
-                                    <td className="py-2 px-3 text-center">
-                                        <div className="inline-flex items-center space-x-2">
-                                            <button
-                                                onClick={e => handleUpdate(e, variant)}
-                                                className="bg-green-600 text-white px-3 py-1 rounded hover:bg-green-700"
-                                            >
-                                                Lưu
-                                            </button>
-                                            <button
-                                                onClick={() => setEditingId(null)}
-                                                className="bg-gray-400 text-white px-3 py-1 rounded hover:bg-gray-500"
-                                            >
-                                                Hủy
-                                            </button>
+                {/* Danh sách biến thể — hiển thị dạng thẻ */}
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+                    {variants.length === 0 && (
+                        <div className="col-span-full text-center py-8 text-gray-500">Chưa có biến thể nào.</div>
+                    )}
+
+                    {variants.map(variant => {
+                        const imageUrl = (variant as any).image_url || (variant as any).image?.url || ''; // ensure backend cung cấp
+                        return (
+                            <div key={variant.id} className="bg-white rounded-lg shadow p-4 flex flex-col">
+                                {editingId === variant.id ? (
+                                    <>
+                                        <div className="mb-3">
+                                            <label className="block text-xs text-gray-500 mb-1">Tên biến thể</label>
+                                            <input
+                                                type="text"
+                                                value={editData.variant_name}
+                                                onChange={e => setEditData({ ...editData, variant_name: e.target.value })}
+                                                className="border rounded px-2 py-1 w-full"
+                                            />
                                         </div>
-                                    </td>
-                                </tr>
-                            ) : (
-                                <tr key={variant.id}>
-                                    <td className="py-2 px-3">{variant.variant_name}</td>
-                                    <td className="py-2 px-3">{formatMoney(variant.additional_price)}</td>
-                                    <td className="py-2 px-3">{variant.stock}</td>
-                                    <td className="py-2 px-3 text-center">
-                                        <div className="inline-flex items-center space-x-2 justify-center">
-                                            <button
-                                                onClick={() => startEdit(variant)}
-                                                className="bg-yellow-500 text-white px-3 py-1 rounded hover:bg-yellow-600"
-                                            >
-                                                Sửa
-                                            </button>
-                                            <button
-                                                onClick={() => handleDelete(variant)}
-                                                className="bg-red-600 text-white px-3 py-1 rounded hover:bg-red-700"
-                                            >
-                                                Xóa
-                                            </button>
+                                        <div className="mb-3">
+                                            <label className="block text-xs text-gray-500 mb-1">Ảnh (đổi)</label>
+                                            <input
+                                                type="file"
+                                                accept="image/*"
+                                                onChange={e => setEditVariantImage(e.target.files ? e.target.files[0] : null)}
+                                                className="border rounded px-3 py-2 w-full"
+                                            />
                                         </div>
-                                    </td>
-                                </tr>
-                            )
-                        ))}
-                     </tbody>
-                  </table>
+                                        <div className="mb-3">
+                                            <label className="block text-xs text-gray-500 mb-1">Giá cộng thêm</label>
+                                            <input
+                                                type="number"
+                                                value={editData.additional_price}
+                                                onChange={e => setEditData({ ...editData, additional_price: e.target.value })}
+                                                className="border rounded px-2 py-1 w-full"
+                                                min={0}
+                                            />
+                                        </div>
+                                        <div className="mb-3">
+                                            <label className="block text-xs text-gray-500 mb-1">Tồn kho</label>
+                                            <input
+                                                type="number"
+                                                value={editData.stock}
+                                                onChange={e => setEditData({ ...editData, stock: e.target.value })}
+                                                className="border rounded px-2 py-1 w-full"
+                                                min={0}
+                                            />
+                                        </div>
+                                        <div className="mt-auto flex gap-2">
+                                            <button onClick={e => handleUpdate(e as any, variant)} className="flex-1 bg-green-600 text-white px-3 py-2 rounded">Lưu</button>
+                                            <button onClick={() => setEditingId(null)} className="flex-1 bg-gray-300 text-gray-800 px-3 py-2 rounded">Hủy</button>
+                                        </div>
+                                    </>
+                                ) : (
+                                    <>
+                                        <div className="h-40 bg-gray-50 rounded overflow-hidden mb-3 flex items-center justify-center">
+                                            {imageUrl ? (
+                                                <img src={imageUrl} alt={variant.variant_name} className="object-contain h-full w-full" />
+                                            ) : (
+                                                <div className="text-sm text-gray-400">Không có ảnh</div>
+                                            )}
+                                        </div>
+                                        <div className="flex-1">
+                                            <h3 className="text-sm font-semibold mb-1">{variant.variant_name}</h3>
+                                            <div className="text-sm text-gray-600 mb-2">{formatMoney(variant.additional_price)}</div>
+                                            <div className="text-sm text-gray-600">Tồn: {variant.stock}</div>
+                                        </div>
+                                        <div className="mt-3 flex gap-2">
+                                            <button onClick={() => startEdit(variant)} className="flex-1 bg-yellow-500 text-white px-3 py-2 rounded">Sửa</button>
+                                            <button onClick={() => handleDelete(variant)} className="flex-1 bg-red-600 text-white px-3 py-2 rounded">Xóa</button>
+                                        </div>
+                                    </>
+                                )}
+                            </div>
+                        );
+                    })}
                 </div>
              </div>
          </AppLayout>

@@ -212,7 +212,7 @@ index.head = (options?: RouteQueryOptions): RouteDefinition<'head'> => ({
     index.form = indexForm
 /**
 * @see \App\Http\Controllers\Seller\ProductController::preview
- * @see app/Http/Controllers/Seller/ProductController.php:189
+ * @see app/Http/Controllers/Seller/ProductController.php:180
  * @route '/seller/products/{product}/preview'
  */
 export const preview = (args: { product: number | { id: number } } | [product: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions): RouteDefinition<'get'> => ({
@@ -227,7 +227,7 @@ preview.definition = {
 
 /**
 * @see \App\Http\Controllers\Seller\ProductController::preview
- * @see app/Http/Controllers/Seller/ProductController.php:189
+ * @see app/Http/Controllers/Seller/ProductController.php:180
  * @route '/seller/products/{product}/preview'
  */
 preview.url = (args: { product: number | { id: number } } | [product: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions) => {
@@ -260,7 +260,7 @@ preview.url = (args: { product: number | { id: number } } | [product: number | {
 
 /**
 * @see \App\Http\Controllers\Seller\ProductController::preview
- * @see app/Http/Controllers/Seller/ProductController.php:189
+ * @see app/Http/Controllers/Seller/ProductController.php:180
  * @route '/seller/products/{product}/preview'
  */
 preview.get = (args: { product: number | { id: number } } | [product: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions): RouteDefinition<'get'> => ({
@@ -269,7 +269,7 @@ preview.get = (args: { product: number | { id: number } } | [product: number | {
 })
 /**
 * @see \App\Http\Controllers\Seller\ProductController::preview
- * @see app/Http/Controllers/Seller/ProductController.php:189
+ * @see app/Http/Controllers/Seller/ProductController.php:180
  * @route '/seller/products/{product}/preview'
  */
 preview.head = (args: { product: number | { id: number } } | [product: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions): RouteDefinition<'head'> => ({
@@ -279,7 +279,7 @@ preview.head = (args: { product: number | { id: number } } | [product: number | 
 
     /**
 * @see \App\Http\Controllers\Seller\ProductController::preview
- * @see app/Http/Controllers/Seller/ProductController.php:189
+ * @see app/Http/Controllers/Seller/ProductController.php:180
  * @route '/seller/products/{product}/preview'
  */
     const previewForm = (args: { product: number | { id: number } } | [product: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
@@ -289,7 +289,7 @@ preview.head = (args: { product: number | { id: number } } | [product: number | 
 
             /**
 * @see \App\Http\Controllers\Seller\ProductController::preview
- * @see app/Http/Controllers/Seller/ProductController.php:189
+ * @see app/Http/Controllers/Seller/ProductController.php:180
  * @route '/seller/products/{product}/preview'
  */
         previewForm.get = (args: { product: number | { id: number } } | [product: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
@@ -298,7 +298,7 @@ preview.head = (args: { product: number | { id: number } } | [product: number | 
         })
             /**
 * @see \App\Http\Controllers\Seller\ProductController::preview
- * @see app/Http/Controllers/Seller/ProductController.php:189
+ * @see app/Http/Controllers/Seller/ProductController.php:180
  * @route '/seller/products/{product}/preview'
  */
         previewForm.head = (args: { product: number | { id: number } } | [product: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
@@ -314,7 +314,7 @@ preview.head = (args: { product: number | { id: number } } | [product: number | 
     preview.form = previewForm
 /**
 * @see \App\Http\Controllers\Seller\ProductController::submitForApproval
- * @see app/Http/Controllers/Seller/ProductController.php:205
+ * @see app/Http/Controllers/Seller/ProductController.php:196
  * @route '/seller/products/{product}/submit'
  */
 export const submitForApproval = (args: { product: number | { id: number } } | [product: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions): RouteDefinition<'post'> => ({
@@ -329,7 +329,7 @@ submitForApproval.definition = {
 
 /**
 * @see \App\Http\Controllers\Seller\ProductController::submitForApproval
- * @see app/Http/Controllers/Seller/ProductController.php:205
+ * @see app/Http/Controllers/Seller/ProductController.php:196
  * @route '/seller/products/{product}/submit'
  */
 submitForApproval.url = (args: { product: number | { id: number } } | [product: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions) => {
@@ -362,7 +362,7 @@ submitForApproval.url = (args: { product: number | { id: number } } | [product: 
 
 /**
 * @see \App\Http\Controllers\Seller\ProductController::submitForApproval
- * @see app/Http/Controllers/Seller/ProductController.php:205
+ * @see app/Http/Controllers/Seller/ProductController.php:196
  * @route '/seller/products/{product}/submit'
  */
 submitForApproval.post = (args: { product: number | { id: number } } | [product: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions): RouteDefinition<'post'> => ({
@@ -372,7 +372,7 @@ submitForApproval.post = (args: { product: number | { id: number } } | [product:
 
     /**
 * @see \App\Http\Controllers\Seller\ProductController::submitForApproval
- * @see app/Http/Controllers/Seller/ProductController.php:205
+ * @see app/Http/Controllers/Seller/ProductController.php:196
  * @route '/seller/products/{product}/submit'
  */
     const submitForApprovalForm = (args: { product: number | { id: number } } | [product: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
@@ -382,7 +382,7 @@ submitForApproval.post = (args: { product: number | { id: number } } | [product:
 
             /**
 * @see \App\Http\Controllers\Seller\ProductController::submitForApproval
- * @see app/Http/Controllers/Seller/ProductController.php:205
+ * @see app/Http/Controllers/Seller/ProductController.php:196
  * @route '/seller/products/{product}/submit'
  */
         submitForApprovalForm.post = (args: { product: number | { id: number } } | [product: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({

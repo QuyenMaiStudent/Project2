@@ -16,7 +16,7 @@ class AdminController extends Controller
     public function dashboard(User $user)
     {
         if (!Auth::user()->isAdmin()) {
-            return redirect()->route('dashboard')->with('error', 'Chỉ admin mới được truy cập trang này.');
+            return redirect()->route('home')->with('error', 'Chỉ admin mới được truy cập trang này.');
         }
         
         $totalUsers = User::count();
