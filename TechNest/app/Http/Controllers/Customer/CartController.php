@@ -15,28 +15,44 @@ class CartController extends Controller
     // Xem giỏ hàng
     public function index()
     {
-        $cart = Cart::with(['items.product.primaryImage', 'items.variant'])->firstOrCreate(['user_id' => Auth::id()]);
+        // load product primary image và variant image (nếu có)
+        $cart = Cart::with(['items.product.primaryImage', 'items.variant.image'])->firstOrCreate(['user_id' => Auth::id()]);
+
         return Inertia::render('Cart/Index', [
             'cart' => [
                 'id' => $cart->id,
                 'items' => $cart->items->map(function ($item) {
-                    // Lấy giá: nếu có variant thì lấy variant->price, không thì lấy product->price
-                    $price = $item->variant
-                        ? ($item->variant->price ?? $item->product->price)
-                        : ($item->product->price ?? 0);
+                    $product = $item->product;
+                    $variant = $item->variant;
+
+                    // Tính giá: nếu variant có trường price dùng nó,
+                    // nếu không dùng additional_price (cộng vào product->price)
+                    $basePrice = $product->price ?? 0;
+                    if ($variant) {
+                        $variantPrice = $variant->price ?? null;
+                        if ($variantPrice !== null) {
+                            $price = $variantPrice;
+                        } else {
+                            $price = $basePrice + ($variant->additional_price ?? 0);
+                        }
+                    } else {
+                        $price = $basePrice;
+                    }
 
                     return [
                         'id' => $item->id,
                         'quantity' => $item->quantity,
-                        'product' => $item->product ? [
-                            'id' => $item->product->id,
-                            'name' => $item->product->name,
-                            'image_url' => $item->product->primaryImage->url ?? null,
+                        'product' => $product ? [
+                            'id' => $product->id,
+                            'name' => $product->name,
+                            'image_url' => $product->primaryImage->url ?? null,
+                            // gửi price cuối cùng trong product để frontend dễ hiển thị
                             'price' => $price,
                         ] : null,
-                        'variant' => $item->variant ? [
-                            'id' => $item->variant->id,
-                            'variant_name' => $item->variant->variant_name,
+                        'variant' => $variant ? [
+                            'id' => $variant->id,
+                            'variant_name' => $variant->variant_name,
+                            'image_url' => optional($variant->image)->url ?? null,
                         ] : null,
                     ];
                 }),
