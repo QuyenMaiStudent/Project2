@@ -1,7 +1,7 @@
 import { queryParams, type RouteQueryOptions, type RouteDefinition, type RouteFormDefinition } from './../../../../wayfinder'
 /**
 * @see \App\Http\Controllers\ProductIndexController::__invoke
- * @see app/Http/Controllers/ProductIndexController.php:11
+ * @see app/Http/Controllers/ProductIndexController.php:13
  * @route '/products'
  */
 const ProductIndexController = (options?: RouteQueryOptions): RouteDefinition<'get'> => ({
@@ -16,7 +16,7 @@ ProductIndexController.definition = {
 
 /**
 * @see \App\Http\Controllers\ProductIndexController::__invoke
- * @see app/Http/Controllers/ProductIndexController.php:11
+ * @see app/Http/Controllers/ProductIndexController.php:13
  * @route '/products'
  */
 ProductIndexController.url = (options?: RouteQueryOptions) => {
@@ -25,7 +25,7 @@ ProductIndexController.url = (options?: RouteQueryOptions) => {
 
 /**
 * @see \App\Http\Controllers\ProductIndexController::__invoke
- * @see app/Http/Controllers/ProductIndexController.php:11
+ * @see app/Http/Controllers/ProductIndexController.php:13
  * @route '/products'
  */
 ProductIndexController.get = (options?: RouteQueryOptions): RouteDefinition<'get'> => ({
@@ -34,7 +34,7 @@ ProductIndexController.get = (options?: RouteQueryOptions): RouteDefinition<'get
 })
 /**
 * @see \App\Http\Controllers\ProductIndexController::__invoke
- * @see app/Http/Controllers/ProductIndexController.php:11
+ * @see app/Http/Controllers/ProductIndexController.php:13
  * @route '/products'
  */
 ProductIndexController.head = (options?: RouteQueryOptions): RouteDefinition<'head'> => ({
@@ -44,7 +44,7 @@ ProductIndexController.head = (options?: RouteQueryOptions): RouteDefinition<'he
 
     /**
 * @see \App\Http\Controllers\ProductIndexController::__invoke
- * @see app/Http/Controllers/ProductIndexController.php:11
+ * @see app/Http/Controllers/ProductIndexController.php:13
  * @route '/products'
  */
     const ProductIndexControllerForm = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
@@ -54,7 +54,7 @@ ProductIndexController.head = (options?: RouteQueryOptions): RouteDefinition<'he
 
             /**
 * @see \App\Http\Controllers\ProductIndexController::__invoke
- * @see app/Http/Controllers/ProductIndexController.php:11
+ * @see app/Http/Controllers/ProductIndexController.php:13
  * @route '/products'
  */
         ProductIndexControllerForm.get = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
@@ -63,7 +63,7 @@ ProductIndexController.head = (options?: RouteQueryOptions): RouteDefinition<'he
         })
             /**
 * @see \App\Http\Controllers\ProductIndexController::__invoke
- * @see app/Http/Controllers/ProductIndexController.php:11
+ * @see app/Http/Controllers/ProductIndexController.php:13
  * @route '/products'
  */
         ProductIndexControllerForm.head = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
