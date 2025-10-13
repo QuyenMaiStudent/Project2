@@ -8,6 +8,7 @@ use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Auth;
 use Inertia\Inertia;
 
 class ManageUserController extends Controller
@@ -17,6 +18,23 @@ class ManageUserController extends Controller
      */
     public function index(Request $request)
     {
+        $isAllowed = Auth::check() && Auth::user()->isSuperAdmin();
+
+        $roles = Role::select('id', 'name')->get();
+
+        if (! $isAllowed) {
+            // render page but indicate not allowed; frontend will show message and disable UI
+            return Inertia::render('Admin/ManageUser', [
+                'users' => ['data' => [], 'links' => []],
+                'roles' => $roles,
+                'filters' => $request->only(['search', 'role', 'status']),
+                'view' => 'index',
+                'isAllowed' => false,
+                'error' => 'Chỉ superadmin mới được truy cập mục Quản lý người dùng.'
+            ]);
+        }
+
+        // exclude any user who has role 'superadmin'
         $query = User::with(['role', 'roles', 'profile'])
             ->when($request->search, fn($q) =>
                 $q->where(function($q2) use ($request) {
@@ -29,16 +47,17 @@ class ManageUserController extends Controller
             )
             ->when($request->has('status'), fn($q) =>
                 $q->where('is_active', (int) $request->status)
-            );
+            )
+            ->whereDoesntHave('roles', fn($r) => $r->where('name', 'superadmin'));
 
         $users = $query->latest()->paginate(10);
-        $roles = Role::select('id', 'name')->get(); // ✅ Fix lỗi roles.map
 
         return Inertia::render('Admin/ManageUser', [
             'users' => $users,
             'roles' => $roles,
             'filters' => $request->only(['search', 'role', 'status']),
-            'view' => 'index', // indicate sub-view/mode for the single page
+            'view' => 'index',
+            'isAllowed' => true,
         ]);
     }
 

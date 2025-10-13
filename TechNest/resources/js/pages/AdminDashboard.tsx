@@ -1,4 +1,5 @@
 import { Head, Link } from '@inertiajs/react';
+import React, { useState } from 'react';
 import AppLayout from '@/layouts/app-layout';
 import { Package, CheckCircle, XCircle, Clock, Users, ShoppingCart, DollarSign } from 'lucide-react';
 
@@ -9,7 +10,28 @@ export default function AdminDashboard(props: any) {
         totalProducts = 0,
         totalOrders = 0,
         totalRevenue = 0,
+        auth = null,
     } = props;
+
+    const currentUser = auth?.user ?? null;
+    const [userDeniedMsg, setUserDeniedMsg] = useState<string>('');
+
+    const isSuperAdmin = () => {
+        if (!currentUser) return false;
+        if (currentUser.role && currentUser.role.name === 'superadmin') return true;
+        if (Array.isArray(currentUser.roles)) {
+            return currentUser.roles.some((r: any) => r.name === 'superadmin');
+        }
+        return false;
+    };
+
+    const handleUsersClick = (e: React.MouseEvent) => {
+        if (!isSuperAdmin()) {
+            e.preventDefault();
+            setUserDeniedMsg('Chỉ superadmin mới được truy cập mục Quản lý người dùng.');
+            setTimeout(() => setUserDeniedMsg(''), 3000);
+        }
+    };
 
     return (
         <AppLayout
@@ -60,12 +82,17 @@ export default function AdminDashboard(props: any) {
                             </Link>
                             <Link
                                 href="/admin/users"
+                                onClick={handleUsersClick}
                                 className="flex items-center space-x-3 p-3 rounded-lg hover:bg-gray-100 transition-colors"
                             >
                                 <Users className="h-5 w-5 text-blue-600" />
                                 <span className="text-gray-700">Quản lý người dùng</span>
                             </Link>
                         </nav>
+
+                        {userDeniedMsg && (
+                            <div className="mt-4 p-2 bg-yellow-100 text-yellow-800 rounded">{userDeniedMsg}</div>
+                        )}
                     </div>
                 </div>
 
