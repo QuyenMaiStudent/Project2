@@ -169,9 +169,10 @@ export default function ProductIndex({ products, brands, categories }: Props) {
 
             {/* Main content with left sticky sidebar like Amazon */}
             <div className="bg-[#f5f5f5] min-h-screen py-8">
-                <div className="max-w-7xl mx-auto px-4 grid grid-cols-1 lg:grid-cols-5 gap-6">
-                    {/* LEFT Sidebar - filters (bigger, sticky) */}
-                    <aside className="lg:col-span-1 bg-white rounded-lg p-4 shadow-sm h-max sticky top-20">
+                <div className="w-full grid grid-cols-1 lg:grid-cols-5 gap-6">
+                    {/* LEFT Sidebar - full-bleed (will sit at left edge of page). 
+                        Adjust ml-6 -> ml-0 if you want it flush to viewport edge. */}
+                    <aside className="lg:col-span-1 bg-white rounded-lg p-4 shadow-sm h-max sticky top-20 ml-0 lg:ml-6">
                         <h2 className="text-lg font-semibold mb-3">Bộ lọc</h2>
 
                         {/* Categories (show 3 by default) */}
@@ -280,58 +281,63 @@ export default function ProductIndex({ products, brands, categories }: Props) {
                         </div>
                     </aside>
 
-                    {/* Products grid */}
-                    <main className="lg:col-span-4">
-                        <h1 className="text-3xl font-bold mb-6 text-[#0AC1EF] text-center lg:text-left">Danh sách sản phẩm</h1>
-                        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-3 gap-6">
-                            {filteredProducts.length === 0 && (
-                                <div className="col-span-full text-center text-gray-500">Không có sản phẩm phù hợp.</div>
-                            )}
-                            {filteredProducts.map(product => (
-                                <div
-                                    key={product.id}
-                                    className="bg-white rounded-lg shadow hover:shadow-lg transition-shadow flex flex-col border border-gray-100 group"
-                                >
-                                    <Link href={`/products/${product.id}`}>
-                                        <div className="aspect-square bg-gray-50 flex items-center justify-center rounded-t-lg overflow-hidden">
-                                            <img
-                                                src={product.primary_image?.url || '/images/logo.png'}
-                                                alt={product.name}
-                                                className="object-contain w-full h-full group-hover:scale-105 transition-transform"
-                                                loading="lazy"
-                                                onError={e => (e.currentTarget.src = '/images/logo.png')}
-                                            />
-                                        </div>
-                                    </Link>
-                                    <div className="flex-1 flex flex-col px-3 py-2">
-                                        <Link
-                                            href={`/products/${product.id}`}
-                                            className="font-semibold text-base text-gray-900 hover:text-[#0AC1EF] line-clamp-2 min-h-[48px]"
-                                        >
-                                            {product.name}
+                    {/* Products area: keep products center-aligned in a max-width container */}
+                    <div className="lg:col-span-4">
+                        <div className="max-w-7xl mx-auto px-6">
+                            <h1 className="text-3xl font-bold mb-6 text-[#0AC1EF] text-center lg:text-left">Danh sách sản phẩm</h1>
+
+                            {/* nhỏ hơn: nhiều cột hơn + gap nhỏ hơn */}
+                            <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-4 xl:grid-cols-5 gap-4">
+                                {filteredProducts.length === 0 && (
+                                    <div className="col-span-full text-center text-gray-500">Không có sản phẩm phù hợp.</div>
+                                )}
+                                {filteredProducts.map(product => (
+                                    <div
+                                        key={product.id}
+                                        className="bg-white rounded-lg shadow hover:shadow-lg transition-shadow flex flex-col border border-gray-100 group overflow-hidden"
+                                    >
+                                        <Link href={`/products/${product.id}`}>
+                                            {/* cố định chiều cao ảnh để thẻ nhỏ hơn */}
+                                            <div className="bg-gray-50 flex items-center justify-center rounded-t-lg overflow-hidden h-40">
+                                                <img
+                                                    src={product.primary_image?.url || '/images/logo.png'}
+                                                    alt={product.name}
+                                                    className="object-contain w-full h-full group-hover:scale-105 transition-transform"
+                                                    loading="lazy"
+                                                    onError={e => (e.currentTarget.src = '/images/logo.png')}
+                                                />
+                                            </div>
                                         </Link>
-                                        {product.brand && (
-                                            <div className="text-xs text-gray-500 mt-1">{product.brand.name}</div>
-                                        )}
-                                        <div className="mt-2 font-bold text-lg text-[#ee4d2d]">
-                                            {product.price != null
-                                                ? Number(product.price).toLocaleString() + '₫'
-                                                : 'Liên hệ'}
+                                        <div className="flex-1 flex flex-col px-2 py-2 text-sm">
+                                            <Link
+                                                href={`/products/${product.id}`}
+                                                className="font-semibold text-sm text-gray-900 hover:text-[#0AC1EF] line-clamp-2 min-h-[44px]"
+                                            >
+                                                {product.name}
+                                            </Link>
+                                            {product.brand && (
+                                                <div className="text-xs text-gray-500 mt-1">{product.brand.name}</div>
+                                            )}
+                                            <div className="mt-2 font-bold text-base text-[#ee4d2d]">
+                                                {product.price != null
+                                                    ? Number(product.price).toLocaleString() + '₫'
+                                                    : 'Liên hệ'}
+                                            </div>
+                                            {product.short_description && (
+                                                <div className="text-xs text-gray-500 mt-1 line-clamp-2">{product.short_description}</div>
+                                            )}
+                                            <Link
+                                                href={`/products/${product.id}`}
+                                                className="mt-3 mb-1 px-2 py-1 bg-[#0AC1EF] text-white rounded text-sm text-center hover:bg-[#0999c2] transition-colors"
+                                            >
+                                                Xem chi tiết
+                                            </Link>
                                         </div>
-                                        {product.short_description && (
-                                            <div className="text-xs text-gray-500 mt-1 line-clamp-2">{product.short_description}</div>
-                                        )}
-                                        <Link
-                                            href={`/products/${product.id}`}
-                                            className="mt-3 mb-1 px-3 py-1 bg-[#0AC1EF] text-white rounded text-sm text-center hover:bg-[#0999c2] transition-colors"
-                                        >
-                                            Xem chi tiết
-                                        </Link>
                                     </div>
-                                </div>
-                            ))}
+                                ))}
+                            </div>
                         </div>
-                    </main>
+                    </div>
                 </div>
             </div>
 
