@@ -46,15 +46,7 @@ export default function SellerDashboard({ stats }: Props) {
                                 <span className="text-gray-700">View Products</span>
                             </Link>
 
-                            <Link 
-                                href='/seller/products/upload-images'
-                                className='flex items-center space-x-3 p-3 rounded-b-lg hover:bg-gray-100 transition-colors'
-                                >
-
-                                <Package className='h-5 w-5 text-purple-600' />
-                                <span className='text-gray-700'>Thêm ảnh cho sản phẩm</span>
-
-                            </Link>
+                            {/* Upload images link removed — image upload now handled in variant UI */}
 
                             {/* Promotions links */}
                             <Link

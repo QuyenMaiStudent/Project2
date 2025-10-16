@@ -1,5 +1,4 @@
-import { queryParams, type RouteQueryOptions, type RouteDefinition, type RouteFormDefinition } from './../../wayfinder'
-import checkoutFb28ab from './checkout'
+import { queryParams, type RouteQueryOptions, type RouteDefinition, type RouteFormDefinition } from './../../../../../wayfinder'
 /**
 * @see \App\Http\Controllers\Customer\OrderController::checkout
  * @see app/Http/Controllers/Customer/OrderController.php:22
@@ -78,8 +77,61 @@ checkout.head = (options?: RouteQueryOptions): RouteDefinition<'head'> => ({
         })
     
     checkout.form = checkoutForm
-const customer = {
-    checkout: Object.assign(checkout, checkoutFb28ab),
+/**
+* @see \App\Http\Controllers\Customer\OrderController::placeOrder
+ * @see app/Http/Controllers/Customer/OrderController.php:151
+ * @route '/checkout'
+ */
+export const placeOrder = (options?: RouteQueryOptions): RouteDefinition<'post'> => ({
+    url: placeOrder.url(options),
+    method: 'post',
+})
+
+placeOrder.definition = {
+    methods: ["post"],
+    url: '/checkout',
+} satisfies RouteDefinition<["post"]>
+
+/**
+* @see \App\Http\Controllers\Customer\OrderController::placeOrder
+ * @see app/Http/Controllers/Customer/OrderController.php:151
+ * @route '/checkout'
+ */
+placeOrder.url = (options?: RouteQueryOptions) => {
+    return placeOrder.definition.url + queryParams(options)
 }
 
-export default customer
+/**
+* @see \App\Http\Controllers\Customer\OrderController::placeOrder
+ * @see app/Http/Controllers/Customer/OrderController.php:151
+ * @route '/checkout'
+ */
+placeOrder.post = (options?: RouteQueryOptions): RouteDefinition<'post'> => ({
+    url: placeOrder.url(options),
+    method: 'post',
+})
+
+    /**
+* @see \App\Http\Controllers\Customer\OrderController::placeOrder
+ * @see app/Http/Controllers/Customer/OrderController.php:151
+ * @route '/checkout'
+ */
+    const placeOrderForm = (options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
+        action: placeOrder.url(options),
+        method: 'post',
+    })
+
+            /**
+* @see \App\Http\Controllers\Customer\OrderController::placeOrder
+ * @see app/Http/Controllers/Customer/OrderController.php:151
+ * @route '/checkout'
+ */
+        placeOrderForm.post = (options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
+            action: placeOrder.url(options),
+            method: 'post',
+        })
+    
+    placeOrder.form = placeOrderForm
+const OrderController = { checkout, placeOrder }
+
+export default OrderController

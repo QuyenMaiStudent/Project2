@@ -4,7 +4,7 @@ import { type SharedData } from '@/types';
 import { router } from '@inertiajs/react';
 
 interface Image { url: string; alt_text?: string; is_primary?: boolean; }
-interface Variant { id: number; variant_name: string; price: number; stock: number; }
+interface Variant { id: number; variant_name: string; price: number; stock: number; image_url?: string | null; }
 interface Spec { key: string; value: string; }
 interface Product {
     id: number;
@@ -22,20 +22,28 @@ interface Props { product: Product; }
 
 export default function ProductDetail({ product }: Props) {
     const { auth } = usePage<SharedData>().props;
-    const [mainImg, setMainImg] = useState(
-        product.images && product.images.length > 0
-            ? product.images[0].url
-            : '/images/logo.png'
-    );
-    const [selectedVariant, setSelectedVariant] = useState<Variant | null>(
-        product.variants && product.variants.length > 0
-            ? product.variants[0]
-            : null
-    );
+    // init selected variant (if any)
+    const initialVariant: Variant | null = product.variants && product.variants.length > 0 ? product.variants[0] : null;
+    const [selectedVariant, setSelectedVariant] = useState<Variant | null>(initialVariant);
+    // initial main image: prefer variant image if selected, fallback to first product image
+    const initialMain = selectedVariant?.image_url ?? (product.images && product.images.length > 0 ? product.images[0].url : '/images/logo.png');
+    const [mainImg, setMainImg] = useState<string>(initialMain);
     const [quantity, setQuantity] = useState(1);
 
     const price = selectedVariant ? selectedVariant.price : product.price;
     const maxStock = selectedVariant ? selectedVariant.stock : product.stock;
+
+    // when user selects a variant, update main image to variant image if present
+    React.useEffect(() => {
+        if (selectedVariant) {
+            if (selectedVariant.image_url) {
+                setMainImg(selectedVariant.image_url);
+                return;
+            }
+        }
+        // fallback to first product image (or default)
+        setMainImg(product.images && product.images.length > 0 ? product.images[0].url : '/images/logo.png');
+    }, [selectedVariant, product.images]);
 
     const handleAddToCart = () => {
         if (!auth.user) {
@@ -148,9 +156,6 @@ export default function ProductDetail({ product }: Props) {
                         )}
                         <div className="text-[#ee4d2d] text-3xl font-bold mb-2">
                             {price.toLocaleString()}₫
-                        </div>
-                        <div className="text-gray-600 mb-2">
-                            {maxStock > 0 ? `Còn ${maxStock} sản phẩm` : 'Hết hàng'}
                         </div>
                         {/* Variant */}
                         {product.variants && product.variants.length > 0 && (

@@ -54,7 +54,6 @@ class ProductController extends Controller
         DB::beginTransaction();
 
         try {
-            // Tạo sản phẩm
             $product = Product::create([
                 'name' => $validated['name'],
                 'description' => $validated['description'] ?? null,
@@ -66,19 +65,21 @@ class ProductController extends Controller
                 'created_by' => auth()->id(),
             ]);
 
-            // Lưu ảnh vào public/images/products
+            // lưu 1 ảnh chính cho product
             if ($request->hasFile('image')) {
                 $file = $request->file('image');
                 $filename = 'product_' . $product->id . '_' . time() . '.' . $file->getClientOriginalExtension();
                 $destination = public_path('images/products');
-                if (!file_exists($destination)) {
-                    mkdir($destination, 0777, true);
-                }
+                if (!file_exists($destination)) mkdir($destination, 0777, true);
                 $file->move($destination, $filename);
 
-                ProductImage::create([
+                // đảm bảo chỉ 1 ảnh primary (mặc định mới tạo)
+                \App\Models\ProductImage::where('product_id', $product->id)->update(['is_primary' => false]);
+
+                \App\Models\ProductImage::create([
                     'product_id' => $product->id,
-                    'url' => env('IMAGE_PRODUCT_PATH') . '/' . $filename, // Đường dẫn public để dùng trong src
+                    'product_variant_id' => null,
+                    'url' => rtrim(env('IMAGE_PRODUCT_PATH', '/images/products'), '/') . '/' . $filename,
                     'alt_text' => $product->name . ' - Ảnh đại diện',
                     'is_primary' => true,
                 ]);
@@ -86,8 +87,7 @@ class ProductController extends Controller
 
             DB::commit();
 
-            return redirect()->route('seller.products.index')
-                ->with('success', 'Sản phẩm đã được thêm thành công!');
+            return redirect()->route('seller.products.index')->with('success', 'Sản phẩm đã được thêm thành công!');
         } catch (\Exception $e) {
             DB::rollback();
             return back()->withErrors(['error' => 'Có lỗi xảy ra: ' . $e->getMessage()]);
@@ -125,49 +125,40 @@ class ProductController extends Controller
             'brand_id' => 'required|exists:brands,id',
             'warranty_id' => 'nullable|exists:warranty_policies,id',
             'is_active' => 'boolean',
-            'images' => 'nullable|array',
-            'images.*' => 'image|mimes:jpeg,png,jpg,gif,webp|max:4096',
+            // bỏ rule for images[] - product chỉ giữ 1 ảnh chính
+            'image' => 'nullable|image|mimes:jpeg,png,jpg,gif,webp|max:4096',
         ]);
 
         DB::beginTransaction();
-        
+
         try {
             $product->update($validated);
 
-            // Nếu có ảnh mới, upload lên Cloudinary
-            if ($request->hasFile('images')) {
-                foreach ($request->file('images') as $index => $image) {
-                    $uploaded = Cloudinary::upload($image->getRealPath(), [
-                        'folder' => 'technest/products',
-                        'public_id' => 'product_' . $product->id . '_' . uniqid(),
-                        'transformation' => [
-                            'quality' => 'auto',
-                            'fetch_format' => 'auto',
-                            'width' => 800,
-                            'height' => 600,
-                            'crop' => 'fit'
-                        ]
-                    ]);
+            // nếu upload image -> thay ảnh chính
+            if ($request->hasFile('image')) {
+                $file = $request->file('image');
+                $filename = 'product_' . $product->id . '_' . time() . '.' . $file->getClientOriginalExtension();
+                $destination = public_path('images/products');
+                if (!file_exists($destination)) mkdir($destination, 0777, true);
+                $file->move($destination, $filename);
 
-                    ProductImage::create([
-                        'product_id' => $product->id,
-                        'url' => $uploaded->getSecurePath(),
-                        'alt_text' => $product->name . ' - Ảnh mới',
-                        'is_primary' => false,
-                    ]);
-                }
+                \App\Models\ProductImage::where('product_id', $product->id)->update(['is_primary' => false]);
+
+                \App\Models\ProductImage::create([
+                    'product_id' => $product->id,
+                    'product_variant_id' => null,
+                    'url' => rtrim(env('IMAGE_PRODUCT_PATH', '/images/products'), '/') . '/' . $filename,
+                    'alt_text' => $product->name . ' - Ảnh đại diện',
+                    'is_primary' => true,
+                ]);
             }
 
             DB::commit();
 
-            return redirect()->route('products.show', $product)
-                           ->with('success', 'Sản phẩm đã được cập nhật!');
-
+            return redirect()->route('products.show', $product)->with('success', 'Sản phẩm đã được cập nhật!');
         } catch (\Exception $e) {
             DB::rollback();
-            
-            return back()->withInput()
-                        ->with('error', 'Có lỗi xảy ra: ' . $e->getMessage());
+            return back()->withInput()->with('error', 'Có lỗi xảy ra: ' . $e->getMessage());
         }
     }
 

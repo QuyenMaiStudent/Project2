@@ -32,7 +32,8 @@ Route::middleware(['auth', 'seller'])->group(function () {
     // Biến thể sản phẩm
     Route::get('/seller/products/{product}/variants', [ProductVariantController::class, 'index'])->name('seller.products.variants.index');
     Route::post('/seller/products/{product}/variants', [ProductVariantController::class, 'store'])->name('seller.products.variants.store');
-    Route::put('/seller/products/{product}/variants/{variant}', [ProductVariantController::class, 'update'])->name('seller.products.variants.update');
+    // Accept both PUT (API) and POST (frontend FormData via router.post)
+    Route::match(['put', 'post'], '/seller/products/{product}/variants/{variant}', [ProductVariantController::class, 'update'])->name('seller.products.variants.update');
     Route::delete('/seller/products/{product}/variants/{variant}', [ProductVariantController::class, 'destroy'])->name('seller.products.variants.destroy');
 
     // Xem trước

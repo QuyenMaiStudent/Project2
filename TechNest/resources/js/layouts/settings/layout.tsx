@@ -7,6 +7,7 @@ import { edit as editPassword } from '@/routes/password';
 import { edit } from '@/routes/profile';
 import { type NavItem } from '@/types';
 import { Link } from '@inertiajs/react';
+import { Home, MapPin, ShoppingCart } from 'lucide-react';
 import { type PropsWithChildren } from 'react';
 
 const sidebarNavItems: NavItem[] = [
@@ -58,6 +59,30 @@ export default function SettingsLayout({ children }: PropsWithChildren) {
                                 </Link>
                             </Button>
                         ))}
+
+                        {/* Quick links in sidebar (same style as other nav items) */}
+                        <div className="mt-4 border-t pt-3">
+                            <Button size="sm" variant="ghost" asChild className="w-full justify-start">
+                                <Link href="/products" prefetch>
+                                    <Home className="h-4 w-4 mr-2 text-blue-600" />
+                                    Sản phẩm
+                                </Link>
+                            </Button>
+
+                            <Button size="sm" variant="ghost" asChild className="w-full justify-start">
+                                <Link href="/cart" prefetch>
+                                    <ShoppingCart className="h-4 w-4 mr-2 text-green-600" />
+                                    Giỏ hàng
+                                </Link>
+                            </Button>
+
+                            <Button size="sm" variant="ghost" asChild className="w-full justify-start">
+                                <Link href="/shipping-addresses" prefetch>
+                                    <MapPin className="h-4 w-4 mr-2 text-orange-600" />
+                                    Địa chỉ giao hàng
+                                </Link>
+                            </Button>
+                        </div>
                     </nav>
                 </aside>
 
@@ -67,6 +92,8 @@ export default function SettingsLayout({ children }: PropsWithChildren) {
                     <section className="max-w-xl space-y-12">{children}</section>
                 </div>
             </div>
+
+            {/* quick links moved into sidebar for consistent formatting */}
         </div>
     );
 }

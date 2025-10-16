@@ -31,7 +31,8 @@ Route::middleware(['auth', 'admin'])->group(function () {
     Route::put('/admin/categories/{category}/update', [CategoryController::class, 'update'])->name('admin.categories.update');
     Route::delete('/admin/categories/{category}/delete', [CategoryController::class, 'destroy'])->name('admin.categories.destroy');
 
-    // Manage users routes (no delete route)
+    // Manage users routes (no delete route) — NO route-level superadmin middleware any more.
+    // Controller will determine access and frontend will show message instead of redirect.
     Route::get('/admin/users', [ManageUserController::class, 'index'])->name('admin.users.index');
     Route::get('/admin/users/create', [ManageUserController::class, 'create'])->name('admin.users.create');
     Route::post('/admin/users', [ManageUserController::class, 'store'])->name('admin.users.store');
