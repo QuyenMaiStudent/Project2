@@ -49,7 +49,7 @@ export default function Welcome() {
                                     ? '/admin/dashboard'
                                     : auth.user.role === 'seller'
                                     ? '/seller/dashboard'
-                                    : '/customer/dashboard'
+                                    : '/settings/profile' // <- thay từ /customer/dashboard
                             }
                             className="inline-block rounded-sm border border-white px-6 py-2 text-base leading-normal text-white hover:bg-[#0999c2]"
                         >
