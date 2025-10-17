@@ -5,8 +5,8 @@ import { cn } from '@/lib/utils';
 import { edit as editAppearance } from '@/routes/appearance';
 import { edit as editPassword } from '@/routes/password';
 import { edit } from '@/routes/profile';
-import { type NavItem } from '@/types';
-import { Link } from '@inertiajs/react';
+import { SharedData, type NavItem } from '@/types';
+import { Link, usePage } from '@inertiajs/react';
 import { Home, MapPin, ShoppingCart } from 'lucide-react';
 import { type PropsWithChildren } from 'react';
 
@@ -36,6 +36,10 @@ export default function SettingsLayout({ children }: PropsWithChildren) {
 
     const currentPath = window.location.pathname;
 
+    //Lấy cartCount từ Inertia shared props
+    const { props } = usePage<SharedData>();
+    const cartCount = (props.cartCount ?? 0) as number;
+
     return (
         <div className="px-4 py-6">
             <Heading title="Settings" description="Manage your profile and account settings" />
@@ -64,21 +68,26 @@ export default function SettingsLayout({ children }: PropsWithChildren) {
                         <div className="mt-4 border-t pt-3">
                             <Button size="sm" variant="ghost" asChild className="w-full justify-start">
                                 <Link href="/products" prefetch>
-                                    <Home className="h-4 w-4 mr-2 text-blue-600" />
+                                    <Home className="mr-2 h-4 w-4 text-blue-600" />
                                     Sản phẩm
                                 </Link>
                             </Button>
 
                             <Button size="sm" variant="ghost" asChild className="w-full justify-start">
                                 <Link href="/cart" prefetch>
-                                    <ShoppingCart className="h-4 w-4 mr-2 text-green-600" />
+                                    <ShoppingCart className="mr-2 h-4 w-4 text-green-600" />
                                     Giỏ hàng
+                                    {cartCount > 0 && (
+                                        <span className='ml-2 inline-flex items-center justify-center px-2 py-0.5 font-medium leading-none text-white bg-red-600 rounded-full'>
+                                            {cartCount}
+                                        </span>
+                                    )}
                                 </Link>
                             </Button>
 
                             <Button size="sm" variant="ghost" asChild className="w-full justify-start">
                                 <Link href="/shipping-addresses" prefetch>
-                                    <MapPin className="h-4 w-4 mr-2 text-orange-600" />
+                                    <MapPin className="mr-2 h-4 w-4 text-orange-600" />
                                     Địa chỉ giao hàng
                                 </Link>
                             </Button>
