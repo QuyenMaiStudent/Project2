@@ -3,6 +3,7 @@ import { login, register } from '@/routes';
 import { type SharedData } from '@/types';
 import { Head, Link, usePage } from '@inertiajs/react';
 import { ShoppingCart } from 'lucide-react';
+import ChatBot from '@/pages/ChatUI/ChatBot'; // thêm dòng import
 
 export default function Welcome() {
     const props = usePage<SharedData>().props;
@@ -148,6 +149,12 @@ export default function Welcome() {
                     <ProductCard name="Surface Laptop" price="62.000.000 đ" img="/images/surface_laptop.jpg" />
                     <ProductCard name="Tai nghe không dây" price="1.500.000 đ" img="/images/headphone.jpg" />
                 </div>
+
+                {/* Chatbot section */}
+                <section className="w-full max-w-[1200px] mt-12">
+                    <SectionTitle text="Chat với trợ lý" />
+                    <ChatBot />
+                </section>
             </div>
 
             {/* Footer */}
