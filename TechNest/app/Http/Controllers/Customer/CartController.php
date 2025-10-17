@@ -15,7 +15,7 @@ class CartController extends Controller
     // Xem giỏ hàng
     public function index()
     {
-        // load product primary image và variant image (nếu có)
+        // Tải ảnh chính của sản phẩm và ảnh của biến thể (nếu có), tạo giỏ nếu chưa tồn tại cho user hiện tại
         $cart = Cart::with(['items.product.primaryImage', 'items.variant.image'])->firstOrCreate(['user_id' => Auth::id()]);
 
         return Inertia::render('Cart/Index', [
@@ -25,8 +25,8 @@ class CartController extends Controller
                     $product = $item->product;
                     $variant = $item->variant;
 
-                    // Tính giá: nếu variant có trường price dùng nó,
-                    // nếu không dùng additional_price (cộng vào product->price)
+                    // Tính giá: nếu biến thể có trường price thì dùng nó,
+                    // nếu không thì cộng additional_price vào price của product
                     $basePrice = $product->price ?? 0;
                     if ($variant) {
                         $variantPrice = $variant->price ?? null;
@@ -60,22 +60,34 @@ class CartController extends Controller
         ]);
     }
 
-    // Thêm sản phẩm
+    // Thêm sản phẩm vào giỏ
     public function add(Request $request)
     {
+        // Xử lý request Inertia hoặc AJAX/JSON như API (không redirect)
+        $isInertia = $request->header('X-Inertia') !== null;
+        $expectsJson = $request->wantsJson() || $request->expectsJson();
+        $api = $isInertia || $expectsJson;
+
         $product = Product::where('id', $request->product_id)
             ->where('is_active', true)
             ->where('status', 'approved')
             ->first();
+
         if (!$product) {
+            if ($api) {
+                return response()->json(['success' => false, 'message' => "Sản phẩm không hợp lệ hoặc đã bị ẩn"], 422);
+            }
             return back()->withErrors(['msg' => "Sản phẩm không hợp lệ hoặc đã bị ẩn."]);
         }
 
-        // Lấy variant nếu có
+        // Lấy biến thể (variant) nếu có
         $variant = null;
         if ($request->product_variant_id) {
             $variant = $product->variants()->where('id', $request->product_variant_id)->first();
             if (!$variant) {
+                if ($api) {
+                    return response()->json(['success' => false, 'message' => "Biến thể sản phẩm không hợp lệ."], 422);
+                }
                 return back()->withErrors(['msg' => "Biến thể sản phẩm không hợp lệ."]);
             }
             $stock = $variant->stock;
@@ -94,7 +106,11 @@ class CartController extends Controller
         $maxQty = max(0, $stock - 1);
 
         if ($currentQty + $addQty > $maxQty) {
-            return back()->withErrors(['msg' => "Số lượng trong giỏ hàng không được vượt quá " . $maxQty . " sản phẩm!"]);
+            $msg = "Số lượng trong giỏ hàng không được vượt quá " . $maxQty . " sản phẩm.";
+            if ($api) {
+                return response()->json(['success' => false, 'message' => $msg], 422);
+            }
+            return back()->withErrors(['msg' => $msg]);
         }
 
         if ($item) {
@@ -109,10 +125,15 @@ class CartController extends Controller
             ]);
         }
 
+        if ($api) {
+            $cartCount = (int) CartItem::where('cart_id', $cart->id)->sum('quantity');
+            return response()->json(['success' => true, 'cartCount' => $cartCount], 200);
+        }
+
         return redirect()->route('cart.index')->with('success', 'Đã thêm vào giỏ hàng');
     }
 
-    // Cập nhật số lượng
+    // Cập nhật số lượng trong giỏ hàng
     public function update(Request $request, $id)
     {
         $item = CartItem::findOrFail($id);
@@ -120,7 +141,7 @@ class CartController extends Controller
         return redirect()->route('cart.index')->with('success', 'Đã cập nhật giỏ hàng');
     }
 
-    // Xóa sản phẩm
+    // Xóa sản phẩm khỏi giỏ
     public function destroy($id)
     {
         $item = CartItem::findOrFail($id);

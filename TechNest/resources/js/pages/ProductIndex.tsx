@@ -1,6 +1,8 @@
 import { Head, Link, usePage } from '@inertiajs/react';
+import { ShoppingCart } from 'lucide-react';
 import { type SharedData } from '@/types';
 import { useMemo, useState } from 'react';
+import CartIcon from '@/components/Cart/CartIcon';
 
 interface Product {
     id: number;
@@ -24,7 +26,10 @@ interface Props {
 }
 
 export default function ProductIndex({ products, brands, categories }: Props) {
-    const { auth } = usePage<SharedData>().props;
+    const props = usePage<SharedData>().props;
+    const { auth } = props;
+    const cartCount: number = (props.cartCount ?? 0) as number;
+    const isCustomer: boolean = (props.isCustomer ?? false) as boolean;
 
     // Khu vực lọc
     const [selectedBrands, setSelectedBrands] = useState<number[]>([]);
@@ -135,6 +140,10 @@ export default function ProductIndex({ products, brands, categories }: Props) {
                 <nav className="flex items-center gap-6">
                     <Link href="/products" className="text-black font-semibold text-lg hover:underline">Sản phẩm</Link>
                     <Link href="/support" className="text-black font-semibold text-lg hover:underline">Hỗ trợ</Link>
+
+                    {/* Cart icon + badge (same as Welcome) */}
+                    <CartIcon />
+
                     {auth.user ? (
                         <Link
                             href={

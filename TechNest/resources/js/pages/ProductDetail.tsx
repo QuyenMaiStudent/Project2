@@ -1,7 +1,7 @@
-import { Head, Link, usePage } from '@inertiajs/react';
+import { Head, Link, usePage, router } from '@inertiajs/react';
 import React, { useState } from 'react';
 import { type SharedData } from '@/types';
-import { router } from '@inertiajs/react';
+import CartIcon from '@/components/Cart/CartIcon';
 
 interface Image { url: string; alt_text?: string; is_primary?: boolean; }
 interface Variant { id: number; variant_name: string; price: number; stock: number; image_url?: string | null; }
@@ -21,19 +21,23 @@ interface Product {
 interface Props { product: Product; }
 
 export default function ProductDetail({ product }: Props) {
-    const { auth } = usePage<SharedData>().props;
-    // init selected variant (if any)
+    const props = usePage<SharedData>().props;
+    const { auth } = props;
+    // cartCount và isCustomer được CartIcon lấy từ shared props, không cần quản lý ở đây
+
+    // Khởi tạo biến thể được chọn (nếu có)
     const initialVariant: Variant | null = product.variants && product.variants.length > 0 ? product.variants[0] : null;
     const [selectedVariant, setSelectedVariant] = useState<Variant | null>(initialVariant);
-    // initial main image: prefer variant image if selected, fallback to first product image
+    // Ảnh chính ban đầu: ưu tiên ảnh của biến thể nếu có, ngược lại dùng ảnh đầu tiên của product
     const initialMain = selectedVariant?.image_url ?? (product.images && product.images.length > 0 ? product.images[0].url : '/images/logo.png');
     const [mainImg, setMainImg] = useState<string>(initialMain);
     const [quantity, setQuantity] = useState(1);
+    const [toast, setToast] = useState<{ type: 'success' | 'error'; message: string } | null>(null);
 
     const price = selectedVariant ? selectedVariant.price : product.price;
     const maxStock = selectedVariant ? selectedVariant.stock : product.stock;
 
-    // when user selects a variant, update main image to variant image if present
+    // Khi người dùng chọn biến thể, cập nhật ảnh chính nếu biến thể có ảnh
     React.useEffect(() => {
         if (selectedVariant) {
             if (selectedVariant.image_url) {
@@ -41,31 +45,122 @@ export default function ProductDetail({ product }: Props) {
                 return;
             }
         }
-        // fallback to first product image (or default)
+        // Nếu không có thì fallback về ảnh đầu tiên của sản phẩm (hoặc ảnh mặc định)
         setMainImg(product.images && product.images.length > 0 ? product.images[0].url : '/images/logo.png');
     }, [selectedVariant, product.images]);
 
-    const handleAddToCart = () => {
+    // Hàm hiển thị toast
+    const showToast = (type: 'success' | 'error', message: string, ms = 3000) => {
+        setToast({ type, message });
+        window.setTimeout(() => setToast(null), ms);
+    };
+
+    const handleAddToCart = async () => {
         if (!auth.user) {
-            alert('Bạn cần đăng nhập để thêm sản phẩm vào giỏ hàng!');
+            showToast('error', 'Bạn cần đăng nhập để thêm sản phẩm vào giỏ hàng!');
             router.visit('/login');
             return;
         }
-        router.post('/cart/add', {
-            product_id: product.id,
-            product_variant_id: selectedVariant ? selectedVariant.id : null,
-            quantity,
-        }, {
-            onSuccess: () => alert('Đã thêm vào giỏ hàng!'),
-            onError: (errors) => {
-                alert(errors.msg || 'Có lỗi xảy ra!');
+
+        try {
+            const getCookie = (name: string) => {
+                const v = `; ${document.cookie}`;
+                const parts = v.split(`; ${name}=`);
+
+                if (parts.length === 2) return decodeURIComponent(parts.pop()!.split(';').shift()!);
+                return '';
+            };
+            const metaToken = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') || '';
+            const xsrfCookie = getCookie('XSRF-TOKEN') || '';
+
+            const res = await fetch('/cart/add', {
+                method: 'POST',
+                // sử dụng 'include' nếu backend khác origin; dùng 'same-origin' nếu cùng origin
+                credentials: 'include',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Accept': 'application/json',
+                    'X-Requested-With': 'XMLHttpRequest',
+                    ...(metaToken ? { 'X-CSRF-TOKEN': metaToken } : {}),
+                    ...(xsrfCookie ? { 'X-XSRF-TOKEN': xsrfCookie } : {}),
+                },
+                body: JSON.stringify({
+                    product_id: product.id,
+                    product_variant_id: selectedVariant ? selectedVariant.id : null,
+                    quantity,
+                }),
+            });
+
+            if (res.status === 401) {
+                showToast('error', 'Bạn cần đăng nhập.');
+                router.visit('/login');
+                return;
             }
-        });
+
+            if (res.status === 419) {
+                showToast('error', 'CSRF token mismatch (419). Kiểm tra cookie/session và meta csrf-token.');
+                return;
+            }
+
+            const data = await res.json().catch(() => ({ success: false, message: 'Có lỗi xảy ra!' }));
+
+            if (!res.ok || data.success === false) {
+                showToast('error', data.message || 'Có lỗi xảy ra!');
+                return;
+            }
+
+            // Hiển thị thông báo thành công, phát sự kiện để cập nhật CartIcon ngay lập tức,
+            // rồi reload một phần (chỉ cartCount) để đồng bộ shared props của Inertia
+            showToast('success', 'Đã thêm vào giỏ hàng!');
+            window.dispatchEvent(new CustomEvent('cart:updated', { detail: { cartCount: data.cartCount } }));
+            router.reload({ only: ['cartCount'] });
+        } catch (e) {
+            showToast('error', 'Không thể kết nối tới server.');
+        }
     };
 
     return (
         <>
             <Head title={product.name} />
+            {/* toast UI */}
+            {toast && (
+                <div className="fixed inset-0 z-50 flex items-center justify-center pointer-events-none">
+                    <div
+                        className={`w-full max-w-lg mx-4 transform transition-all duration-200 pointer-events-auto rounded-xl shadow-2xl flex items-start gap-4 p-4 ${toast.type === 'success' ? 'border-2 border-green-600 bg-white' : 'border-2 border-red-600 bg-white'}`}
+                        role="status"
+                        aria-live="polite"
+                    >
+                        <div className={`flex-shrink-0 rounded-full p-3 ${toast.type === 'success' ? 'bg-green-600' : 'bg-red-600'} text-white`}>
+                            {toast.type === 'success' ? (
+                                <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+                                    <path fillRule="evenodd" d="M16.707 5.293a1 1 0 00-1.414-1.414L8 11.172 4.707 7.879a1 1 0 10-1.414 1.414l4 4a1 1 0 001.414 0l8-8z" clipRule="evenodd" />
+                                </svg>
+                            ) : (
+                                <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+                                    <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-11a1 1 0 10-2 0v3a1 1 0 102 0V7zm-1 7a1.25 1.25 0 110-2.5 1.25 1.25 0 010 2.5z" clipRule="evenodd" />
+                                </svg>
+                            )}
+                        </div>
+
+                        <div className="flex-1">
+                            <div className="flex items-center justify-between gap-4">
+                                <div className="text-sm font-semibold text-gray-900">{toast.type === 'success' ? 'Thành công' : 'Lỗi'}</div>
+                                <button
+                                    type="button"
+                                    onClick={() => setToast(null)}
+                                    className="text-gray-400 hover:text-gray-600"
+                                    aria-label="Đóng thông báo"
+                                >
+                                    ×
+                                </button>
+                            </div>
+                            <div className="mt-1 text-sm text-gray-700">
+                                {toast.message}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            )}
 
             {/* Header (copy từ welcome.tsx) */}
             <header className="w-full bg-[#0AC1EF] py-3 px-6 flex items-center justify-between">
@@ -96,6 +191,10 @@ export default function ProductDetail({ product }: Props) {
                 <nav className="flex items-center gap-6">
                     <Link href="/products" className="text-black font-semibold text-lg hover:underline">Sản phẩm</Link>
                     <Link href="/support" className="text-black font-semibold text-lg hover:underline">Hỗ trợ</Link>
+
+                    {/* reuse CartIcon component (it reads shared props and animates on increase) */}
+                    <CartIcon />
+
                     {auth.user ? (
                         <Link
                             href={
@@ -202,7 +301,7 @@ export default function ProductDetail({ product }: Props) {
                         </div>
                         {/* Nút mua */}
                         <div className="flex gap-4 mt-2">
-                            <button 
+                            <button
                                 className="px-8 py-3 bg-[#ee4d2d] text-white rounded font-bold text-lg hover:bg-[#d73211] transition-colors"
                                 onClick={handleAddToCart}
                             >

@@ -1,3 +1,4 @@
+import CartIcon from '@/components/Cart/CartIcon';
 import { login, register } from '@/routes';
 import { type SharedData } from '@/types';
 import { Head, Link, usePage } from '@inertiajs/react';
@@ -53,17 +54,7 @@ export default function Welcome() {
                     </Link>
 
                     {/* Cart icon + count only for customer users */}
-                    {isCustomer && (
-                        <Link href="/cart" className="relative inline-flex items-center text-lg text-black hover:opacity-90" title="Giỏ hàng" aria-label='Giò hàng'>
-                            <ShoppingCart className='h-8 w-8' />
-
-                            {cartCount > 0 && (
-                                <span className="absolute -top-2 -right-3 inline-flex items-center justify-center px-2 py-0.5 text-xs font-medium text-white bg-red-600 rounded-full">
-                                    {cartCount}
-                                </span>
-                            )}
-                        </Link>
-                    )}
+                    <CartIcon />
 
                     {auth.user ? (
                         <Link
