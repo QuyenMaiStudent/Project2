@@ -1,7 +1,7 @@
-import { Head, Link } from '@inertiajs/react';
-import React, { useState } from 'react';
+import { Head } from '@inertiajs/react';
+import React from 'react';
 import AppLayout from '@/layouts/app-layout';
-import { Package, CheckCircle, XCircle, Clock, Users, ShoppingCart, DollarSign } from 'lucide-react';
+import { Users, Package, ShoppingCart, DollarSign } from 'lucide-react';
 
 export default function AdminDashboard(props: any) {
     const {
@@ -10,28 +10,7 @@ export default function AdminDashboard(props: any) {
         totalProducts = 0,
         totalOrders = 0,
         totalRevenue = 0,
-        auth = null,
     } = props;
-
-    const currentUser = auth?.user ?? null;
-    const [userDeniedMsg, setUserDeniedMsg] = useState<string>('');
-
-    const isSuperAdmin = () => {
-        if (!currentUser) return false;
-        if (currentUser.role && currentUser.role.name === 'superadmin') return true;
-        if (Array.isArray(currentUser.roles)) {
-            return currentUser.roles.some((r: any) => r.name === 'superadmin');
-        }
-        return false;
-    };
-
-    const handleUsersClick = (e: React.MouseEvent) => {
-        if (!isSuperAdmin()) {
-            e.preventDefault();
-            setUserDeniedMsg('Chỉ superadmin mới được truy cập mục Quản lý người dùng.');
-            setTimeout(() => setUserDeniedMsg(''), 3000);
-        }
-    };
 
     return (
         <AppLayout
@@ -40,99 +19,41 @@ export default function AdminDashboard(props: any) {
             ]}
         >
             <Head title="Bảng điều khiển quản trị" />
-            <div className="flex">
-                {/* Sidebar Menu */}
-                <div className="w-64 bg-white shadow-md h-screen">
-                    <div className="p-4">
-                        <nav className="space-y-2">
-                            <Link
-                                href="/admin/products/pending"
-                                className="flex items-center space-x-3 p-3 rounded-lg hover:bg-gray-100 transition-colors"
-                            >
-                                <Clock className="h-5 w-5 text-yellow-600" />
-                                <span className="text-gray-700">Sản phẩm chờ duyệt</span>
-                            </Link>
-                            <Link
-                                href="/admin/products/approved"
-                                className="flex items-center space-x-3 p-3 rounded-lg hover:bg-gray-100 transition-colors"
-                            >
-                                <CheckCircle className="h-5 w-5 text-green-600" />
-                                <span className="text-gray-700">Sản phẩm đã duyệt</span>
-                            </Link>
-                            <Link
-                                href="/admin/products/rejected"
-                                className="flex items-center space-x-3 p-3 rounded-lg hover:bg-gray-100 transition-colors"
-                            >
-                                <XCircle className="h-5 w-5 text-red-600" />
-                                <span className="text-gray-700">Sản phẩm bị từ chối</span>
-                            </Link>
-                            <Link
-                                href="/admin/categories"
-                                className="flex items-center space-x-3 p-3 rounded-lg hover:bg-gray-100 transition-colors"
-                            >
-                                <Package className="h-5 w-5 text-indigo-600" />
-                                <span className="text-gray-700">Quản lý danh mục</span>
-                            </Link>
-                            <Link
-                                href="/admin/promotions"
-                                className="flex items-center space-x-3 p-3 rounded-lg hover:bg-gray-100 transition-colors"
-                            >
-                                <DollarSign className="h-5 w-5 text-green-600" />
-                                <span className="text-gray-700">Quản lý khuyến mãi</span>
-                            </Link>
-                            <Link
-                                href="/admin/users"
-                                onClick={handleUsersClick}
-                                className="flex items-center space-x-3 p-3 rounded-lg hover:bg-gray-100 transition-colors"
-                            >
-                                <Users className="h-5 w-5 text-blue-600" />
-                                <span className="text-gray-700">Quản lý người dùng</span>
-                            </Link>
-                        </nav>
-
-                        {userDeniedMsg && (
-                            <div className="mt-4 p-2 bg-yellow-100 text-yellow-800 rounded">{userDeniedMsg}</div>
-                        )}
+            <div className="p-6">
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+                    <div className="bg-white p-6 rounded-lg shadow-md flex items-center">
+                        <Users className="h-8 w-8 text-blue-600 mr-3" />
+                        <div>
+                            <p className="text-sm text-gray-600">Tổng người dùng</p>
+                            <p className="text-2xl font-semibold text-gray-800">{totalUsers}</p>
+                        </div>
                     </div>
-                </div>
-
-                {/* Main Content */}
-                <div className="flex-1 p-6">
-                    <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
-                        <div className="bg-white p-6 rounded-lg shadow-md flex items-center">
-                            <Users className="h-8 w-8 text-blue-600 mr-3" />
-                            <div>
-                                <p className="text-sm text-gray-600">Tổng người dùng</p>
-                                <p className="text-2xl font-semibold text-gray-800">{totalUsers}</p>
-                            </div>
+                    <div className="bg-white p-6 rounded-lg shadow-md flex items-center">
+                        <Package className="h-8 w-8 text-purple-600 mr-3" />
+                        <div>
+                            <p className="text-sm text-gray-600">Tổng người bán</p>
+                            <p className="text-2xl font-semibold text-gray-800">{totalSellers}</p>
                         </div>
-                        <div className="bg-white p-6 rounded-lg shadow-md flex items-center">
-                            <Package className="h-8 w-8 text-purple-600 mr-3" />
-                            <div>
-                                <p className="text-sm text-gray-600">Tổng người bán</p>
-                                <p className="text-2xl font-semibold text-gray-800">{totalSellers}</p>
-                            </div>
+                    </div>
+                    <div className="bg-white p-6 rounded-lg shadow-md flex items-center">
+                        <Package className="h-8 w-8 text-gray-600 mr-3" />
+                        <div>
+                            <p className="text-sm text-gray-600">Tổng sản phẩm</p>
+                            <p className="text-2xl font-semibold text-gray-800">{totalProducts}</p>
                         </div>
-                        <div className="bg-white p-6 rounded-lg shadow-md flex items-center">
-                            <Package className="h-8 w-8 text-gray-600 mr-3" />
-                            <div>
-                                <p className="text-sm text-gray-600">Tổng sản phẩm</p>
-                                <p className="text-2xl font-semibold text-gray-800">{totalProducts}</p>
-                            </div>
+                    </div>
+                    <div className="bg-white p-6 rounded-lg shadow-md flex items-center">
+                        <ShoppingCart className="h-8 w-8 text-green-600 mr-3" />
+                        <div>
+                            <p className="text-sm text-gray-600">Tổng đơn hàng</p>
+                            <p className="text-2xl font-semibold text-gray-800">{totalOrders}</p>
                         </div>
-                        <div className="bg-white p-6 rounded-lg shadow-md flex items-center">
-                            <ShoppingCart className="h-8 w-8 text-green-600 mr-3" />
-                            <div>
-                                <p className="text-sm text-gray-600">Tổng đơn hàng</p>
-                                <p className="text-2xl font-semibold text-gray-800">{totalOrders}</p>
-                            </div>
-                        </div>
-                        <div className="bg-white p-6 rounded-lg shadow-md flex items-center">
-                            <DollarSign className="h-8 w-8 text-yellow-600 mr-3" />
-                            <div>
-                                <p className="text-sm text-gray-600">Tổng doanh thu</p>
-                                <p className="text-2xl font-semibold text-gray-800">{totalRevenue.toLocaleString()}₫</p>
-                            </div>
+                    </div>
+                    <div className="bg-white p-6 rounded-lg shadow-md flex items-center">
+                        <DollarSign className="h-8 w-8 text-yellow-600 mr-3" />
+                        <div>
+                            <p className="text-sm text-gray-600">Tổng doanh thu</p>
+                            <p className="text-2xl font-semibold text-gray-800">{totalRevenue.toLocaleString()}₫</p>
                         </div>
                     </div>
                 </div>

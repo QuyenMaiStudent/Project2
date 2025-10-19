@@ -63,35 +63,6 @@ export default function SettingsLayout({ children }: PropsWithChildren) {
                                 </Link>
                             </Button>
                         ))}
-
-                        {/* Quick links in sidebar (same style as other nav items) */}
-                        <div className="mt-4 border-t pt-3">
-                            <Button size="sm" variant="ghost" asChild className="w-full justify-start">
-                                <Link href="/products" prefetch>
-                                    <Home className="mr-2 h-4 w-4 text-blue-600" />
-                                    Sản phẩm
-                                </Link>
-                            </Button>
-
-                            <Button size="sm" variant="ghost" asChild className="w-full justify-start">
-                                <Link href="/cart" prefetch>
-                                    <ShoppingCart className="mr-2 h-4 w-4 text-green-600" />
-                                    Giỏ hàng
-                                    {cartCount > 0 && (
-                                        <span className='ml-2 inline-flex items-center justify-center px-2 py-0.5 font-medium leading-none text-white bg-red-600 rounded-full'>
-                                            {cartCount}
-                                        </span>
-                                    )}
-                                </Link>
-                            </Button>
-
-                            <Button size="sm" variant="ghost" asChild className="w-full justify-start">
-                                <Link href="/shipping-addresses" prefetch>
-                                    <MapPin className="mr-2 h-4 w-4 text-orange-600" />
-                                    Địa chỉ giao hàng
-                                </Link>
-                            </Button>
-                        </div>
                     </nav>
                 </aside>
 
