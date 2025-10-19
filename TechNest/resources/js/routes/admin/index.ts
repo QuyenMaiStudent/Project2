@@ -1,6 +1,7 @@
 import { queryParams, type RouteQueryOptions, type RouteDefinition, type RouteFormDefinition } from './../../wayfinder'
 import products from './products'
 import categories from './categories'
+import brands from './brands'
 /**
 * @see \App\Http\Controllers\Admin\AdminController::dashboard
  * @see app/Http/Controllers/Admin/AdminController.php:15
@@ -83,6 +84,7 @@ const admin = {
     dashboard: Object.assign(dashboard, dashboard),
 products: Object.assign(products, products),
 categories: Object.assign(categories, categories),
+brands: Object.assign(brands, brands),
 }
 
 export default admin
