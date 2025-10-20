@@ -1,58 +1,108 @@
-import { Head, Link, useForm, usePage } from '@inertiajs/react';
+import { Head, Link, router, usePage } from '@inertiajs/react';
 import React, { useEffect, useState } from 'react';
 import AppLayout from '@/layouts/app-layout';
 
 function Edit() {
     const { brand, breadcrumbs }: any = usePage().props;
-    const { data, setData, put, processing, errors } = useForm({
-        name: brand?.name || '',
-        logo: null,
-        logo_url: '',
-        description: brand?.description || '',
-    });
-
+    
+    // State cho form
+    const [name, setName] = useState('');
+    const [description, setDescription] = useState('');
+    const [logo, setLogo] = useState<File | null>(null);
+    const [logoUrl, setLogoUrl] = useState('');
     const [useUrl, setUseUrl] = useState<boolean>(false);
     const [preview, setPreview] = useState<string | null>(null);
+    const [processing, setProcessing] = useState(false);
+    const [errors, setErrors] = useState<Record<string, string>>({});
 
+    // Đồng bộ state với prop brand khi brand ready
     useEffect(() => {
-        // prefer file preview, otherwise logo_url, otherwise existing brand.logo
-        if (data.logo && typeof data.logo !== 'string') {
-            const objUrl = URL.createObjectURL(data.logo as File);
-            setPreview(objUrl);
-            return () => URL.revokeObjectURL(objUrl);
+        if (!brand) return;
+        
+        setName(brand.name || '');
+        setDescription(brand.description || '');
+        
+        // Nếu logo là URL
+        if (brand.logo && String(brand.logo).startsWith('http')) {
+            setLogoUrl(brand.logo);
+            setUseUrl(true);
+            setPreview(brand.logo);
+        } 
+        // Nếu logo là file
+        else if (brand.logo) {
+            setLogoUrl('');
+            setUseUrl(false);
+            setPreview(`/storage/${brand.logo}`);
+        } 
+        // Không có logo
+        else {
+            setLogoUrl('');
+            setUseUrl(false);
+            setPreview(null);
         }
-        if (data.logo_url) {
-            setPreview(data.logo_url);
-            return;
-        }
-        if (brand?.logo) {
-            setPreview(brand.logo.startsWith('http') ? brand.logo : `/storage/${brand.logo}`);
-            return;
-        }
-        setPreview(null);
-    }, [data.logo, data.logo_url, brand]);
+    }, [brand]);
 
+    // Cập nhật preview khi chọn file
     const onFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-        const file = e.target.files?.[0] ?? null;
-        setData('logo', file);
-        setData('logo_url', '');
-        setUseUrl(false);
+        const file = e.target.files?.[0] || null;
+        if (file) {
+            setLogo(file);
+            setLogoUrl('');
+            setUseUrl(false);
+            setPreview(URL.createObjectURL(file));
+        }
     };
 
+    // Cập nhật preview khi nhập URL
     const onUrlChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const url = e.target.value;
-        setData('logo_url', url);
-        setData('logo', null);
+        setLogoUrl(url);
+        setLogo(null);
         setUseUrl(true);
+        
+        if (url) {
+            setPreview(url);
+        } else {
+            setPreview(null);
+        }
     };
 
-    const submit = (e: React.FormEvent) => {
+    // Xử lý submit form
+    const handleSubmit = (e: React.FormEvent) => {
         e.preventDefault();
-        put(`/admin/brands/${brand.id}`, {
-            forceFormData: true,
+        setProcessing(true);
+        setErrors({});
+        
+        // Tạo FormData để gửi cả file và text
+        const formData = new FormData();
+        formData.append('_method', 'PUT'); // Quan trọng: Laravel method spoofing
+        
+        // Chỉ gửi các trường đã thay đổi
+        if (name !== brand.name) {
+            formData.append('name', name);
+        }
+        
+        if (description !== brand.description) {
+            formData.append('description', description);
+        }
+        
+        // Xử lý logo - chọn file hoặc URL
+        if (logo) {
+            formData.append('logo', logo);
+        } else if (logoUrl && logoUrl !== brand.logo) {
+            formData.append('logo_url', logoUrl);
+        }
+        
+        // Gửi request POST (với _method=PUT) - không dùng PUT trực tiếp với file
+        router.post(`/admin/brands/${brand.id}`, formData, {
             onSuccess: () => {
-                // optional post-update action
+                setProcessing(false);
             },
+            onError: (errors) => {
+                setProcessing(false);
+                setErrors(errors);
+            },
+            preserveScroll: true,
         });
     };
 
@@ -72,12 +122,12 @@ function Edit() {
                         <Link href="/admin/brands" className="text-sm text-gray-600">Quay lại</Link>
                     </div>
 
-                    <form onSubmit={submit} encType="multipart/form-data">
+                    <form onSubmit={handleSubmit}>
                         <div className="mb-4">
                             <label className="block text-sm mb-1">Tên thương hiệu</label>
                             <input
-                                value={data.name}
-                                onChange={(e) => setData('name', e.target.value)}
+                                value={name}
+                                onChange={(e) => setName(e.target.value)}
                                 className="w-full border rounded p-2"
                                 type="text"
                             />
@@ -93,7 +143,7 @@ function Edit() {
                                         type="radio"
                                         name="logo_choice"
                                         checked={!useUrl}
-                                        onChange={() => { setUseUrl(false); setData('logo_url', ''); }}
+                                        onChange={() => { setUseUrl(false); setLogoUrl(''); }}
                                         className="hidden"
                                     />
                                     Upload file
@@ -103,7 +153,7 @@ function Edit() {
                                         type="radio"
                                         name="logo_choice"
                                         checked={useUrl}
-                                        onChange={() => { setUseUrl(true); setData('logo', null); }}
+                                        onChange={() => { setUseUrl(true); setLogo(null); }}
                                         className="hidden"
                                     />
                                     Dùng URL
@@ -119,7 +169,7 @@ function Edit() {
                                 />
                             ) : (
                                 <input
-                                    value={data.logo_url}
+                                    value={logoUrl}
                                     onChange={onUrlChange}
                                     className="w-full border rounded p-2"
                                     type="url"
@@ -129,11 +179,9 @@ function Edit() {
                             {errors.logo && <div className="text-red-600 text-sm mt-1">{errors.logo}</div>}
                             {errors.logo_url && <div className="text-red-600 text-sm mt-1">{errors.logo_url}</div>}
 
-                            {/* Preview box */}
                             <div className="mt-3">
                                 <div className="w-48 h-24 border rounded overflow-hidden bg-gray-50 flex items-center justify-center">
                                     {preview ? (
-                                        // eslint-disable-next-line @next/next/no-img-element
                                         <img src={preview} alt="Logo preview" className="max-h-full object-contain" />
                                     ) : (
                                         <span className="text-xs text-gray-500">Preview</span>
@@ -146,8 +194,8 @@ function Edit() {
                         <div className="mb-4">
                             <label className="block text-sm mb-1">Mô tả</label>
                             <textarea
-                                value={data.description}
-                                onChange={(e) => setData('description', e.target.value)}
+                                value={description}
+                                onChange={(e) => setDescription(e.target.value)}
                                 className="w-full border rounded p-2"
                                 rows={4}
                             />
@@ -160,7 +208,7 @@ function Edit() {
                                 className="bg-yellow-500 text-black px-4 py-2 rounded disabled:opacity-60"
                                 disabled={processing}
                             >
-                                Cập nhật
+                                {processing ? 'Đang lưu...' : 'Cập nhật'}
                             </button>
                         </div>
                     </form>

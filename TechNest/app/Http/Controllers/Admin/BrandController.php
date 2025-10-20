@@ -69,7 +69,13 @@ class BrandController extends Controller
         $brand = Brand::findOrFail($id);
 
         return Inertia::render('Admin/Brands/Edit', [
-            'brand' => $brand,
+            'brand' => [
+                'id' => $brand->id,
+                'name' => $brand->name,
+                'logo' => $brand->logo,
+                'description' => $brand->description,
+                // Thêm các trường khác nếu cần
+            ],
             'breadcrumbs' => [
                 ['title' => 'Trang quản trị', 'href' => '/admin/dashboard'],
                 ['title' => 'Quản lý thương hiệu', 'href' => '/admin/brands'],
@@ -82,50 +88,51 @@ class BrandController extends Controller
     {
         $brand = Brand::findOrFail($id);
 
-        // validate only fields that are present
-        $rules = [
-            'name' => ['sometimes', 'required', 'max:255', Rule::unique('brands', 'name')->ignore($brand->id)],
-            'logo' => 'sometimes|nullable|image|max:2048',
-            'logo_url' => 'sometimes|nullable|url',
-            'description' => 'sometimes|nullable|string',
-        ];
+        // Chỉ validate khi có trong request (không bắt buộc)
+        $validated = $request->validate([
+            'name' => ['nullable', 'string', 'max:255', Rule::unique('brands')->ignore($brand->id)],
+            'logo' => 'nullable|image|max:2048',
+            'logo_url' => 'nullable|url',
+            'description' => 'nullable|string',
+        ]);
 
-        $validated = $request->validate($rules);
+        // Tạo mảng để lưu các giá trị sẽ cập nhật
+        $updateData = [];
 
-        $data = [];
-
-        // handle uploaded file (highest priority)
-        if ($request->hasFile('logo')) {
-            $path = $request->file('logo')->store('brands', 'public');
-
-            // delete old local file if existed
-            if ($brand->logo && !str_starts_with($brand->logo, 'http') && Storage::disk('public')->exists($brand->logo)) {
-                Storage::disk('public')->delete($brand->logo);
-            }
-
-            $data['logo'] = $path;
-        } elseif ($request->filled('logo_url')) {
-            // switching to external URL
-            if ($brand->logo && !str_starts_with($brand->logo, 'http') && Storage::disk('public')->exists($brand->logo)) {
-                Storage::disk('public')->delete($brand->logo);
-            }
-
-            $data['logo'] = $request->input('logo_url');
+        // Xử lý tên nếu được cung cấp
+        if ($request->has('name') && !empty($request->name)) {
+            $updateData['name'] = $request->name;
         }
 
-        // name (if sent)
-        if ($request->has('name')) {
-            // validated['name'] exists because of validation rule
-            $data['name'] = $validated['name'];
-        }
-
-        // description (if sent) — allow clearing by sending empty string
+        // Xử lý mô tả - cho phép xóa (empty string)
         if ($request->has('description')) {
-            $data['description'] = $validated['description'] ?? null;
+            $updateData['description'] = $request->description;
         }
 
-        if (!empty($data)) {
-            $brand->update($data);
+        // Xử lý logo - file upload ưu tiên
+        if ($request->hasFile('logo')) {
+            // Xóa file logo cũ nếu tồn tại và là file local
+            if ($brand->logo && !str_starts_with($brand->logo, 'http') && Storage::disk('public')->exists($brand->logo)) {
+                Storage::disk('public')->delete($brand->logo);
+            }
+            
+            // Lưu file mới
+            $path = $request->file('logo')->store('brands', 'public');
+            $updateData['logo'] = $path;
+        } 
+        // Xử lý logo_url nếu được cung cấp và không có file upload
+        elseif ($request->filled('logo_url')) {
+            // Xóa file logo cũ nếu tồn tại và là file local
+            if ($brand->logo && !str_starts_with($brand->logo, 'http') && Storage::disk('public')->exists($brand->logo)) {
+                Storage::disk('public')->delete($brand->logo);
+            }
+            
+            $updateData['logo'] = $request->logo_url;
+        }
+
+        // Cập nhật nếu có dữ liệu
+        if (!empty($updateData)) {
+            $brand->update($updateData);
         }
 
         return redirect()->route('admin.brands.index')->with('success', 'Cập nhật thành công!');
