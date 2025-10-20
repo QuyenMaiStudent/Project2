@@ -134,7 +134,7 @@ add.post = (options?: RouteQueryOptions): RouteDefinition<'post'> => ({
     add.form = addForm
 /**
 * @see \App\Http\Controllers\Customer\CartController::update
- * @see app/Http/Controllers/Customer/CartController.php:116
+ * @see app/Http/Controllers/Customer/CartController.php:137
  * @route '/cart/update/{id}'
  */
 export const update = (args: { id: string | number } | [id: string | number ] | string | number, options?: RouteQueryOptions): RouteDefinition<'post'> => ({
@@ -149,7 +149,7 @@ update.definition = {
 
 /**
 * @see \App\Http\Controllers\Customer\CartController::update
- * @see app/Http/Controllers/Customer/CartController.php:116
+ * @see app/Http/Controllers/Customer/CartController.php:137
  * @route '/cart/update/{id}'
  */
 update.url = (args: { id: string | number } | [id: string | number ] | string | number, options?: RouteQueryOptions) => {
@@ -177,7 +177,7 @@ update.url = (args: { id: string | number } | [id: string | number ] | string | 
 
 /**
 * @see \App\Http\Controllers\Customer\CartController::update
- * @see app/Http/Controllers/Customer/CartController.php:116
+ * @see app/Http/Controllers/Customer/CartController.php:137
  * @route '/cart/update/{id}'
  */
 update.post = (args: { id: string | number } | [id: string | number ] | string | number, options?: RouteQueryOptions): RouteDefinition<'post'> => ({
@@ -187,7 +187,7 @@ update.post = (args: { id: string | number } | [id: string | number ] | string |
 
     /**
 * @see \App\Http\Controllers\Customer\CartController::update
- * @see app/Http/Controllers/Customer/CartController.php:116
+ * @see app/Http/Controllers/Customer/CartController.php:137
  * @route '/cart/update/{id}'
  */
     const updateForm = (args: { id: string | number } | [id: string | number ] | string | number, options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
@@ -197,7 +197,7 @@ update.post = (args: { id: string | number } | [id: string | number ] | string |
 
             /**
 * @see \App\Http\Controllers\Customer\CartController::update
- * @see app/Http/Controllers/Customer/CartController.php:116
+ * @see app/Http/Controllers/Customer/CartController.php:137
  * @route '/cart/update/{id}'
  */
         updateForm.post = (args: { id: string | number } | [id: string | number ] | string | number, options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
@@ -208,7 +208,7 @@ update.post = (args: { id: string | number } | [id: string | number ] | string |
     update.form = updateForm
 /**
 * @see \App\Http\Controllers\Customer\CartController::destroy
- * @see app/Http/Controllers/Customer/CartController.php:124
+ * @see app/Http/Controllers/Customer/CartController.php:145
  * @route '/cart/delete/{id}'
  */
 export const destroy = (args: { id: string | number } | [id: string | number ] | string | number, options?: RouteQueryOptions): RouteDefinition<'post'> => ({
@@ -223,7 +223,7 @@ destroy.definition = {
 
 /**
 * @see \App\Http\Controllers\Customer\CartController::destroy
- * @see app/Http/Controllers/Customer/CartController.php:124
+ * @see app/Http/Controllers/Customer/CartController.php:145
  * @route '/cart/delete/{id}'
  */
 destroy.url = (args: { id: string | number } | [id: string | number ] | string | number, options?: RouteQueryOptions) => {
@@ -251,7 +251,7 @@ destroy.url = (args: { id: string | number } | [id: string | number ] | string |
 
 /**
 * @see \App\Http\Controllers\Customer\CartController::destroy
- * @see app/Http/Controllers/Customer/CartController.php:124
+ * @see app/Http/Controllers/Customer/CartController.php:145
  * @route '/cart/delete/{id}'
  */
 destroy.post = (args: { id: string | number } | [id: string | number ] | string | number, options?: RouteQueryOptions): RouteDefinition<'post'> => ({
@@ -261,7 +261,7 @@ destroy.post = (args: { id: string | number } | [id: string | number ] | string 
 
     /**
 * @see \App\Http\Controllers\Customer\CartController::destroy
- * @see app/Http/Controllers/Customer/CartController.php:124
+ * @see app/Http/Controllers/Customer/CartController.php:145
  * @route '/cart/delete/{id}'
  */
     const destroyForm = (args: { id: string | number } | [id: string | number ] | string | number, options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
@@ -271,7 +271,7 @@ destroy.post = (args: { id: string | number } | [id: string | number ] | string 
 
             /**
 * @see \App\Http\Controllers\Customer\CartController::destroy
- * @see app/Http/Controllers/Customer/CartController.php:124
+ * @see app/Http/Controllers/Customer/CartController.php:145
  * @route '/cart/delete/{id}'
  */
         destroyForm.post = (args: { id: string | number } | [id: string | number ] | string | number, options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({

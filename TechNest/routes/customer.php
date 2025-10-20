@@ -7,6 +7,8 @@ use App\Http\Controllers\Customer\ShippingAddressController;
 use Illuminate\Support\Facades\Route;
 
 Route::middleware(['auth', 'customer'])->group(function () {
+    // Thêm route dashboard cho customer
+    Route::get('customer/dashboard', [CustomerController::class, 'dashboard'])->name('customer.dashboard');
 
     Route::get('/cart', [CartController::class, 'index'])->name('cart.index');
     Route::post('/cart/add', [CartController::class, 'add'])->name('cart.add');
