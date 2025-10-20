@@ -26,7 +26,7 @@ export default function Index() {
   const categories = page.categories ?? {};
   const filters = page.filters ?? {};
   const breadcrumbs = [
-    { title: 'Bảng điều khiển quản trị', href: '/admin/dashboard' },
+    { title: 'Trang quản trị', href: '/admin/dashboard' },
     { title: 'Khuyến mãi', href: '/admin/promotions' },
   ];
 

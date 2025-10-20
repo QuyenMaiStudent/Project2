@@ -57,6 +57,11 @@ export function AppSidebar() {
                 href: '/admin/promotions',
                 icon: DollarSign,
             },
+            {
+                title: 'Quản lý thương hiệu',
+                href: '/admin/brands',
+                icon: Tag,
+            }
         ];
 
         if (user?.isSuperAdmin) {

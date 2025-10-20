@@ -5,6 +5,7 @@ use App\Http\Controllers\Admin\AdminProductController;
 use App\Http\Controllers\Admin\CategoryController;
 use App\Http\Controllers\Admin\ManageUserController;
 use App\Http\Controllers\Admin\AdminPromotionController;
+use App\Http\Controllers\Admin\BrandController;
 use Illuminate\Support\Facades\Route;
 
 Route::middleware(['auth', 'admin'])->group(function () {
@@ -51,5 +52,13 @@ Route::middleware(['auth', 'admin'])->group(function () {
     Route::post('/admin/promotions/{id}/toggle-status', [AdminPromotionController::class, 'toggleStatus'])->name('admin.promotions.toggleStatus');
     Route::post('/admin/promotions/{id}/assign-targets', [AdminPromotionController::class, 'assignTargets'])->name('admin.promotions.assignTargets');
     Route::get('/admin/promotions/{id}/usage', [AdminPromotionController::class, 'usageStats'])->name('admin.promotions.usage');
+
+    // Brand
+    Route::get('/admin/brands', [BrandController::class, 'index'])->name('admin.brands.index');
+    Route::get('/admin/brands/create', [BrandController::class, 'create'])->name('admin.brands.create');
+    Route::post('/admin/brands', [BrandController::class, 'store'])->name('admin.brands.store');
+    Route::get('/admin/brands/{id}/edit', [BrandController::class, 'edit'])->name('admin.brands.edit');
+    Route::put('/admin/brands/{id}', [BrandController::class, 'update'])->name('admin.brands.update');
+    Route::delete('/admin/brands/{id}', [BrandController::class, 'destroy'])->name('admin.brands.destroy');
 });
 ?>
