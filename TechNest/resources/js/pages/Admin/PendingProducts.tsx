@@ -19,7 +19,7 @@ interface Props {
 }
 
 export default function PendingProducts({ products }: Props) {
-    const { flash } = usePage().props as any;
+    const { flash, errors } = usePage().props as any;
 
     const handleApprove = (productId: number) => {
         if (confirm('Bạn có chắc muốn duyệt sản phẩm này?')) {
@@ -36,18 +36,28 @@ export default function PendingProducts({ products }: Props) {
     return (
         <AppLayout
             breadcrumbs={[
-                { title: 'Admin Dashboard', href: '/admin/dashboard' },
+                { title: 'Trang quản trị', href: '/admin/dashboard' },
                 { title: 'Sản phẩm chờ duyệt', href: '/admin/products/pending' },
             ]}
         >
             <Head title="Sản phẩm chờ duyệt" />
             <div className="max-w-6xl mx-auto p-6">
                 <h1 className="text-2xl font-bold mb-6">Sản phẩm chờ duyệt</h1>
+                {/* Thông báo thành công/lỗi */}
                 {flash?.success && (
                     <div className="mb-4 p-3 bg-green-100 text-green-800 rounded">{flash.success}</div>
                 )}
                 {flash?.error && (
                     <div className="mb-4 p-3 bg-red-100 text-red-800 rounded">{flash.error}</div>
+                )}
+                {errors && Object.keys(errors).length > 0 && (
+                    <div className="mb-4 p-3 bg-red-100 text-red-800 rounded">
+                        <ul className="list-disc list-inside">
+                            {Object.values(errors).map((err, idx) => (
+                                <li key={idx}>{String(err)}</li>
+                            ))}
+                        </ul>
+                    </div>
                 )}
                 <div className="bg-white rounded-lg shadow overflow-hidden">
                     <table className="w-full">
@@ -60,7 +70,7 @@ export default function PendingProducts({ products }: Props) {
                                     Thương hiệu
                                 </th>
                                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                    Seller
+                                    Người bán
                                 </th>
                                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                                     Giá
@@ -133,7 +143,7 @@ export default function PendingProducts({ products }: Props) {
                 {/* Pagination */}
                 {products.links && (
                     <div className="mt-4 flex justify-center">
-                        {/* Component pagination tương tự như các trang khác */}
+                        {/* Component phân trang nếu có */}
                     </div>
                 )}
             </div>

@@ -2,6 +2,7 @@
 
 namespace App\Http\Requests\Auth;
 
+use App\Models\User;
 use Illuminate\Auth\Events\Lockout;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Support\Facades\Auth;
@@ -39,6 +40,14 @@ class LoginRequest extends FormRequest
     public function authenticate(): void
     {
         $this->ensureIsNotRateLimited();
+
+        // Nếu tài khoản đã tồn tại nhưng bị khóa thì chặn login và thông báo tiếng Việt
+        $user = User::where('email', $this->input('email'))->first();
+        if ($user && ! $user->is_active) {
+            throw ValidationException::withMessages([
+                'email' => 'Tài khoản đã bị khóa. Vui lòng liên hệ quản trị để mở khóa.',
+            ]);
+        }
 
         if (! Auth::attempt($this->only('email', 'password'), $this->boolean('remember'))) {
             RateLimiter::hit($this->throttleKey());

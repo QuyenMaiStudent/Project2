@@ -33,7 +33,6 @@ class PasswordController extends Controller
                 'required',  
                 'confirmed',
                 PasswordRule::min(8)->mixedCase()->numbers()->symbols(),
-                'different:current_password',
                 new NotOldPassword(Auth::user()),
             ],
         ]);

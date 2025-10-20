@@ -10,10 +10,11 @@ class ProductDetailController extends Controller
 {
     public function __invoke($id)
     {
+        // load variant image relation so frontend có url ảnh cho mỗi variant
         $product = Product::with([
             'brand',
             'images' => fn($q) => $q,
-            'variants',
+            'variants.image', // eager load image relation on variants
             'specs',
         ])->findOrFail($id);
 
@@ -33,8 +34,9 @@ class ProductDetailController extends Controller
                 'variants' => $product->variants->map(fn($v) => [
                     'id' => $v->id,
                     'variant_name' => $v->variant_name,
-                    'price' => $product->price + ($v->additional_price ?? 0), // tính giá cuối cùng
+                    'price' => $product->price + ($v->additional_price ?? 0),
                     'stock' => $v->stock,
+                    'image_url' => optional($v->image)->url ?? null, // thêm trường image_url
                 ]),
                 'specs' => $product->specs->map(fn($s) => [
                     'key' => $s->key,

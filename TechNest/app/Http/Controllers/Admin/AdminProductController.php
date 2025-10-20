@@ -48,7 +48,7 @@ class AdminProductController extends Controller
             return back()->with('error', 'Chỉ có thể duyệt sản phẩm đang chờ duyệt.');
         }
         $product->update(['status' => 'approved']);
-        return back()->with('success', 'Sản phẩm đã được duyệt.');
+        return back()->with('success', 'Sản phẩm đã được duyệt thành công.');
     }
 
     //Từ chối sản phẩm
@@ -91,6 +91,8 @@ class AdminProductController extends Controller
         $request->validate([
             'categories' => 'array',
             'categories.*' => 'exists:categories,id',
+        ], [
+            'categories.*.exists' => 'Danh mục không hợp lệ.',
         ]);
         $product->categories()->sync($request->categories ?? []);
         return back()->with('success', 'Đã cập nhật danh mục cho sản phẩm!');

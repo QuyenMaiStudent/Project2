@@ -21,7 +21,7 @@ class CheckSellerRole
         }
 
         if (!Auth::user()->isSeller()) {
-            return redirect()->route('dashboard')->with('error', 'Chỉ seller mới được thêm sản phẩm');
+            return redirect()->route('home')->with('error', 'Chỉ seller mới được thêm sản phẩm');
         }
 
         return $next($request);

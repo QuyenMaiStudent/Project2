@@ -164,6 +164,14 @@ class User extends Authenticatable implements MustVerifyEmail
         return $this->roles()->where('name', 'admin')->exists();
     }
 
+    public function isSuperAdmin()
+    {
+        if ($this->role && $this->role->name === 'superadmin') {
+            return true;
+        }
+        return $this->roles()->where('name', 'superadmin')->exists();
+    }
+
     public function isCustomer()
     {
         if ($this->role && $this->role->name === 'customer') {
@@ -178,5 +186,10 @@ class User extends Authenticatable implements MustVerifyEmail
             return true;
         }
         return $this->roles()->where('name', $roleName)->exists();
+    }
+
+    public function sellerPromotions()
+    {
+        return $this->hasMany(Promotion::class, 'seller_id');
     }
 }

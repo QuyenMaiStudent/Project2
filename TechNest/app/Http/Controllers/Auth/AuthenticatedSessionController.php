@@ -42,8 +42,12 @@ class AuthenticatedSessionController extends Controller
             return redirect()->intended(route('admin.dashboard'));
         };
 
+        if ($user->isSuperAdmin()) {
+            return redirect()->intended(route('admin.dashboard'));
+        };
+
         if ($user->isCustomer()) {
-            return redirect()->intended(route('customer.dashboard'));
+            return redirect()->intended(route('customer.dashboard')); // Thay đổi về customer.dashboard
         };
 
         return redirect()->intended(route('dashboard', absolute: false));
@@ -59,6 +63,6 @@ class AuthenticatedSessionController extends Controller
         $request->session()->invalidate();
         $request->session()->regenerateToken();
 
-        return redirect('/');
+        return redirect('/login');
     }
 }

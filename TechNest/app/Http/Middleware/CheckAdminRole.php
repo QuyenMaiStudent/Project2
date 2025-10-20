@@ -20,8 +20,8 @@ class CheckAdminRole
             return redirect()->route('login');
         }
 
-        if (!Auth::user()->isAdmin()) {
-            return redirect()->route('dashboard')->with('error', 'Chỉ admin mới được truy cập trang này.');
+        if (! (Auth::user()->isAdmin() || Auth::user()->isSuperAdmin()) ) {
+            return redirect()->route('home')->with('error', 'Chỉ admin hoặc superadmin mới được truy cập trang này.');
         }
 
         return $next($request);

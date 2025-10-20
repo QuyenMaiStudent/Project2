@@ -1,8 +1,9 @@
 import { queryParams, type RouteQueryOptions, type RouteDefinition, type RouteFormDefinition } from './../../wayfinder'
 import products from './products'
+import promotions from './promotions'
 /**
 * @see \App\Http\Controllers\Seller\SellerController::dashboard
- * @see app/Http/Controllers/Seller/SellerController.php:12
+ * @see app/Http/Controllers/Seller/SellerController.php:13
  * @route '/seller/dashboard'
  */
 export const dashboard = (options?: RouteQueryOptions): RouteDefinition<'get'> => ({
@@ -17,7 +18,7 @@ dashboard.definition = {
 
 /**
 * @see \App\Http\Controllers\Seller\SellerController::dashboard
- * @see app/Http/Controllers/Seller/SellerController.php:12
+ * @see app/Http/Controllers/Seller/SellerController.php:13
  * @route '/seller/dashboard'
  */
 dashboard.url = (options?: RouteQueryOptions) => {
@@ -26,7 +27,7 @@ dashboard.url = (options?: RouteQueryOptions) => {
 
 /**
 * @see \App\Http\Controllers\Seller\SellerController::dashboard
- * @see app/Http/Controllers/Seller/SellerController.php:12
+ * @see app/Http/Controllers/Seller/SellerController.php:13
  * @route '/seller/dashboard'
  */
 dashboard.get = (options?: RouteQueryOptions): RouteDefinition<'get'> => ({
@@ -35,7 +36,7 @@ dashboard.get = (options?: RouteQueryOptions): RouteDefinition<'get'> => ({
 })
 /**
 * @see \App\Http\Controllers\Seller\SellerController::dashboard
- * @see app/Http/Controllers/Seller/SellerController.php:12
+ * @see app/Http/Controllers/Seller/SellerController.php:13
  * @route '/seller/dashboard'
  */
 dashboard.head = (options?: RouteQueryOptions): RouteDefinition<'head'> => ({
@@ -45,7 +46,7 @@ dashboard.head = (options?: RouteQueryOptions): RouteDefinition<'head'> => ({
 
     /**
 * @see \App\Http\Controllers\Seller\SellerController::dashboard
- * @see app/Http/Controllers/Seller/SellerController.php:12
+ * @see app/Http/Controllers/Seller/SellerController.php:13
  * @route '/seller/dashboard'
  */
     const dashboardForm = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
@@ -55,7 +56,7 @@ dashboard.head = (options?: RouteQueryOptions): RouteDefinition<'head'> => ({
 
             /**
 * @see \App\Http\Controllers\Seller\SellerController::dashboard
- * @see app/Http/Controllers/Seller/SellerController.php:12
+ * @see app/Http/Controllers/Seller/SellerController.php:13
  * @route '/seller/dashboard'
  */
         dashboardForm.get = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
@@ -64,7 +65,7 @@ dashboard.head = (options?: RouteQueryOptions): RouteDefinition<'head'> => ({
         })
             /**
 * @see \App\Http\Controllers\Seller\SellerController::dashboard
- * @see app/Http/Controllers/Seller/SellerController.php:12
+ * @see app/Http/Controllers/Seller/SellerController.php:13
  * @route '/seller/dashboard'
  */
         dashboardForm.head = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
@@ -81,6 +82,7 @@ dashboard.head = (options?: RouteQueryOptions): RouteDefinition<'head'> => ({
 const seller = {
     dashboard: Object.assign(dashboard, dashboard),
 products: Object.assign(products, products),
+promotions: Object.assign(promotions, promotions),
 }
 
 export default seller

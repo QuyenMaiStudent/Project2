@@ -82,7 +82,7 @@ export default function Login({ status, canResetPassword }: LoginProps) {
                         <div className="mt-4 text-center">
                             <a
                                 href="/auth/google"
-                                className="bg-[#0AC1EF] text-white px-4 py-2 rounded hover:bg-[#0999c2] flex items-center justify-center mt-4"
+                                className="bg-black text-white px-4 py-2 rounded flex items-center justify-center mt-4"
                             >
                                 {/* Google SVG icon */}
                                 <svg className="h-5 w-5 mr-2" viewBox="0 0 48 48">

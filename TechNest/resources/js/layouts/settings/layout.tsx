@@ -5,8 +5,9 @@ import { cn } from '@/lib/utils';
 import { edit as editAppearance } from '@/routes/appearance';
 import { edit as editPassword } from '@/routes/password';
 import { edit } from '@/routes/profile';
-import { type NavItem } from '@/types';
-import { Link } from '@inertiajs/react';
+import { SharedData, type NavItem } from '@/types';
+import { Link, usePage } from '@inertiajs/react';
+import { Home, MapPin, ShoppingCart } from 'lucide-react';
 import { type PropsWithChildren } from 'react';
 
 const sidebarNavItems: NavItem[] = [
@@ -34,6 +35,10 @@ export default function SettingsLayout({ children }: PropsWithChildren) {
     }
 
     const currentPath = window.location.pathname;
+
+    //Lấy cartCount từ Inertia shared props
+    const { props } = usePage<SharedData>();
+    const cartCount = (props.cartCount ?? 0) as number;
 
     return (
         <div className="px-4 py-6">
@@ -67,6 +72,8 @@ export default function SettingsLayout({ children }: PropsWithChildren) {
                     <section className="max-w-xl space-y-12">{children}</section>
                 </div>
             </div>
+
+            {/* quick links moved into sidebar for consistent formatting */}
         </div>
     );
 }

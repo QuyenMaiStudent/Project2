@@ -2,11 +2,13 @@
 
 use App\Http\Controllers\Customer\CartController;
 use App\Http\Controllers\Customer\CustomerController;
+use App\Http\Controllers\Customer\OrderController;
 use App\Http\Controllers\Customer\ShippingAddressController;
 use Illuminate\Support\Facades\Route;
 
 Route::middleware(['auth', 'customer'])->group(function () {
-    Route::get('/customer/dashboard', [CustomerController::class, 'dashboard'])->name('customer.dashboard');
+    // Thêm route dashboard cho customer
+    Route::get('customer/dashboard', [CustomerController::class, 'dashboard'])->name('customer.dashboard');
 
     Route::get('/cart', [CartController::class, 'index'])->name('cart.index');
     Route::post('/cart/add', [CartController::class, 'add'])->name('cart.add');
@@ -17,4 +19,8 @@ Route::middleware(['auth', 'customer'])->group(function () {
     Route::post('/shipping-addresses', [ShippingAddressController::class, 'store'])->name('shipping_addresses.store');
     Route::put('/shipping-addresses/{shippingAddress}', [ShippingAddressController::class, 'update'])->name('shipping_addresses.update');
     Route::delete('/shipping-addresses/{shippingAddress}', [ShippingAddressController::class, 'destroy'])->name('shipping_addresses.destroy');
+
+    // Order routes
+    Route::get('/checkout', [OrderController::class, 'checkout'])->name('customer.checkout');
+    Route::post('/checkout', [OrderController::class, 'placeOrder'])->name('customer.checkout.placeOrder');
 });

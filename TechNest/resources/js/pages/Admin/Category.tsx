@@ -22,7 +22,7 @@ interface Props {
 export default function CategoryPage({ categories }: Props) {
     const [form, setForm] = useState({ name: '', description: '', id: null as number | null });
     const [isEdit, setIsEdit] = useState(false);
-    const { flash } = usePage().props as any;
+    const { flash, errors } = usePage().props as any;
     const success = flash?.success;
     const error = flash?.error;
     const formRef = useRef<HTMLFormElement>(null);
@@ -55,16 +55,26 @@ export default function CategoryPage({ categories }: Props) {
     return (
         <AppLayout
             breadcrumbs={[
-                { title: 'Admin Dashboard', href: '/admin/dashboard' },
+                { title: 'Trang quản trị', href: '/admin/dashboard' },
                 { title: 'Quản lý danh mục', href: '/admin/categories' }
             ]}
         >
             <Head title="Quản lý danh mục" />
             <div className="max-w-3xl mx-auto p-6">
-                {/* Thông báo */}
+                {/* Thông báo thành công/lỗi */}
                 {(success || error) && (
                     <div className={`mb-4 px-4 py-3 rounded text-white font-semibold ${success ? 'bg-green-600' : 'bg-red-600'}`}>
                         {success || error}
+                    </div>
+                )}
+                {/* Hiển thị lỗi validate tiếng Việt */}
+                {errors && Object.keys(errors).length > 0 && (
+                    <div className="mb-4 p-3 bg-red-100 text-red-800 rounded">
+                        <ul className="list-disc list-inside">
+                            {Object.values(errors).map((err, idx) => (
+                                <li key={idx}>{String(err)}</li>
+                            ))}
+                        </ul>
                     </div>
                 )}
                 <h1 className="text-2xl font-bold mb-6">Quản lý danh mục sản phẩm</h1>

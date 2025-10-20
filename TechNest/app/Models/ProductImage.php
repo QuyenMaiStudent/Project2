@@ -9,7 +9,7 @@ class ProductImage extends Model
 {
     use HasFactory;
 
-    protected $fillable = ['product_id', 'url', 'alt_text', 'is_primary'];
+    protected $fillable = ['product_id', 'product_variant_id', 'url', 'alt_text', 'is_primary'];
 
     protected $casts = [
         'is_primary' => 'boolean',
