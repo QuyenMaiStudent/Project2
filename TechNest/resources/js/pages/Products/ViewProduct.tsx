@@ -126,7 +126,7 @@ export default function ViewProduct({ products }: Props) {
                                     </div>
                                     
                                     <p className="text-sm text-gray-600 mb-2">
-                                        Brand: {product.brand.name}
+                                        Brand: {product.brand?.name || 'N/A'}
                                     </p>
                                     
                                     <div className="flex justify-between items-center mb-4">

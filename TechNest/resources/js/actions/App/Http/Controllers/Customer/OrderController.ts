@@ -1,7 +1,7 @@
 import { queryParams, type RouteQueryOptions, type RouteDefinition, type RouteFormDefinition } from './../../../../../wayfinder'
 /**
 * @see \App\Http\Controllers\Customer\OrderController::checkout
- * @see app/Http/Controllers/Customer/OrderController.php:22
+ * @see app/Http/Controllers/Customer/OrderController.php:23
  * @route '/checkout'
  */
 export const checkout = (options?: RouteQueryOptions): RouteDefinition<'get'> => ({
@@ -16,7 +16,7 @@ checkout.definition = {
 
 /**
 * @see \App\Http\Controllers\Customer\OrderController::checkout
- * @see app/Http/Controllers/Customer/OrderController.php:22
+ * @see app/Http/Controllers/Customer/OrderController.php:23
  * @route '/checkout'
  */
 checkout.url = (options?: RouteQueryOptions) => {
@@ -25,7 +25,7 @@ checkout.url = (options?: RouteQueryOptions) => {
 
 /**
 * @see \App\Http\Controllers\Customer\OrderController::checkout
- * @see app/Http/Controllers/Customer/OrderController.php:22
+ * @see app/Http/Controllers/Customer/OrderController.php:23
  * @route '/checkout'
  */
 checkout.get = (options?: RouteQueryOptions): RouteDefinition<'get'> => ({
@@ -34,7 +34,7 @@ checkout.get = (options?: RouteQueryOptions): RouteDefinition<'get'> => ({
 })
 /**
 * @see \App\Http\Controllers\Customer\OrderController::checkout
- * @see app/Http/Controllers/Customer/OrderController.php:22
+ * @see app/Http/Controllers/Customer/OrderController.php:23
  * @route '/checkout'
  */
 checkout.head = (options?: RouteQueryOptions): RouteDefinition<'head'> => ({
@@ -44,7 +44,7 @@ checkout.head = (options?: RouteQueryOptions): RouteDefinition<'head'> => ({
 
     /**
 * @see \App\Http\Controllers\Customer\OrderController::checkout
- * @see app/Http/Controllers/Customer/OrderController.php:22
+ * @see app/Http/Controllers/Customer/OrderController.php:23
  * @route '/checkout'
  */
     const checkoutForm = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
@@ -54,7 +54,7 @@ checkout.head = (options?: RouteQueryOptions): RouteDefinition<'head'> => ({
 
             /**
 * @see \App\Http\Controllers\Customer\OrderController::checkout
- * @see app/Http/Controllers/Customer/OrderController.php:22
+ * @see app/Http/Controllers/Customer/OrderController.php:23
  * @route '/checkout'
  */
         checkoutForm.get = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
@@ -63,7 +63,7 @@ checkout.head = (options?: RouteQueryOptions): RouteDefinition<'head'> => ({
         })
             /**
 * @see \App\Http\Controllers\Customer\OrderController::checkout
- * @see app/Http/Controllers/Customer/OrderController.php:22
+ * @see app/Http/Controllers/Customer/OrderController.php:23
  * @route '/checkout'
  */
         checkoutForm.head = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
@@ -79,7 +79,7 @@ checkout.head = (options?: RouteQueryOptions): RouteDefinition<'head'> => ({
     checkout.form = checkoutForm
 /**
 * @see \App\Http\Controllers\Customer\OrderController::placeOrder
- * @see app/Http/Controllers/Customer/OrderController.php:151
+ * @see app/Http/Controllers/Customer/OrderController.php:218
  * @route '/checkout'
  */
 export const placeOrder = (options?: RouteQueryOptions): RouteDefinition<'post'> => ({
@@ -94,7 +94,7 @@ placeOrder.definition = {
 
 /**
 * @see \App\Http\Controllers\Customer\OrderController::placeOrder
- * @see app/Http/Controllers/Customer/OrderController.php:151
+ * @see app/Http/Controllers/Customer/OrderController.php:218
  * @route '/checkout'
  */
 placeOrder.url = (options?: RouteQueryOptions) => {
@@ -103,7 +103,7 @@ placeOrder.url = (options?: RouteQueryOptions) => {
 
 /**
 * @see \App\Http\Controllers\Customer\OrderController::placeOrder
- * @see app/Http/Controllers/Customer/OrderController.php:151
+ * @see app/Http/Controllers/Customer/OrderController.php:218
  * @route '/checkout'
  */
 placeOrder.post = (options?: RouteQueryOptions): RouteDefinition<'post'> => ({
@@ -113,7 +113,7 @@ placeOrder.post = (options?: RouteQueryOptions): RouteDefinition<'post'> => ({
 
     /**
 * @see \App\Http\Controllers\Customer\OrderController::placeOrder
- * @see app/Http/Controllers/Customer/OrderController.php:151
+ * @see app/Http/Controllers/Customer/OrderController.php:218
  * @route '/checkout'
  */
     const placeOrderForm = (options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
@@ -123,7 +123,7 @@ placeOrder.post = (options?: RouteQueryOptions): RouteDefinition<'post'> => ({
 
             /**
 * @see \App\Http\Controllers\Customer\OrderController::placeOrder
- * @see app/Http/Controllers/Customer/OrderController.php:151
+ * @see app/Http/Controllers/Customer/OrderController.php:218
  * @route '/checkout'
  */
         placeOrderForm.post = (options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
