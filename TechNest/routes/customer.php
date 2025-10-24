@@ -5,6 +5,7 @@ use App\Http\Controllers\Customer\CustomerController;
 use App\Http\Controllers\Customer\OrderController;
 use App\Http\Controllers\Customer\ShippingAddressController;
 use App\Http\Controllers\Customer\CheckoutController;
+use App\Http\Controllers\Customer\TransactionController;
 use Illuminate\Support\Facades\Route;
 
 Route::middleware(['auth', 'customer'])->group(function () {
@@ -31,4 +32,8 @@ Route::middleware(['auth', 'customer'])->group(function () {
     
     // Thêm route này để PaymentResult có thể redirect đúng
     Route::get('/customer/orders/{order}', [OrderController::class, 'show'])->name('customer.orders.detail');
+
+    //Transaction routes
+    Route::get('/transactions', [TransactionController::class, 'index'])->name('customer.transactions.index');
+    Route::get('transactions/{transaction}', [TransactionController::class, 'show'])->name('customer.transactions.show');
 });

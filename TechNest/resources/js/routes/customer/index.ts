@@ -1,6 +1,7 @@
 import { queryParams, type RouteQueryOptions, type RouteDefinition, type RouteFormDefinition } from './../../wayfinder'
 import checkoutFb28ab from './checkout'
 import orders from './orders'
+import transactions from './transactions'
 /**
 * @see \App\Http\Controllers\Customer\CustomerController::dashboard
  * @see app/Http/Controllers/Customer/CustomerController.php:10
@@ -161,6 +162,7 @@ const customer = {
     dashboard: Object.assign(dashboard, dashboard),
 checkout: Object.assign(checkout, checkoutFb28ab),
 orders: Object.assign(orders, orders),
+transactions: Object.assign(transactions, transactions),
 }
 
 export default customer

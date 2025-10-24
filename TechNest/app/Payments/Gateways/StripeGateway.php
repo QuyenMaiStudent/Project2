@@ -146,7 +146,7 @@ class StripeGateway implements PaymentGateway
 
             // Cập nhật payment
             Payment::where('order_id', $order->id)
-                ->where('provider', 'stripe')
+                ->whereRaw('LOWER(provider) = ?', ['stripe'])
                 ->update([
                     'status'           => 'succeeded',
                     'transaction_id'   => $pi,
