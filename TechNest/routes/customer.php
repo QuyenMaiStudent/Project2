@@ -27,6 +27,7 @@ Route::middleware(['auth', 'customer'])->group(function () {
 
     // Order routes
     Route::get('/orders', [OrderController::class, 'index'])->name('customer.orders.index');
+    Route::get('/orders/{order}', [OrderController::class, 'show'])->name('customer.orders.show');
     
     // Thêm route này để PaymentResult có thể redirect đúng
     Route::get('/customer/orders/{order}', [OrderController::class, 'show'])->name('customer.orders.detail');
