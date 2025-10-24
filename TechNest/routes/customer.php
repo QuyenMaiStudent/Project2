@@ -4,6 +4,7 @@ use App\Http\Controllers\Customer\CartController;
 use App\Http\Controllers\Customer\CustomerController;
 use App\Http\Controllers\Customer\OrderController;
 use App\Http\Controllers\Customer\ShippingAddressController;
+use App\Http\Controllers\Customer\CheckoutController;
 use Illuminate\Support\Facades\Route;
 
 Route::middleware(['auth', 'customer'])->group(function () {
@@ -20,7 +21,13 @@ Route::middleware(['auth', 'customer'])->group(function () {
     Route::put('/shipping-addresses/{shippingAddress}', [ShippingAddressController::class, 'update'])->name('shipping_addresses.update');
     Route::delete('/shipping-addresses/{shippingAddress}', [ShippingAddressController::class, 'destroy'])->name('shipping_addresses.destroy');
 
-    // Order routes
-    Route::get('/checkout', [OrderController::class, 'checkout'])->name('customer.checkout');
+    // Checkout routes (GET moved to CheckoutController)
+    Route::get('/checkout', [CheckoutController::class, 'index'])->name('customer.checkout');
     Route::post('/checkout', [OrderController::class, 'placeOrder'])->name('customer.checkout.placeOrder');
+
+    // Order routes
+    Route::get('/orders', [OrderController::class, 'index'])->name('customer.orders.index');
+    
+    // Thêm route này để PaymentResult có thể redirect đúng
+    Route::get('/customer/orders/{order}', [OrderController::class, 'show'])->name('customer.orders.detail');
 });

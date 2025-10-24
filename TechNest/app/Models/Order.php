@@ -9,7 +9,21 @@ class Order extends Model
 {
     use HasFactory;
 
-    protected $fillable = ['user_id', 'status', 'total_amount', 'placed_at'];
+    protected $fillable = [
+        'user_id',
+        'status',
+        'total_amount',
+        'discount_amount',
+        'promotion_id',
+        'shipping_address_id',
+        'placed_at'
+    ];
+
+    protected $casts = [
+        'total_amount' => 'decimal:2',
+        'discount_amount' => 'decimal:2',
+        'placed_at' => 'datetime',
+    ];
 
     public function user()
     {
@@ -39,5 +53,10 @@ class Order extends Model
     public function payment()
     {
         return $this->hasOne(Payment::class);
+    }
+
+    public function promotion()
+    {
+        return $this->belongsTo(Promotion::class);
     }
 }

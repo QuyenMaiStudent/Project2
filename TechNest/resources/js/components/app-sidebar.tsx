@@ -100,6 +100,11 @@ export function AppSidebar() {
         mainNavItems = [
             ...mainNavItems,
             {
+                title: 'Đơn hàng',
+                href: '/orders',
+                icon: BookOpen,
+            },
+            {
                 title: 'Giỏ hàng',
                 href: '/cart',
                 icon: ShoppingCart,

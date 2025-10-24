@@ -33,6 +33,11 @@ return Application::configure(basePath: dirname(__DIR__))
             'customer' => CheckCustomer::class,
             'superadmin' => CheckSuperAdminRole::class,
         ]);
+
+        $middleware->validateCsrfTokens(except: [
+            '/webhooks/stripe',
+            '/webhooks/*',
+        ]);
     })
     ->withExceptions(function (Exceptions $exceptions) {
         //

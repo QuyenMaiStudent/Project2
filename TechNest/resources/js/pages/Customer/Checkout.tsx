@@ -85,17 +85,28 @@ export default function Checkout({
     
     // Validate required fields
     if (!data.shipping_address_id) {
-      alert('Vui lòng chọn địa chỉ giao hàng');
-      return;
+        alert('Vui lòng chọn địa chỉ giao hàng');
+        return;
     }
     if (!data.payment_method_id) {
-      alert('Vui lòng chọn phương thức thanh toán');
-      return;
+        alert('Vui lòng chọn phương thức thanh toán');
+        return;
     }
     
-    if (!confirm('Xác nhận đặt hàng?')) return;
-    
-    post(placeOrderUrl);
+    post(placeOrderUrl, {
+        preserveScroll: true,
+        onBefore: () => {
+            console.log('Starting payment process...');
+        },
+        onError: (errors) => {
+            console.error('Payment error:', errors);
+            alert('Có lỗi xảy ra. Vui lòng thử lại.');
+        },
+        onSuccess: (page) => {
+            // Inertia::location() sẽ tự động redirect đến external URL
+            console.log('Payment initiated successfully');
+        },
+    });
   };
 
   // Format tiền: nếu là số nguyên thì không hiện phần thập phân (.00)
@@ -133,7 +144,6 @@ export default function Checkout({
     >
       <Head title="Thanh toán" />
 
-      {/* Mở rộng toàn bộ vùng hiển thị */}
       <div className="max-w-screen-2xl mx-auto px-12 py-10">
         {(!cart || !cart.items || cart.items.length === 0) ? (
           <>
@@ -279,10 +289,26 @@ export default function Checkout({
                 <button 
                   type="submit" 
                   disabled={processing || !data.shipping_address_id || !data.payment_method_id}
-                  className="w-full bg-blue-600 hover:bg-blue-700 disabled:bg-gray-400 disabled:cursor-not-allowed text-white py-4 rounded text-xl font-semibold transition"
+                  className="w-full bg-blue-600 hover:bg-blue-700 disabled:bg-gray-400 disabled:cursor-not-allowed text-white py-4 rounded text-xl font-semibold transition flex items-center justify-center gap-2"
                 >
-                  {processing ? 'Đang xử lý...' : 'Đặt hàng'}
+                  {processing ? (
+                    <>
+                      <svg className="animate-spin h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                        <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                        <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                      </svg>
+                      Đang chuyển đến thanh toán...
+                    </>
+                  ) : (
+                    'Đặt hàng và Thanh toán'
+                  )}
                 </button>
+                
+                {/* Thông báo bảo mật */}
+                <div className="mt-4 text-center text-sm text-gray-600">
+                  <p>🔒 Thanh toán an toàn và bảo mật</p>
+                  <p className="mt-1">Bạn sẽ được chuyển đến trang thanh toán</p>
+                </div>
               </form>
             </aside>
           </div>

@@ -2,9 +2,12 @@
 
 use App\Http\Controllers\Auth\GoogleController;
 use App\Http\Controllers\Chat\ChatBotController;
+use App\Http\Controllers\Payments\PaymentReturnController;
+use App\Http\Controllers\Payments\PaymentWebhookController;
 use App\Http\Controllers\ProductDetailController;
 use App\Http\Controllers\ProductIndexController;
 use App\Http\Controllers\Seller\ProductController;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
 
@@ -22,6 +25,25 @@ Route::get('/products/{id}', ProductDetailController::class)->name('products.det
 Route::get('/chat/chatbot', function () {
     return Inertia::render('ChatUI/ChatBot');
 })->name('chat.chatbot');
+
+// Payment return routes - đảm bảo route này tồn tại
+Route::get('/payments/{provider}/return', [PaymentReturnController::class, 'handle'])
+    ->name('payments.return');
+
+// Webhook routes (không cần auth/middleware)
+Route::post('/webhooks/stripe', [PaymentWebhookController::class, 'stripe'])
+    ->name('webhooks.stripe');
+Route::post('/webhooks/momo', [PaymentWebhookController::class, 'momo']);
+Route::post('/webhooks/vnpay', [PaymentWebhookController::class, 'vnpay']);
+
+// Thêm dòng này để load customer routes
+Route::middleware('web')->group(base_path('routes/customer.php'));
+
+// Test route để kiểm tra
+Route::get('/test-place-order', function() {
+    Log::info('Test place order route called');
+    return 'Test route works';
+});
 
 require __DIR__.'/settings.php';
 require __DIR__.'/auth.php';
