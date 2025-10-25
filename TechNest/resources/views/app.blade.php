@@ -4,7 +4,10 @@
         <meta charset="utf-8">
         <meta name="viewport" content="width=device-width, initial-scale=1">
 
-        {{-- Inline script to detect system dark mode preference and apply it immediately --}}
+        {{-- CSRF Token để React có thể lấy và gửi --}}
+        <meta name="csrf-token" content="{{ csrf_token() }}">
+
+        {{-- Inline script để áp dụng dark mode theo hệ thống --}}
         <script>
             (function() {
                 const appearance = '{{ $appearance ?? "system" }}';
@@ -19,7 +22,7 @@
             })();
         </script>
 
-        {{-- Inline style to set the HTML background color based on our theme in app.css --}}
+        {{-- Inline style để set màu nền theo theme --}}
         <style>
             html {
                 background-color: oklch(1 0 0);

@@ -3,6 +3,7 @@ import React, { useState } from 'react';
 import { type SharedData } from '@/types';
 import CartIcon from '@/components/Cart/CartIcon';
 import PublicLayout from '@/layouts/public-layout';
+import Comments from '@/Components/Comments'; // <-- import component comment
 
 interface Image { url: string; alt_text?: string; is_primary?: boolean; }
 interface Variant { id: number; variant_name: string; price: number; stock: number; image_url?: string | null; }
@@ -24,12 +25,10 @@ interface Props { product: Product; }
 export default function ProductDetail({ product }: Props) {
     const props = usePage<SharedData>().props;
     const { auth } = props;
-    // cartCount và isCustomer được CartIcon lấy từ shared props, không cần quản lý ở đây
 
-    // Khởi tạo biến thể được chọn (nếu có)
     const initialVariant: Variant | null = product.variants && product.variants.length > 0 ? product.variants[0] : null;
     const [selectedVariant, setSelectedVariant] = useState<Variant | null>(initialVariant);
-    // Ảnh chính ban đầu: ưu tiên ảnh của biến thể nếu có, ngược lại dùng ảnh đầu tiên của product
+
     const initialMain = selectedVariant?.image_url ?? (product.images && product.images.length > 0 ? product.images[0].url : '/images/logo.png');
     const [mainImg, setMainImg] = useState<string>(initialMain);
     const [quantity, setQuantity] = useState(1);
@@ -38,7 +37,6 @@ export default function ProductDetail({ product }: Props) {
     const price = selectedVariant ? selectedVariant.price : product.price;
     const maxStock = selectedVariant ? selectedVariant.stock : product.stock;
 
-    // Khi người dùng chọn biến thể, cập nhật ảnh chính nếu biến thể có ảnh
     React.useEffect(() => {
         if (selectedVariant) {
             if (selectedVariant.image_url) {
@@ -46,11 +44,9 @@ export default function ProductDetail({ product }: Props) {
                 return;
             }
         }
-        // Nếu không có thì fallback về ảnh đầu tiên của sản phẩm (hoặc ảnh mặc định)
         setMainImg(product.images && product.images.length > 0 ? product.images[0].url : '/images/logo.png');
     }, [selectedVariant, product.images]);
 
-    // Hàm hiển thị toast
     const showToast = (type: 'success' | 'error', message: string, ms = 3000) => {
         setToast({ type, message });
         window.setTimeout(() => setToast(null), ms);
@@ -67,7 +63,6 @@ export default function ProductDetail({ product }: Props) {
             const getCookie = (name: string) => {
                 const v = `; ${document.cookie}`;
                 const parts = v.split(`; ${name}=`);
-
                 if (parts.length === 2) return decodeURIComponent(parts.pop()!.split(';').shift()!);
                 return '';
             };
@@ -76,7 +71,6 @@ export default function ProductDetail({ product }: Props) {
 
             const res = await fetch('/cart/add', {
                 method: 'POST',
-                // sử dụng 'include' nếu backend khác origin; dùng 'same-origin' nếu cùng origin
                 credentials: 'include',
                 headers: {
                     'Content-Type': 'application/json',
@@ -110,8 +104,6 @@ export default function ProductDetail({ product }: Props) {
                 return;
             }
 
-            // Hiển thị thông báo thành công, phát sự kiện để cập nhật CartIcon ngay lập tức,
-            // rồi reload một phần (chỉ cartCount) để đồng bộ shared props của Inertia
             showToast('success', 'Đã thêm vào giỏ hàng!');
             window.dispatchEvent(new CustomEvent('cart:updated', { detail: { cartCount: data.cartCount } }));
             router.reload({ only: ['cartCount'] });
@@ -123,7 +115,7 @@ export default function ProductDetail({ product }: Props) {
     return (
         <PublicLayout>
             <Head title={product.name} />
-            {/* toast UI */}
+
             {toast && (
                 <div className="fixed inset-0 z-50 flex items-center justify-center pointer-events-none">
                     <div
@@ -155,15 +147,12 @@ export default function ProductDetail({ product }: Props) {
                                     ×
                                 </button>
                             </div>
-                            <div className="mt-1 text-sm text-gray-700">
-                                {toast.message}
-                            </div>
+                            <div className="mt-1 text-sm text-gray-700">{toast.message}</div>
                         </div>
                     </div>
                 </div>
             )}
 
-            {/* Main content giữ nguyên */}
             <div className="bg-[#f5f5f5] min-h-screen py-8">
                 <div className="max-w-6xl mx-auto bg-white rounded-lg shadow p-8 flex flex-col md:flex-row gap-8">
                     {/* Ảnh sản phẩm */}
@@ -189,9 +178,8 @@ export default function ProductDetail({ product }: Props) {
                         {product.brand && (
                             <div className="text-base text-gray-500 mb-1">Thương hiệu: <span className="font-semibold">{product.brand}</span></div>
                         )}
-                        <div className="text-[#ee4d2d] text-3xl font-bold mb-2">
-                            {price.toLocaleString()}₫
-                        </div>
+                        <div className="text-[#ee4d2d] text-3xl font-bold mb-2">{price.toLocaleString()}₫</div>
+
                         {/* Variant */}
                         {product.variants && product.variants.length > 0 && (
                             <div className="mb-2">
@@ -210,6 +198,7 @@ export default function ProductDetail({ product }: Props) {
                                 </div>
                             </div>
                         )}
+
                         {/* Số lượng */}
                         <div className="flex items-center gap-3 mb-4">
                             <span className="font-semibold">Số lượng:</span>
@@ -235,6 +224,7 @@ export default function ProductDetail({ product }: Props) {
                             >+</button>
                             <span className="text-gray-500 ml-2">({maxStock} có sẵn)</span>
                         </div>
+
                         {/* Nút mua */}
                         <div className="flex gap-4 mt-2">
                             <button
@@ -247,6 +237,7 @@ export default function ProductDetail({ product }: Props) {
                                 Mua ngay
                             </button>
                         </div>
+
                         {/* Mô tả */}
                         {product.description && (
                             <div className="mt-6">
@@ -254,6 +245,7 @@ export default function ProductDetail({ product }: Props) {
                                 <div className="text-gray-700 whitespace-pre-line">{product.description}</div>
                             </div>
                         )}
+
                         {/* Thông số kỹ thuật */}
                         {product.specs && product.specs.length > 0 && (
                             <div className="mt-6">
@@ -271,6 +263,11 @@ export default function ProductDetail({ product }: Props) {
                             </div>
                         )}
                     </div>
+                </div>
+
+                {/* <-- CHỖ CHÈN COMPONENT COMMENTS --> */}
+                <div className="max-w-6xl mx-auto mt-12">
+                    <Comments productId={product.id} />
                 </div>
             </div>
         </PublicLayout>
