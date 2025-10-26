@@ -1,5 +1,5 @@
 // @ts-nocheck
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Head, Link, useForm, usePage } from '@inertiajs/react';
 import AppLayout from '@/layouts/app-layout';
 
@@ -13,9 +13,9 @@ function toInputDatetime(dt: any) {
 export default function Edit() {
   const page = usePage().props as any;
   const promotion = page.promotion;
-  const brands = page.brands ?? [];
+  const products = page.products ?? [];
 
-  const initialSelectedBrands = (promotion?.conditions ?? []).filter((c:any)=>c.condition_type==='brand').map((c:any)=>c.target_id);
+  const initialSelectedProducts = (promotion?.conditions ?? []).filter((c:any)=>c.condition_type==='product').map((c:any)=>c.target_id);
 
   const form = useForm({
     type: promotion?.type ?? 'fixed',
@@ -27,7 +27,7 @@ export default function Edit() {
     starts_at: toInputDatetime(promotion?.starts_at),
     expires_at: toInputDatetime(promotion?.expires_at),
     apply_all: (promotion?.conditions?.length ?? 0) === 0,
-    selected_brands: initialSelectedBrands,
+    selected_products: initialSelectedProducts,
     conditions: promotion?.conditions ?? [], // <-- thêm conditions vào state
   });
 
@@ -42,11 +42,23 @@ export default function Edit() {
         starts_at: toInputDatetime(promotion.starts_at),
         expires_at: toInputDatetime(promotion.expires_at),
         apply_all: (promotion?.conditions?.length ?? 0) === 0,
-        selected_brands: initialSelectedBrands,
+        selected_products: initialSelectedProducts,
         conditions: promotion?.conditions ?? [],
       });
     }
   }, [promotion]);
+
+  const [startError, setStartError] = useState<string>();
+
+  const validateStart = (local?: string) => {
+    if (!local) { setStartError(''); return true; }
+    const sel = new Date(local);
+    if (Number.isNaN(sel.getTime())) { setStartError('Ngày/giờ không hợp lệ'); return false; }
+    const now = new Date();
+    if (sel < now) { setStartError('Thời gian bắt đầu phải là hiện tại hoặc tương lai.'); return false; }
+    setStartError('');
+    return true;
+  };
 
   const submit = (e: any) => {
     e.preventDefault();
@@ -55,12 +67,15 @@ export default function Edit() {
     const starts = form.data.starts_at ? form.data.starts_at.replace('T', ' ') + ':00' : null;
     const expires = form.data.expires_at ? form.data.expires_at.replace('T', ' ') + ':00' : null;
 
-    // create conditions based on selected brands when not apply_all
+    // client-side check
+    if (!validateStart(form.data.starts_at)) return;
+
+    // create conditions based on selected products when not apply_all
     const conditions = form.data.apply_all
       ? []
-      : (form.data.selected_brands || []).map((b:number)=>({
-          condition_type: 'brand',
-          target_id: b,
+      : (form.data.selected_products || []).map((p:number)=>({
+          condition_type: 'product',
+          target_id: p,
         }));
 
     // set fields individually to match useForm typings
@@ -74,14 +89,14 @@ export default function Edit() {
   const toggleApplyAll = (checked: boolean) => {
     form.setData('apply_all', checked);
     if (checked) {
-      // clear brand selection and conditions when switching to "all"
-      form.setData('selected_brands', []);
+      // clear product selection and conditions when switching to "all"
+      form.setData('selected_products', []);
       form.setData('conditions', []);
     } else {
-      // when switching back to brand, ensure conditions reflect selected_brands
-      const conditions = (form.data.selected_brands || []).map((b:number)=>({
-        condition_type: 'brand',
-        target_id: b,
+      // when switching back to product, ensure conditions reflect selected_products
+      const conditions = (form.data.selected_products || []).map((p:number)=>({
+        condition_type: 'product',
+        target_id: p,
       }));
       form.setData('conditions', conditions);
     }
@@ -144,7 +159,8 @@ export default function Edit() {
           <div className="grid grid-cols-2 gap-3 mt-3">
             <div>
               <label className="block mb-1">Bắt đầu</label>
-              <input type="datetime-local" value={form.data.starts_at} onChange={e => form.setData('starts_at', e.target.value)} className="w-full border rounded px-3 py-2" />
+              <input type="datetime-local" value={form.data.starts_at} onChange={e => { form.setData('starts_at', e.target.value); validateStart(e.target.value); }} className="w-full border rounded px-3 py-2" />
+              {startError && <div className="text-red-600 text-sm mt-1">{startError}</div>}
             </div>
             <div>
               <label className="block mb-1">Kết thúc</label>
@@ -165,15 +181,15 @@ export default function Edit() {
 
             {!form.data.apply_all && (
               <div className="mt-2">
-                <label className="block mb-1">Chọn brand (áp dụng theo brand)</label>
-                <select multiple value={form.data.selected_brands.map(String)} onChange={e => {
+                <label className="block mb-1">Chọn sản phẩm (áp dụng theo sản phẩm)</label>
+                <select multiple value={form.data.selected_products.map(String)} onChange={e => {
                   const opts = Array.from(e.currentTarget.selectedOptions).map(o => Number(o.value));
-                  form.setData('selected_brands', opts);
-                  // keep conditions in sync with selected brands for immediate submit
-                  const conditions = opts.map((b:number)=>({ condition_type: 'brand', target_id: b }));
+                  form.setData('selected_products', opts);
+                  // keep conditions in sync with selected products for immediate submit
+                  const conditions = opts.map((p:number)=>({ condition_type: 'product', target_id: p }));
                   form.setData('conditions', conditions);
                 }} className="w-full border rounded px-3 py-2">
-                  {brands.map((b: any) => <option key={b.id} value={b.id}>{b.name}</option>)}
+                  {products.map((p: any) => <option key={p.id} value={p.id}>{p.name ?? `#${p.id}`}</option>)}
                 </select>
               </div>
             )}

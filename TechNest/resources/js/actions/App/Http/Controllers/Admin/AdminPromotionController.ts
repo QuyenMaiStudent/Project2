@@ -1,7 +1,7 @@
 import { queryParams, type RouteQueryOptions, type RouteDefinition, type RouteFormDefinition, applyUrlDefaults } from './../../../../../wayfinder'
 /**
 * @see \App\Http\Controllers\Admin\AdminPromotionController::index
- * @see app/Http/Controllers/Admin/AdminPromotionController.php:18
+ * @see app/Http/Controllers/Admin/AdminPromotionController.php:20
  * @route '/admin/promotions'
  */
 export const index = (options?: RouteQueryOptions): RouteDefinition<'get'> => ({
@@ -16,7 +16,7 @@ index.definition = {
 
 /**
 * @see \App\Http\Controllers\Admin\AdminPromotionController::index
- * @see app/Http/Controllers/Admin/AdminPromotionController.php:18
+ * @see app/Http/Controllers/Admin/AdminPromotionController.php:20
  * @route '/admin/promotions'
  */
 index.url = (options?: RouteQueryOptions) => {
@@ -25,7 +25,7 @@ index.url = (options?: RouteQueryOptions) => {
 
 /**
 * @see \App\Http\Controllers\Admin\AdminPromotionController::index
- * @see app/Http/Controllers/Admin/AdminPromotionController.php:18
+ * @see app/Http/Controllers/Admin/AdminPromotionController.php:20
  * @route '/admin/promotions'
  */
 index.get = (options?: RouteQueryOptions): RouteDefinition<'get'> => ({
@@ -34,7 +34,7 @@ index.get = (options?: RouteQueryOptions): RouteDefinition<'get'> => ({
 })
 /**
 * @see \App\Http\Controllers\Admin\AdminPromotionController::index
- * @see app/Http/Controllers/Admin/AdminPromotionController.php:18
+ * @see app/Http/Controllers/Admin/AdminPromotionController.php:20
  * @route '/admin/promotions'
  */
 index.head = (options?: RouteQueryOptions): RouteDefinition<'head'> => ({
@@ -44,7 +44,7 @@ index.head = (options?: RouteQueryOptions): RouteDefinition<'head'> => ({
 
     /**
 * @see \App\Http\Controllers\Admin\AdminPromotionController::index
- * @see app/Http/Controllers/Admin/AdminPromotionController.php:18
+ * @see app/Http/Controllers/Admin/AdminPromotionController.php:20
  * @route '/admin/promotions'
  */
     const indexForm = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
@@ -54,7 +54,7 @@ index.head = (options?: RouteQueryOptions): RouteDefinition<'head'> => ({
 
             /**
 * @see \App\Http\Controllers\Admin\AdminPromotionController::index
- * @see app/Http/Controllers/Admin/AdminPromotionController.php:18
+ * @see app/Http/Controllers/Admin/AdminPromotionController.php:20
  * @route '/admin/promotions'
  */
         indexForm.get = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
@@ -63,7 +63,7 @@ index.head = (options?: RouteQueryOptions): RouteDefinition<'head'> => ({
         })
             /**
 * @see \App\Http\Controllers\Admin\AdminPromotionController::index
- * @see app/Http/Controllers/Admin/AdminPromotionController.php:18
+ * @see app/Http/Controllers/Admin/AdminPromotionController.php:20
  * @route '/admin/promotions'
  */
         indexForm.head = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
@@ -79,7 +79,7 @@ index.head = (options?: RouteQueryOptions): RouteDefinition<'head'> => ({
     index.form = indexForm
 /**
 * @see \App\Http\Controllers\Admin\AdminPromotionController::create
- * @see app/Http/Controllers/Admin/AdminPromotionController.php:41
+ * @see app/Http/Controllers/Admin/AdminPromotionController.php:43
  * @route '/admin/promotions/create'
  */
 export const create = (options?: RouteQueryOptions): RouteDefinition<'get'> => ({
@@ -94,7 +94,7 @@ create.definition = {
 
 /**
 * @see \App\Http\Controllers\Admin\AdminPromotionController::create
- * @see app/Http/Controllers/Admin/AdminPromotionController.php:41
+ * @see app/Http/Controllers/Admin/AdminPromotionController.php:43
  * @route '/admin/promotions/create'
  */
 create.url = (options?: RouteQueryOptions) => {
@@ -103,7 +103,7 @@ create.url = (options?: RouteQueryOptions) => {
 
 /**
 * @see \App\Http\Controllers\Admin\AdminPromotionController::create
- * @see app/Http/Controllers/Admin/AdminPromotionController.php:41
+ * @see app/Http/Controllers/Admin/AdminPromotionController.php:43
  * @route '/admin/promotions/create'
  */
 create.get = (options?: RouteQueryOptions): RouteDefinition<'get'> => ({
@@ -112,7 +112,7 @@ create.get = (options?: RouteQueryOptions): RouteDefinition<'get'> => ({
 })
 /**
 * @see \App\Http\Controllers\Admin\AdminPromotionController::create
- * @see app/Http/Controllers/Admin/AdminPromotionController.php:41
+ * @see app/Http/Controllers/Admin/AdminPromotionController.php:43
  * @route '/admin/promotions/create'
  */
 create.head = (options?: RouteQueryOptions): RouteDefinition<'head'> => ({
@@ -122,7 +122,7 @@ create.head = (options?: RouteQueryOptions): RouteDefinition<'head'> => ({
 
     /**
 * @see \App\Http\Controllers\Admin\AdminPromotionController::create
- * @see app/Http/Controllers/Admin/AdminPromotionController.php:41
+ * @see app/Http/Controllers/Admin/AdminPromotionController.php:43
  * @route '/admin/promotions/create'
  */
     const createForm = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
@@ -132,7 +132,7 @@ create.head = (options?: RouteQueryOptions): RouteDefinition<'head'> => ({
 
             /**
 * @see \App\Http\Controllers\Admin\AdminPromotionController::create
- * @see app/Http/Controllers/Admin/AdminPromotionController.php:41
+ * @see app/Http/Controllers/Admin/AdminPromotionController.php:43
  * @route '/admin/promotions/create'
  */
         createForm.get = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
@@ -141,7 +141,7 @@ create.head = (options?: RouteQueryOptions): RouteDefinition<'head'> => ({
         })
             /**
 * @see \App\Http\Controllers\Admin\AdminPromotionController::create
- * @see app/Http/Controllers/Admin/AdminPromotionController.php:41
+ * @see app/Http/Controllers/Admin/AdminPromotionController.php:43
  * @route '/admin/promotions/create'
  */
         createForm.head = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
@@ -157,7 +157,7 @@ create.head = (options?: RouteQueryOptions): RouteDefinition<'head'> => ({
     create.form = createForm
 /**
 * @see \App\Http\Controllers\Admin\AdminPromotionController::store
- * @see app/Http/Controllers/Admin/AdminPromotionController.php:55
+ * @see app/Http/Controllers/Admin/AdminPromotionController.php:57
  * @route '/admin/promotions'
  */
 export const store = (options?: RouteQueryOptions): RouteDefinition<'post'> => ({
@@ -172,7 +172,7 @@ store.definition = {
 
 /**
 * @see \App\Http\Controllers\Admin\AdminPromotionController::store
- * @see app/Http/Controllers/Admin/AdminPromotionController.php:55
+ * @see app/Http/Controllers/Admin/AdminPromotionController.php:57
  * @route '/admin/promotions'
  */
 store.url = (options?: RouteQueryOptions) => {
@@ -181,7 +181,7 @@ store.url = (options?: RouteQueryOptions) => {
 
 /**
 * @see \App\Http\Controllers\Admin\AdminPromotionController::store
- * @see app/Http/Controllers/Admin/AdminPromotionController.php:55
+ * @see app/Http/Controllers/Admin/AdminPromotionController.php:57
  * @route '/admin/promotions'
  */
 store.post = (options?: RouteQueryOptions): RouteDefinition<'post'> => ({
@@ -191,7 +191,7 @@ store.post = (options?: RouteQueryOptions): RouteDefinition<'post'> => ({
 
     /**
 * @see \App\Http\Controllers\Admin\AdminPromotionController::store
- * @see app/Http/Controllers/Admin/AdminPromotionController.php:55
+ * @see app/Http/Controllers/Admin/AdminPromotionController.php:57
  * @route '/admin/promotions'
  */
     const storeForm = (options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
@@ -201,7 +201,7 @@ store.post = (options?: RouteQueryOptions): RouteDefinition<'post'> => ({
 
             /**
 * @see \App\Http\Controllers\Admin\AdminPromotionController::store
- * @see app/Http/Controllers/Admin/AdminPromotionController.php:55
+ * @see app/Http/Controllers/Admin/AdminPromotionController.php:57
  * @route '/admin/promotions'
  */
         storeForm.post = (options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
@@ -212,7 +212,7 @@ store.post = (options?: RouteQueryOptions): RouteDefinition<'post'> => ({
     store.form = storeForm
 /**
 * @see \App\Http\Controllers\Admin\AdminPromotionController::edit
- * @see app/Http/Controllers/Admin/AdminPromotionController.php:104
+ * @see app/Http/Controllers/Admin/AdminPromotionController.php:116
  * @route '/admin/promotions/{id}/edit'
  */
 export const edit = (args: { id: string | number } | [id: string | number ] | string | number, options?: RouteQueryOptions): RouteDefinition<'get'> => ({
@@ -227,7 +227,7 @@ edit.definition = {
 
 /**
 * @see \App\Http\Controllers\Admin\AdminPromotionController::edit
- * @see app/Http/Controllers/Admin/AdminPromotionController.php:104
+ * @see app/Http/Controllers/Admin/AdminPromotionController.php:116
  * @route '/admin/promotions/{id}/edit'
  */
 edit.url = (args: { id: string | number } | [id: string | number ] | string | number, options?: RouteQueryOptions) => {
@@ -255,7 +255,7 @@ edit.url = (args: { id: string | number } | [id: string | number ] | string | nu
 
 /**
 * @see \App\Http\Controllers\Admin\AdminPromotionController::edit
- * @see app/Http/Controllers/Admin/AdminPromotionController.php:104
+ * @see app/Http/Controllers/Admin/AdminPromotionController.php:116
  * @route '/admin/promotions/{id}/edit'
  */
 edit.get = (args: { id: string | number } | [id: string | number ] | string | number, options?: RouteQueryOptions): RouteDefinition<'get'> => ({
@@ -264,7 +264,7 @@ edit.get = (args: { id: string | number } | [id: string | number ] | string | nu
 })
 /**
 * @see \App\Http\Controllers\Admin\AdminPromotionController::edit
- * @see app/Http/Controllers/Admin/AdminPromotionController.php:104
+ * @see app/Http/Controllers/Admin/AdminPromotionController.php:116
  * @route '/admin/promotions/{id}/edit'
  */
 edit.head = (args: { id: string | number } | [id: string | number ] | string | number, options?: RouteQueryOptions): RouteDefinition<'head'> => ({
@@ -274,7 +274,7 @@ edit.head = (args: { id: string | number } | [id: string | number ] | string | n
 
     /**
 * @see \App\Http\Controllers\Admin\AdminPromotionController::edit
- * @see app/Http/Controllers/Admin/AdminPromotionController.php:104
+ * @see app/Http/Controllers/Admin/AdminPromotionController.php:116
  * @route '/admin/promotions/{id}/edit'
  */
     const editForm = (args: { id: string | number } | [id: string | number ] | string | number, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
@@ -284,7 +284,7 @@ edit.head = (args: { id: string | number } | [id: string | number ] | string | n
 
             /**
 * @see \App\Http\Controllers\Admin\AdminPromotionController::edit
- * @see app/Http/Controllers/Admin/AdminPromotionController.php:104
+ * @see app/Http/Controllers/Admin/AdminPromotionController.php:116
  * @route '/admin/promotions/{id}/edit'
  */
         editForm.get = (args: { id: string | number } | [id: string | number ] | string | number, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
@@ -293,7 +293,7 @@ edit.head = (args: { id: string | number } | [id: string | number ] | string | n
         })
             /**
 * @see \App\Http\Controllers\Admin\AdminPromotionController::edit
- * @see app/Http/Controllers/Admin/AdminPromotionController.php:104
+ * @see app/Http/Controllers/Admin/AdminPromotionController.php:116
  * @route '/admin/promotions/{id}/edit'
  */
         editForm.head = (args: { id: string | number } | [id: string | number ] | string | number, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
@@ -309,7 +309,7 @@ edit.head = (args: { id: string | number } | [id: string | number ] | string | n
     edit.form = editForm
 /**
 * @see \App\Http\Controllers\Admin\AdminPromotionController::update
- * @see app/Http/Controllers/Admin/AdminPromotionController.php:121
+ * @see app/Http/Controllers/Admin/AdminPromotionController.php:133
  * @route '/admin/promotions/{id}'
  */
 export const update = (args: { id: string | number } | [id: string | number ] | string | number, options?: RouteQueryOptions): RouteDefinition<'put'> => ({
@@ -324,7 +324,7 @@ update.definition = {
 
 /**
 * @see \App\Http\Controllers\Admin\AdminPromotionController::update
- * @see app/Http/Controllers/Admin/AdminPromotionController.php:121
+ * @see app/Http/Controllers/Admin/AdminPromotionController.php:133
  * @route '/admin/promotions/{id}'
  */
 update.url = (args: { id: string | number } | [id: string | number ] | string | number, options?: RouteQueryOptions) => {
@@ -352,7 +352,7 @@ update.url = (args: { id: string | number } | [id: string | number ] | string | 
 
 /**
 * @see \App\Http\Controllers\Admin\AdminPromotionController::update
- * @see app/Http/Controllers/Admin/AdminPromotionController.php:121
+ * @see app/Http/Controllers/Admin/AdminPromotionController.php:133
  * @route '/admin/promotions/{id}'
  */
 update.put = (args: { id: string | number } | [id: string | number ] | string | number, options?: RouteQueryOptions): RouteDefinition<'put'> => ({
@@ -362,7 +362,7 @@ update.put = (args: { id: string | number } | [id: string | number ] | string | 
 
     /**
 * @see \App\Http\Controllers\Admin\AdminPromotionController::update
- * @see app/Http/Controllers/Admin/AdminPromotionController.php:121
+ * @see app/Http/Controllers/Admin/AdminPromotionController.php:133
  * @route '/admin/promotions/{id}'
  */
     const updateForm = (args: { id: string | number } | [id: string | number ] | string | number, options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
@@ -377,7 +377,7 @@ update.put = (args: { id: string | number } | [id: string | number ] | string | 
 
             /**
 * @see \App\Http\Controllers\Admin\AdminPromotionController::update
- * @see app/Http/Controllers/Admin/AdminPromotionController.php:121
+ * @see app/Http/Controllers/Admin/AdminPromotionController.php:133
  * @route '/admin/promotions/{id}'
  */
         updateForm.put = (args: { id: string | number } | [id: string | number ] | string | number, options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
@@ -393,7 +393,7 @@ update.put = (args: { id: string | number } | [id: string | number ] | string | 
     update.form = updateForm
 /**
 * @see \App\Http\Controllers\Admin\AdminPromotionController::destroy
- * @see app/Http/Controllers/Admin/AdminPromotionController.php:171
+ * @see app/Http/Controllers/Admin/AdminPromotionController.php:193
  * @route '/admin/promotions/{id}'
  */
 export const destroy = (args: { id: string | number } | [id: string | number ] | string | number, options?: RouteQueryOptions): RouteDefinition<'delete'> => ({
@@ -408,7 +408,7 @@ destroy.definition = {
 
 /**
 * @see \App\Http\Controllers\Admin\AdminPromotionController::destroy
- * @see app/Http/Controllers/Admin/AdminPromotionController.php:171
+ * @see app/Http/Controllers/Admin/AdminPromotionController.php:193
  * @route '/admin/promotions/{id}'
  */
 destroy.url = (args: { id: string | number } | [id: string | number ] | string | number, options?: RouteQueryOptions) => {
@@ -436,7 +436,7 @@ destroy.url = (args: { id: string | number } | [id: string | number ] | string |
 
 /**
 * @see \App\Http\Controllers\Admin\AdminPromotionController::destroy
- * @see app/Http/Controllers/Admin/AdminPromotionController.php:171
+ * @see app/Http/Controllers/Admin/AdminPromotionController.php:193
  * @route '/admin/promotions/{id}'
  */
 destroy.delete = (args: { id: string | number } | [id: string | number ] | string | number, options?: RouteQueryOptions): RouteDefinition<'delete'> => ({
@@ -446,7 +446,7 @@ destroy.delete = (args: { id: string | number } | [id: string | number ] | strin
 
     /**
 * @see \App\Http\Controllers\Admin\AdminPromotionController::destroy
- * @see app/Http/Controllers/Admin/AdminPromotionController.php:171
+ * @see app/Http/Controllers/Admin/AdminPromotionController.php:193
  * @route '/admin/promotions/{id}'
  */
     const destroyForm = (args: { id: string | number } | [id: string | number ] | string | number, options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
@@ -461,7 +461,7 @@ destroy.delete = (args: { id: string | number } | [id: string | number ] | strin
 
             /**
 * @see \App\Http\Controllers\Admin\AdminPromotionController::destroy
- * @see app/Http/Controllers/Admin/AdminPromotionController.php:171
+ * @see app/Http/Controllers/Admin/AdminPromotionController.php:193
  * @route '/admin/promotions/{id}'
  */
         destroyForm.delete = (args: { id: string | number } | [id: string | number ] | string | number, options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
@@ -477,7 +477,7 @@ destroy.delete = (args: { id: string | number } | [id: string | number ] | strin
     destroy.form = destroyForm
 /**
 * @see \App\Http\Controllers\Admin\AdminPromotionController::toggleStatus
- * @see app/Http/Controllers/Admin/AdminPromotionController.php:180
+ * @see app/Http/Controllers/Admin/AdminPromotionController.php:202
  * @route '/admin/promotions/{id}/toggle-status'
  */
 export const toggleStatus = (args: { id: string | number } | [id: string | number ] | string | number, options?: RouteQueryOptions): RouteDefinition<'post'> => ({
@@ -492,7 +492,7 @@ toggleStatus.definition = {
 
 /**
 * @see \App\Http\Controllers\Admin\AdminPromotionController::toggleStatus
- * @see app/Http/Controllers/Admin/AdminPromotionController.php:180
+ * @see app/Http/Controllers/Admin/AdminPromotionController.php:202
  * @route '/admin/promotions/{id}/toggle-status'
  */
 toggleStatus.url = (args: { id: string | number } | [id: string | number ] | string | number, options?: RouteQueryOptions) => {
@@ -520,7 +520,7 @@ toggleStatus.url = (args: { id: string | number } | [id: string | number ] | str
 
 /**
 * @see \App\Http\Controllers\Admin\AdminPromotionController::toggleStatus
- * @see app/Http/Controllers/Admin/AdminPromotionController.php:180
+ * @see app/Http/Controllers/Admin/AdminPromotionController.php:202
  * @route '/admin/promotions/{id}/toggle-status'
  */
 toggleStatus.post = (args: { id: string | number } | [id: string | number ] | string | number, options?: RouteQueryOptions): RouteDefinition<'post'> => ({
@@ -530,7 +530,7 @@ toggleStatus.post = (args: { id: string | number } | [id: string | number ] | st
 
     /**
 * @see \App\Http\Controllers\Admin\AdminPromotionController::toggleStatus
- * @see app/Http/Controllers/Admin/AdminPromotionController.php:180
+ * @see app/Http/Controllers/Admin/AdminPromotionController.php:202
  * @route '/admin/promotions/{id}/toggle-status'
  */
     const toggleStatusForm = (args: { id: string | number } | [id: string | number ] | string | number, options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
@@ -540,7 +540,7 @@ toggleStatus.post = (args: { id: string | number } | [id: string | number ] | st
 
             /**
 * @see \App\Http\Controllers\Admin\AdminPromotionController::toggleStatus
- * @see app/Http/Controllers/Admin/AdminPromotionController.php:180
+ * @see app/Http/Controllers/Admin/AdminPromotionController.php:202
  * @route '/admin/promotions/{id}/toggle-status'
  */
         toggleStatusForm.post = (args: { id: string | number } | [id: string | number ] | string | number, options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
@@ -551,7 +551,7 @@ toggleStatus.post = (args: { id: string | number } | [id: string | number ] | st
     toggleStatus.form = toggleStatusForm
 /**
 * @see \App\Http\Controllers\Admin\AdminPromotionController::assignTargets
- * @see app/Http/Controllers/Admin/AdminPromotionController.php:190
+ * @see app/Http/Controllers/Admin/AdminPromotionController.php:212
  * @route '/admin/promotions/{id}/assign-targets'
  */
 export const assignTargets = (args: { id: string | number } | [id: string | number ] | string | number, options?: RouteQueryOptions): RouteDefinition<'post'> => ({
@@ -566,7 +566,7 @@ assignTargets.definition = {
 
 /**
 * @see \App\Http\Controllers\Admin\AdminPromotionController::assignTargets
- * @see app/Http/Controllers/Admin/AdminPromotionController.php:190
+ * @see app/Http/Controllers/Admin/AdminPromotionController.php:212
  * @route '/admin/promotions/{id}/assign-targets'
  */
 assignTargets.url = (args: { id: string | number } | [id: string | number ] | string | number, options?: RouteQueryOptions) => {
@@ -594,7 +594,7 @@ assignTargets.url = (args: { id: string | number } | [id: string | number ] | st
 
 /**
 * @see \App\Http\Controllers\Admin\AdminPromotionController::assignTargets
- * @see app/Http/Controllers/Admin/AdminPromotionController.php:190
+ * @see app/Http/Controllers/Admin/AdminPromotionController.php:212
  * @route '/admin/promotions/{id}/assign-targets'
  */
 assignTargets.post = (args: { id: string | number } | [id: string | number ] | string | number, options?: RouteQueryOptions): RouteDefinition<'post'> => ({
@@ -604,7 +604,7 @@ assignTargets.post = (args: { id: string | number } | [id: string | number ] | s
 
     /**
 * @see \App\Http\Controllers\Admin\AdminPromotionController::assignTargets
- * @see app/Http/Controllers/Admin/AdminPromotionController.php:190
+ * @see app/Http/Controllers/Admin/AdminPromotionController.php:212
  * @route '/admin/promotions/{id}/assign-targets'
  */
     const assignTargetsForm = (args: { id: string | number } | [id: string | number ] | string | number, options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
@@ -614,7 +614,7 @@ assignTargets.post = (args: { id: string | number } | [id: string | number ] | s
 
             /**
 * @see \App\Http\Controllers\Admin\AdminPromotionController::assignTargets
- * @see app/Http/Controllers/Admin/AdminPromotionController.php:190
+ * @see app/Http/Controllers/Admin/AdminPromotionController.php:212
  * @route '/admin/promotions/{id}/assign-targets'
  */
         assignTargetsForm.post = (args: { id: string | number } | [id: string | number ] | string | number, options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
@@ -625,7 +625,7 @@ assignTargets.post = (args: { id: string | number } | [id: string | number ] | s
     assignTargets.form = assignTargetsForm
 /**
 * @see \App\Http\Controllers\Admin\AdminPromotionController::usageStats
- * @see app/Http/Controllers/Admin/AdminPromotionController.php:220
+ * @see app/Http/Controllers/Admin/AdminPromotionController.php:242
  * @route '/admin/promotions/{id}/usage'
  */
 export const usageStats = (args: { id: string | number } | [id: string | number ] | string | number, options?: RouteQueryOptions): RouteDefinition<'get'> => ({
@@ -640,7 +640,7 @@ usageStats.definition = {
 
 /**
 * @see \App\Http\Controllers\Admin\AdminPromotionController::usageStats
- * @see app/Http/Controllers/Admin/AdminPromotionController.php:220
+ * @see app/Http/Controllers/Admin/AdminPromotionController.php:242
  * @route '/admin/promotions/{id}/usage'
  */
 usageStats.url = (args: { id: string | number } | [id: string | number ] | string | number, options?: RouteQueryOptions) => {
@@ -668,7 +668,7 @@ usageStats.url = (args: { id: string | number } | [id: string | number ] | strin
 
 /**
 * @see \App\Http\Controllers\Admin\AdminPromotionController::usageStats
- * @see app/Http/Controllers/Admin/AdminPromotionController.php:220
+ * @see app/Http/Controllers/Admin/AdminPromotionController.php:242
  * @route '/admin/promotions/{id}/usage'
  */
 usageStats.get = (args: { id: string | number } | [id: string | number ] | string | number, options?: RouteQueryOptions): RouteDefinition<'get'> => ({
@@ -677,7 +677,7 @@ usageStats.get = (args: { id: string | number } | [id: string | number ] | strin
 })
 /**
 * @see \App\Http\Controllers\Admin\AdminPromotionController::usageStats
- * @see app/Http/Controllers/Admin/AdminPromotionController.php:220
+ * @see app/Http/Controllers/Admin/AdminPromotionController.php:242
  * @route '/admin/promotions/{id}/usage'
  */
 usageStats.head = (args: { id: string | number } | [id: string | number ] | string | number, options?: RouteQueryOptions): RouteDefinition<'head'> => ({
@@ -687,7 +687,7 @@ usageStats.head = (args: { id: string | number } | [id: string | number ] | stri
 
     /**
 * @see \App\Http\Controllers\Admin\AdminPromotionController::usageStats
- * @see app/Http/Controllers/Admin/AdminPromotionController.php:220
+ * @see app/Http/Controllers/Admin/AdminPromotionController.php:242
  * @route '/admin/promotions/{id}/usage'
  */
     const usageStatsForm = (args: { id: string | number } | [id: string | number ] | string | number, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
@@ -697,7 +697,7 @@ usageStats.head = (args: { id: string | number } | [id: string | number ] | stri
 
             /**
 * @see \App\Http\Controllers\Admin\AdminPromotionController::usageStats
- * @see app/Http/Controllers/Admin/AdminPromotionController.php:220
+ * @see app/Http/Controllers/Admin/AdminPromotionController.php:242
  * @route '/admin/promotions/{id}/usage'
  */
         usageStatsForm.get = (args: { id: string | number } | [id: string | number ] | string | number, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
@@ -706,7 +706,7 @@ usageStats.head = (args: { id: string | number } | [id: string | number ] | stri
         })
             /**
 * @see \App\Http\Controllers\Admin\AdminPromotionController::usageStats
- * @see app/Http/Controllers/Admin/AdminPromotionController.php:220
+ * @see app/Http/Controllers/Admin/AdminPromotionController.php:242
  * @route '/admin/promotions/{id}/usage'
  */
         usageStatsForm.head = (args: { id: string | number } | [id: string | number ] | string | number, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({

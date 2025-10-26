@@ -4,8 +4,9 @@ namespace App\Http\Controllers\Seller;
 
 use App\Http\Controllers\Controller;
 use App\Models\Promotion;
-use App\Models\PromotionCondition;
 use App\Models\Brand;
+use App\Models\Product;
+use Illuminate\Validation\ValidationException;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Inertia\Inertia;
@@ -28,11 +29,14 @@ class SellerPromotionController extends Controller
 
         // nếu muốn hiển thị tên brand ở list, đưa brands tới frontend
         $brands = Brand::all();
+        // đưa danh sách sản phẩm do seller tạo để frontend hiển thị/lọc
+        $products = Product::where('created_by', $sellerId)->get();
 
         return Inertia::render('Seller/Promotions/Index', [
             'promotions' => $promotions,
             'filters' => $request->only(['q']),
             'brands' => $brands,
+            'products' => $products,
         ]);
     }
 
@@ -42,8 +46,11 @@ class SellerPromotionController extends Controller
         $sellerId = Auth::id();
         // brands table hiện không chứa seller_id => trả về tất cả brand
         $brands = Brand::all();
+        // danh sách sản phẩm do seller tạo để chọn khi tạo khuyến mãi
+        $products = Product::where('created_by', $sellerId)->get();
         return Inertia::render('Seller/Promotions/Create', [
             'brands' => $brands,
+            'products' => $products,
         ]);
     }
 
@@ -62,9 +69,27 @@ class SellerPromotionController extends Controller
             'starts_at' => 'nullable|date',
             'expires_at' => 'nullable|date|after_or_equal:starts_at',
             'conditions' => 'nullable|array',
-            'conditions.*.condition_type' => 'required_with:conditions|in:category,product,brand',
+            // chỉ cho phép condition theo product cho seller
+            'conditions.*.condition_type' => 'required_with:conditions|in:product',
             'conditions.*.target_id' => 'required_with:conditions|integer',
         ]);
+
+        // bắt lỗi: starts_at không được ở quá khứ (phải >= now)
+        if (!empty($data['starts_at'])) {
+            $starts = Carbon::parse($data['starts_at']);
+            if ($starts->lt(Carbon::now())) {
+                throw ValidationException::withMessages(['starts_at' => 'Thời gian bắt đầu phải là hiện tại hoặc tương lai. Vui lòng chọn ngày/giờ từ bây giờ trở đi.']);
+            }
+        }
+
+        // xác thực product thuộc seller
+        if (!empty($data['conditions'])) {
+            foreach ($data['conditions'] as $cond) {
+                if ($cond['condition_type'] !== 'product' || !Product::where('id', $cond['target_id'])->where('created_by', $sellerId)->exists()) {
+                    throw ValidationException::withMessages(['conditions' => 'Bạn chỉ có thể tạo khuyến mãi cho sản phẩm của chính bạn.']);
+                }
+            }
+        }
 
         DB::transaction(function () use ($data, $sellerId) {
             $promotion = Promotion::create([
@@ -101,10 +126,12 @@ class SellerPromotionController extends Controller
         $promotion = Promotion::with('conditions')->where('seller_id', $sellerId)->findOrFail($id);
         // brands table hiện không chứa seller_id => trả về tất cả brand
         $brands = Brand::all();
+        $products = Product::where('created_by', $sellerId)->get();
 
         return Inertia::render('Seller/Promotions/Edit', [
             'promotion' => $promotion,
             'brands' => $brands,
+            'products' => $products,
         ]);
     }
 
@@ -124,9 +151,27 @@ class SellerPromotionController extends Controller
             'expires_at' => 'nullable|date|after_or_equal:starts_at',
             'conditions' => 'nullable|array',
             'conditions.*.id' => 'nullable|integer|exists:promotion_conditions,id',
-            'conditions.*.condition_type' => 'required_with:conditions|in:category,product,brand',
+            // chỉ product
+            'conditions.*.condition_type' => 'required_with:conditions|in:product',
             'conditions.*.target_id' => 'required_with:conditions|integer',
         ]);
+
+        // bắt lỗi: starts_at không được ở quá khứ (phải >= now)
+        if (!empty($data['starts_at'])) {
+            $starts = Carbon::parse($data['starts_at']);
+            if ($starts->lt(Carbon::now())) {
+                throw ValidationException::withMessages(['starts_at' => 'Thời gian bắt đầu phải là hiện tại hoặc tương lai. Vui lòng chọn ngày/giờ từ bây giờ trở đi.']);
+            }
+        }
+
+        // xác thực product thuộc seller
+        if (!empty($data['conditions'])) {
+            foreach ($data['conditions'] as $cond) {
+                if ($cond['condition_type'] !== 'product' || !Product::where('id', $cond['target_id'])->where('created_by', $sellerId)->exists()) {
+                    throw ValidationException::withMessages(['conditions' => 'Bạn chỉ có thể tạo khuyến mãi cho sản phẩm của chính bạn.']);
+                }
+            }
+        }
 
         DB::transaction(function () use ($promotion, $data) {
             $promotion->update([

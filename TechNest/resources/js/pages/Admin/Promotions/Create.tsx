@@ -1,5 +1,5 @@
 // @ts-nocheck
-import React from 'react';
+import React, { useState } from 'react';
 import { Head, Link, useForm, usePage } from '@inertiajs/react';
 import AppLayout from '@/layouts/app-layout';
 
@@ -30,6 +30,53 @@ export default function Create() {
     no_min_amount: false,
     no_usage_limit: false,
   });
+  const [startError, setStartError] = useState<string>('');
+  const [endError, setEndError] = useState<string>('');
+
+  const validateStart = (local?: string) => {
+    // normalize server-format "YYYY-MM-DD HH:mm:00" => "YYYY-MM-DDTHH:mm"
+    if (!local) { setStartError(''); return true; }
+    let s = local;
+    if (s.includes(' ')) {
+      // possible server format "2025-10-09 14:30:00"
+      s = s.replace(' ', 'T').split(':00')[0];
+    }
+    // ensure we have "YYYY-MM-DDTHH:mm"
+    if (!s.includes('T') && s.length >= 16) s = s.slice(0,16);
+    const sel = new Date(s);
+    if (Number.isNaN(sel.getTime())) { setStartError('Ngày/giờ không hợp lệ'); return false; }
+    const now = new Date();
+    if (sel < now) { setStartError('Thời gian bắt đầu phải là hiện tại hoặc tương lai.'); return false; }
+    setStartError('');
+    return true;
+  };
+
+  const validateEnd = (localEnd?: string, localStart?: string) => {
+    // normalize both inputs to comparable Date objects
+    if (!localEnd) { setEndError(''); return true; }
+    let e = localEnd;
+    if (e.includes(' ')) e = e.replace(' ', 'T').split(':00')[0];
+    if (!e.includes('T') && e.length >= 16) e = e.slice(0,16);
+    const endDate = new Date(e);
+    if (Number.isNaN(endDate.getTime())) { setEndError('Ngày/giờ kết thúc không hợp lệ'); return false; }
+
+    // if start provided, compare
+    if (localStart) {
+      let s = localStart;
+      if (s.includes(' ')) s = s.replace(' ', 'T').split(':00')[0];
+      if (!s.includes('T') && s.length >= 16) s = s.slice(0,16);
+      const startDate = new Date(s);
+      if (!Number.isNaN(startDate.getTime())) {
+        if (endDate <= startDate) {
+          setEndError('Thời gian kết thúc phải sau thời gian bắt đầu.');
+          return false;
+        }
+      }
+    }
+
+    setEndError('');
+    return true;
+  };
 
   const submit = (e:any) => {
     e.preventDefault();
@@ -42,6 +89,10 @@ export default function Create() {
 
     const starts = form.data.starts_at ? form.data.starts_at.replace('T',' ') + ':00' : null;
     const expires = form.data.expires_at ? form.data.expires_at.replace('T',' ') + ':00' : null;
+
+    // client-side check: start + end
+    if (!validateStart(form.data.starts_at as string)) return;
+    if (!validateEnd(form.data.expires_at as string, form.data.starts_at as string)) return;
 
     form.setData('min_order_amount', min);
     form.setData('usage_limit', limit);
@@ -115,10 +166,33 @@ export default function Create() {
             <label className="block mb-1">Thời gian áp dụng</label>
             <div className="grid grid-cols-2 gap-3">
               <div>
-                <input type="datetime-local" value={form.data.starts_at?.substring(0,16)} onChange={e=>form.setData('starts_at', e.target.value)} className="w-full border rounded px-3 py-2" />
+                <input
+                  type="datetime-local"
+                  value={form.data.starts_at?.substring(0,16)}
+                  onChange={e => {
+                    form.setData('starts_at', e.target.value);
+                    validateStart(e.target.value);
+                    // re-validate end against new start
+                    validateEnd(form.data.expires_at as string, e.target.value);
+                  }}
+                  onBlur={e => { validateStart(e.target.value); validateEnd(form.data.expires_at as string, e.target.value); }}
+                  className={`w-full border rounded px-3 py-2 ${startError || form.errors.starts_at ? 'border-red-400' : ''}`}
+                />
+                {(form.errors.starts_at) && <div className="text-red-600 text-sm mt-1">{form.errors.starts_at}</div>}
+                {startError && <div className="text-red-600 text-sm mt-1">{startError}</div>}
               </div>
               <div>
-                <input type="datetime-local" value={form.data.expires_at?.substring(0,16)} onChange={e=>form.setData('expires_at', e.target.value)} className="w-full border rounded px-3 py-2" />
+                <input
+                  type="datetime-local"
+                  value={form.data.expires_at?.substring(0,16)}
+                  onChange={e => {
+                    form.setData('expires_at', e.target.value);
+                    validateEnd(e.target.value, form.data.starts_at as string);
+                  }}
+                  onBlur={e => validateEnd(e.target.value, form.data.starts_at as string)}
+                  className={`w-full border rounded px-3 py-2 ${endError ? 'border-red-400' : ''}`}
+                />
+                {endError && <div className="text-red-600 text-sm mt-1">{endError}</div>}
               </div>
             </div>
           </div>

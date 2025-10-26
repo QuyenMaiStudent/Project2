@@ -1,11 +1,13 @@
 // @ts-nocheck
-import React from 'react';
+import React, { useState } from 'react';
 import { Head, Link, useForm, usePage } from '@inertiajs/react';
 import AppLayout from '@/layouts/app-layout';
 
 export default function Create() {
   const page = usePage().props as any;
-  const brands = page.brands ?? [];
+  const products = page.products ?? [];
+  const [startError, setStartError] = useState<string>('');
+  const [endError, setEndError] = useState<string>('');
   const flash = page.flash ?? {};
   const breadcrumbs = [
     { title: 'Seller Dashboard', href: '/seller/dashboard' },
@@ -23,7 +25,7 @@ export default function Create() {
     starts_at: '',
     expires_at: '',
     apply_all: true,
-    selected_brands: [] as number[],
+    selected_products: [] as number[],
     conditions: [], // <-- thêm field conditions vào initial state
   });
 
@@ -32,6 +34,40 @@ export default function Create() {
     if (!local) return null;
     // local expected like "2025-10-09T14:30"
     return local.replace('T', ' ') + ':00';
+  };
+
+  const validateStart = (local?: string) => {
+    if (!local) { setStartError(''); return true; }
+    const sel = new Date(local);
+    if (Number.isNaN(sel.getTime())) { setStartError('Ngày/giờ không hợp lệ'); return false; }
+    const now = new Date();
+    if (sel < now) { setStartError('Thời gian bắt đầu phải là hiện tại hoặc tương lai.'); return false; }
+    setStartError('');
+    return true;
+  };
+
+  const validateEnd = (localEnd?: string, localStart?: string) => {
+    if (!localEnd) { setEndError(''); return true; }
+    let e = localEnd;
+    // accept server format "YYYY-MM-DD HH:mm:00" or input "YYYY-MM-DDTHH:mm"
+    if (e.includes(' ')) e = e.replace(' ', 'T').split(':00')[0];
+    if (!e.includes('T') && e.length >= 16) e = e.slice(0,16);
+    const endDate = new Date(e);
+    if (Number.isNaN(endDate.getTime())) { setEndError('Ngày/giờ kết thúc không hợp lệ'); return false; }
+
+    if (localStart) {
+      let s = localStart;
+      if (s.includes(' ')) s = s.replace(' ', 'T').split(':00')[0];
+      if (!s.includes('T') && s.length >= 16) s = s.slice(0,16);
+      const startDate = new Date(s);
+      if (!Number.isNaN(startDate.getTime()) && endDate <= startDate) {
+        setEndError('Thời gian kết thúc phải sau thời gian bắt đầu.');
+        return false;
+      }
+    }
+
+    setEndError('');
+    return true;
   };
 
   // format for display: dd/mm/yyyy HH:mm (24h)
@@ -50,10 +86,14 @@ export default function Create() {
     const starts = toServerDatetime(form.data.starts_at as string);
     const expires = toServerDatetime(form.data.expires_at as string);
 
+    // client-side check: block submit if invalid start time
+    if (!validateStart(form.data.starts_at as string)) return;
+    if (!validateEnd(form.data.expires_at as string, form.data.starts_at as string)) return;
+
     // build conditions payload
-    const conditions = form.data.apply_all ? [] : (form.data.selected_brands || []).map((b: number) => ({
-      condition_type: 'brand',
-      target_id: b,
+    const conditions = form.data.apply_all ? [] : (form.data.selected_products || []).map((p: number) => ({
+      condition_type: 'product',
+      target_id: p,
     }));
 
     // set từng field (an toàn với useForm typings / runtime)
@@ -117,22 +157,28 @@ export default function Create() {
               <input
                 type="datetime-local"
                 value={form.data.starts_at as string}
-                onChange={e => form.setData('starts_at', e.target.value)}
+                onChange={e => { form.setData('starts_at', e.target.value); validateStart(e.target.value); }}
                 className="w-full border rounded px-3 py-2"
               />
               <div className="text-sm text-gray-600 mt-1">Đã chọn: {formatVN(form.data.starts_at as string) || '—'}</div>
               {form.errors.starts_at && <div className="text-red-600 text-sm mt-1">{form.errors.starts_at}</div>}
+              {startError && <div className="text-red-600 text-sm mt-1">{startError}</div>}
             </div>
             <div>
               <label className="block mb-1">Kết thúc</label>
               <input
                 type="datetime-local"
                 value={form.data.expires_at as string}
-                onChange={e => form.setData('expires_at', e.target.value)}
-                className="w-full border rounded px-3 py-2"
+                onChange={e => {
+                  form.setData('expires_at', e.target.value);
+                  validateEnd(e.target.value, form.data.starts_at as string);
+                }}
+                onBlur={e => validateEnd(e.target.value, form.data.starts_at as string)}
+                className={`w-full border rounded px-3 py-2 ${endError ? 'border-red-400' : ''}`}
               />
               <div className="text-sm text-gray-600 mt-1">Đã chọn: {formatVN(form.data.expires_at as string) || '—'}</div>
               {form.errors.expires_at && <div className="text-red-600 text-sm mt-1">{form.errors.expires_at}</div>}
+              {endError && <div className="text-red-600 text-sm mt-1">{endError}</div>}
             </div>
           </div>
 
@@ -147,12 +193,12 @@ export default function Create() {
 
             {!form.data.apply_all && (
               <div className="mt-2">
-                <label className="block mb-1">Chọn brand (áp dụng theo brand)</label>
-                <select multiple value={form.data.selected_brands.map(String)} onChange={e => {
+                <label className="block mb-1">Chọn sản phẩm (áp dụng theo sản phẩm)</label>
+                <select multiple value={form.data.selected_products.map(String)} onChange={e => {
                   const opts = Array.from(e.currentTarget.selectedOptions).map(o => Number(o.value));
-                  form.setData('selected_brands', opts);
+                  form.setData('selected_products', opts);
                 }} className="w-full border rounded px-3 py-2">
-                  {brands.map((b: any) => <option key={b.id} value={b.id}>{b.name}</option>)}
+                  {products.map((p: any) => <option key={p.id} value={p.id}>{p.name ?? `#${p.id}`}</option>)}
                 </select>
               </div>
             )}
