@@ -2,6 +2,12 @@ import { Head, useForm, router } from '@inertiajs/react';
 import AppLayout from '@/layouts/app-layout';
 import { useState } from 'react';
 
+const containsUrlOrPhone = (t?: string) => {
+    if (!t) return false;
+    if (/(https?:\/\/|www\.|[a-z0-9\-]+\.[a-z]{2,})/i.test(t)) return true;
+    return t.replace(/\D+/g, '').length >= 7;
+};
+
 interface Product {
     id: number;
     name: string;
@@ -21,17 +27,47 @@ interface Props {
 export default function ProductSpecs({ product, specs }: Props) {
     const [editingId, setEditingId] = useState<number | null>(null);
     const [editData, setEditData] = useState<{ key: string; value: string }>({ key: '', value: '' });
+    // separate client errors for "add" and "edit" to avoid cross-blocking
+    const [addErrors, setAddErrors] = useState<{ key?: string; value?: string }>({});
+    const [editErrors, setEditErrors] = useState<{ key?: string; value?: string }>({});
 
     const { data, setData, post, reset, errors } = useForm({
         key: '',
         value: '',
     });
 
+    const validateAddField = (field: 'key' | 'value', value: string) => {
+        if (containsUrlOrPhone(value)) {
+            setAddErrors(prev => ({ ...prev, [field]: 'Không được chứa đường link hoặc số điện thoại.' }));
+            return false;
+        } else {
+            setAddErrors(prev => { const c = { ...prev }; delete c[field]; return c; });
+            return true;
+        }
+    };
+
+    const validateEditField = (field: 'key' | 'value', value: string) => {
+        if (containsUrlOrPhone(value)) {
+            setEditErrors(prev => ({ ...prev, [field]: 'Không được chứa đường link hoặc số điện thoại.' }));
+            return false;
+        } else {
+            setEditErrors(prev => { const c = { ...prev }; delete c[field]; return c; });
+            return true;
+        }
+    };
+
     // Thêm mới thông số
     const handleSubmit = (e: React.FormEvent) => {
         e.preventDefault();
+        const okKey = validateAddField('key', data.key);
+        const okValue = validateAddField('value', data.value);
+        if (!okKey || !okValue) return;
+
         post(`/seller/products/${product.id}/specs`, {
-            onSuccess: () => reset(),
+            onSuccess: () => {
+                reset();
+                setAddErrors({});
+            },
         });
     };
 
@@ -39,16 +75,26 @@ export default function ProductSpecs({ product, specs }: Props) {
     const startEdit = (spec: Spec) => {
         setEditingId(spec.id);
         setEditData({ key: spec.key, value: spec.value });
+        // clear add/edit errors for edit context
+        setEditErrors({});
+        setAddErrors(prev => prev); // keep add errors as-is
     };
 
     // Lưu sửa
     const handleUpdate = (e: React.FormEvent, spec: Spec) => {
         e.preventDefault();
+        const okKey = validateEditField('key', editData.key);
+        const okValue = validateEditField('value', editData.value);
+        if (!okKey || !okValue) return;
+
         router.put(
             `/seller/products/${product.id}/specs/${spec.id}`,
             editData,
             {
-                onSuccess: () => setEditingId(null),
+                onSuccess: () => {
+                    setEditingId(null);
+                    setEditErrors({});
+                },
             }
         );
     };
@@ -79,26 +125,29 @@ export default function ProductSpecs({ product, specs }: Props) {
                         <input
                             type="text"
                             value={data.key}
-                            onChange={e => setData('key', e.target.value)}
-                            className="border rounded px-3 py-2 w-full"
+                            onChange={e => { setData('key', e.target.value); validateAddField('key', e.target.value); }}
+                            className={`border rounded px-3 py-2 w-full ${addErrors.key ? 'border-red-400' : ''}`}
                             required
                         />
                         {errors.key && <div className="text-red-500 text-xs">{errors.key}</div>}
+                        {addErrors.key && <div className="text-red-500 text-xs">{addErrors.key}</div>}
                     </div>
                     <div>
                         <label className="block text-sm font-medium mb-1">Giá trị</label>
                         <textarea
                             value={data.value}
-                            onChange={e => setData('value', e.target.value)}
-                            className="border rounded px-3 py-2 w-full min-h-[40px]"
+                            onChange={e => { setData('value', e.target.value); validateAddField('value', e.target.value); }}
+                            className={`border rounded px-3 py-2 w-full min-h-[40px] ${addErrors.value ? 'border-red-400' : ''}`}
                             required
                         />
                         {errors.value && <div className="text-red-500 text-xs">{errors.value}</div>}
+                        {addErrors.value && <div className="text-red-500 text-xs">{addErrors.value}</div>}
                     </div>
                     <div>
                         <button
                             type="submit"
-                            className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700"
+                            className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 disabled:opacity-50"
+                            disabled={Boolean(addErrors.key || addErrors.value)}
                         >
                             Thêm
                         </button>
@@ -134,26 +183,29 @@ export default function ProductSpecs({ product, specs }: Props) {
                                         <input
                                             type="text"
                                             value={editData.key}
-                                            onChange={e => setEditData({ ...editData, key: e.target.value })}
-                                            className="border rounded px-2 py-1 w-full"
+                                            onChange={e => { setEditData({ ...editData, key: e.target.value }); validateEditField('key', e.target.value); }}
+                                            className={`border rounded px-2 py-1 w-full ${editErrors.key ? 'border-red-400' : ''}`}
                                         />
+                                        {editErrors.key && <div className="text-red-500 text-xs">{editErrors.key}</div>}
                                     </td>
                                     <td className="py-2 px-3 align-top">
                                         <textarea
                                             value={editData.value}
-                                            onChange={e => setEditData({ ...editData, value: e.target.value })}
-                                            className="border rounded px-2 py-1 w-full min-h-[40px]"
+                                            onChange={e => { setEditData({ ...editData, value: e.target.value }); validateEditField('value', e.target.value); }}
+                                            className={`border rounded px-2 py-1 w-full min-h-[40px] ${editErrors.value ? 'border-red-400' : ''}`}
                                         />
+                                        {editErrors.value && <div className="text-red-500 text-xs">{editErrors.value}</div>}
                                     </td>
                                     <td className="py-2 px-3 text-center align-top whitespace-nowrap">
                                         <button
                                             onClick={e => handleUpdate(e, spec)}
                                             className="bg-green-600 text-white px-3 py-1 rounded mr-2 hover:bg-green-700"
+                                            disabled={Boolean(editErrors.key || editErrors.value)}
                                         >
                                             Lưu
                                         </button>
                                         <button
-                                            onClick={() => setEditingId(null)}
+                                            onClick={() => { setEditingId(null); setEditErrors({}); }}
                                             className="bg-gray-400 text-white px-3 py-1 rounded hover:bg-gray-500"
                                         >
                                             Hủy

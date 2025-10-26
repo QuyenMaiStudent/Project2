@@ -8,6 +8,7 @@ use App\Models\ProductImage;
 use App\Models\ProductVariant;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Validation\ValidationException;
 use Inertia\Inertia;
 
 class ProductVariantController extends Controller
@@ -41,6 +42,11 @@ class ProductVariantController extends Controller
             'stock' => 'required|integer|min:0',
             'image' => 'nullable|image|mimes:jpeg,png,jpg,gif,webp|max:4096',
         ]);
+
+        // disallow URLs/phone in variant name
+        if ($this->containsUrlOrPhone($validated['variant_name'])) {
+            throw ValidationException::withMessages(['variant_name' => 'Tên biến thể không được chứa đường link hoặc số điện thoại.']);
+        }
 
         DB::beginTransaction();
         try {
@@ -89,6 +95,11 @@ class ProductVariantController extends Controller
             'stock' => 'required|integer|min:0',
             'image' => 'nullable|image|mimes:jpeg,png,jpg,gif,webp|max:4096',
         ]);
+
+        // disallow URLs/phone in variant name
+        if ($this->containsUrlOrPhone($validated['variant_name'])) {
+            throw ValidationException::withMessages(['variant_name' => 'Tên biến thể không được chứa đường link hoặc số điện thoại.']);
+        }
 
         DB::beginTransaction();
         try {
@@ -187,5 +198,14 @@ class ProductVariantController extends Controller
         }
 
         return back()->with('success', 'Đã thêm ảnh cho biến thể.');
+    }
+
+    private function containsUrlOrPhone($text)
+    {
+        $t = trim((string)$text);
+        if ($t === '') return false;
+        if (preg_match('/(https?:\/\/|www\.|[a-z0-9\-]+\.[a-z]{2,})/i', $t)) return true;
+        $digitsOnly = preg_replace('/\D+/', '', $t);
+        return strlen($digitsOnly) >= 7;
     }
 }

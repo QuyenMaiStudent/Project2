@@ -7,6 +7,7 @@ use App\Models\Product;
 use App\Models\ProductSpec;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
+use Illuminate\Validation\ValidationException;
 
 class ProductSpecController extends Controller
 {
@@ -33,6 +34,13 @@ class ProductSpecController extends Controller
             'value' => 'required|string|max:255',
         ]);
 
+        // disallow URLs/phone in spec key/value
+        foreach (['key','value'] as $f) {
+            if ($this->containsUrlOrPhone($validated[$f])) {
+                throw ValidationException::withMessages([$f => 'Không được chứa đường link hoặc số điện thoại.']);
+            }
+        }
+
         $product->specs()->create($validated);
 
         return back()->with('success', 'Đã thêm thông số sản phẩm.');
@@ -52,9 +60,26 @@ class ProductSpecController extends Controller
             'value' => 'required|string|max:255',
         ]);
 
+        // disallow URLs/phone in spec key/value
+        foreach (['key','value'] as $f) {
+            if ($this->containsUrlOrPhone($validated[$f])) {
+                throw ValidationException::withMessages([$f => 'Không được chứa đường link hoặc số điện thoại.']);
+            }
+        }
+
         $spec->update($validated);
 
         return back()->with('success', 'Đã cập nhật thông số sản phẩm.');
+    }
+
+    // reuse same detection heuristic
+    protected function containsUrlOrPhone($text)
+    {
+        $t = trim((string)$text);
+        if ($t === '') return false;
+        if (preg_match('/(https?:\/\/|www\.|[a-z0-9\-]+\.[a-z]{2,})/i', $t)) return true;
+        $digitsOnly = preg_replace('/\D+/', '', $t);
+        return strlen($digitsOnly) >= 7;
     }
 
     //Xóa

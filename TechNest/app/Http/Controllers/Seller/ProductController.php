@@ -10,6 +10,7 @@ use App\Models\Brand;
 use App\Models\WarrantyPolicy;
 use CloudinaryLabs\CloudinaryLaravel\Facades\Cloudinary;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Validation\ValidationException;
 use Inertia\Inertia;
 
 class ProductController extends Controller
@@ -51,6 +52,17 @@ class ProductController extends Controller
             'image' => 'required|image|mimes:jpeg,png,jpg,gif,webp|max:4096',
         ]);
 
+        // server-side: disallow URLs and phone numbers in text inputs
+        $checkFields = [
+            'name' => $validated['name'] ?? '',
+            'description' => $validated['description'] ?? '',
+        ];
+        foreach ($checkFields as $field => $value) {
+            if ($this->containsUrlOrPhone((string)$value)) {
+                throw ValidationException::withMessages([$field => 'Trường này không được chứa đường link hoặc số điện thoại.']);
+            }
+        }
+
         DB::beginTransaction();
 
         try {
@@ -63,6 +75,8 @@ class ProductController extends Controller
                 'warranty_id' => $validated['warranty_id'] ?? null,
                 'is_active' => $validated['is_active'] ?? true,
                 'created_by' => auth()->id(),
+                // auto-approve when seller creates product
+                'status' => 'approved',
             ]);
 
             // lưu 1 ảnh chính cho product
@@ -125,9 +139,19 @@ class ProductController extends Controller
             'brand_id' => 'required|exists:brands,id',
             'warranty_id' => 'nullable|exists:warranty_policies,id',
             'is_active' => 'boolean',
-            // bỏ rule for images[] - product chỉ giữ 1 ảnh chính
             'image' => 'nullable|image|mimes:jpeg,png,jpg,gif,webp|max:4096',
         ]);
+
+        // server-side: disallow URLs and phone numbers in text inputs
+        $checkFields = [
+            'name' => $validated['name'] ?? '',
+            'description' => $validated['description'] ?? '',
+        ];
+        foreach ($checkFields as $field => $value) {
+            if ($this->containsUrlOrPhone((string)$value)) {
+                throw ValidationException::withMessages([$field => 'Trường này không được chứa đường link hoặc số điện thoại.']);
+            }
+        }
 
         DB::beginTransaction();
 
@@ -205,9 +229,33 @@ class ProductController extends Controller
             return back()->with('error', 'Sản phẩm phải có ít nhất 1 ảnh, 1 thông số kỹ thuật và 1 biến thể trước khi gửi duyệt.');
         }
 
-        $product->update(['status' => 'pending']);
+        // Seller action: mark approved immediately
+        $product->update(['status' => 'approved']);
 
-        return back()->with('success', 'Sản phẩm đã được gửi duyệt thành công và đang chờ xét duyệt.');
+        return back()->with('success', 'Sản phẩm đã được đăng/duyệt thành công.');
+    }
+
+    /**
+     * Simple heuristics to detect URLs or phone numbers inside text.
+     * Returns true if forbidden content found.
+     */
+    private function containsUrlOrPhone(string $text): bool
+    {
+        $t = trim($text);
+        if ($t === '') return false;
+
+        // detect URLs (http(s):// or www. or domains like example.com)
+        if (preg_match('/(https?:\/\/|www\.|[a-z0-9\-]+\.[a-z]{2,})/i', $t)) {
+            return true;
+        }
+
+        // detect phone-like patterns: sequence of digits with length >=7 (allow +, spaces, dashes, parentheses)
+        $digitsOnly = preg_replace('/\D+/', '', $t);
+        if (strlen($digitsOnly) >= 7) {
+            return true;
+        }
+
+        return false;
     }
 
     private function authorizeProduct(Product $product)

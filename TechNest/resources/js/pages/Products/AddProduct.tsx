@@ -1,5 +1,5 @@
 import { Head, useForm, Link } from '@inertiajs/react';
-import { FormEvent, ChangeEvent } from 'react';
+import { FormEvent, ChangeEvent, useState } from 'react';
 import AppLayout from '@/layouts/app-layout';
 import { type BreadcrumbItem } from '@/types';
 
@@ -30,6 +30,26 @@ interface Props {
 }
 
 export default function AddProduct({ brands, warranties }: Props) {
+  const [clientErrors, setClientErrors] = useState<Record<string,string>>({});
+
+  const containsUrlOrPhone = (text?: string) => {
+    const t = (text ?? '').trim();
+    if (!t) return false;
+    if (/(https?:\/\/|www\.|[a-z0-9\-]+\.[a-z]{2,})/i.test(t)) return true;
+    const digits = t.replace(/\D+/g, '');
+    return digits.length >= 7;
+  };
+
+  const validateField = (field: string, value: string) => {
+    if (containsUrlOrPhone(value)) {
+      setClientErrors(prev => ({ ...prev, [field]: 'Không được chứa đường link hoặc số điện thoại.' }));
+      return false;
+    } else {
+      setClientErrors(prev => { const c = { ...prev }; delete c[field]; return c; });
+      return true;
+    }
+  };
+
     const { data, setData, post, processing, errors } = useForm({
         name: '',
         description: '',
@@ -47,18 +67,13 @@ export default function AddProduct({ brands, warranties }: Props) {
 
     const handleSubmit = (e: FormEvent) => {
         e.preventDefault();
-        const formData = new FormData();
-        formData.append('name', data.name);
-        formData.append('description', data.description);
-        formData.append('price', data.price);
-        formData.append('stock', data.stock);
-        formData.append('brand_id', data.brand_id);
-        if (data.warranty_id) formData.append('warranty_id', data.warranty_id);
-        formData.append('is_active', data.is_active ? '1' : '0');
-        if (data.image) formData.append('image', data.image);
+        // client-side validation
+        const okName = validateField('name', data.name);
+        const okDesc = validateField('description', data.description);
+        if (!okName || !okDesc) return;
 
+        // use useForm.post so Inertia knows about our form state (useForm supports files)
         post('/seller/products', {
-            data: formData,
             forceFormData: true,
             preserveScroll: true,
         });
@@ -98,7 +113,7 @@ export default function AddProduct({ brands, warranties }: Props) {
                                         type="text"
                                         id="name"
                                         value={data.name}
-                                        onChange={(e) => setData('name', e.target.value)}
+                                        onChange={(e) => { setData('name', e.target.value); validateField('name', e.target.value); }}
                                         className={`w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 ${
                                             errors.name ? 'border-red-300' : 'border-gray-300'
                                         }`}
@@ -107,6 +122,7 @@ export default function AddProduct({ brands, warranties }: Props) {
                                     {errors.name && (
                                         <p className="text-red-600 text-sm mt-1">{errors.name}</p>
                                     )}
+                                    {clientErrors.name && <p className="text-red-600 text-sm mt-1">{clientErrors.name}</p>}
                                 </div>
 
                                 {/* Description */}
@@ -118,7 +134,7 @@ export default function AddProduct({ brands, warranties }: Props) {
                                         id="description"
                                         rows={4}
                                         value={data.description}
-                                        onChange={(e) => setData('description', e.target.value)}
+                                        onChange={(e) => { setData('description', e.target.value); validateField('description', e.target.value); }}
                                         className={`w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 ${
                                             errors.description ? 'border-red-300' : 'border-gray-300'
                                         }`}
@@ -126,6 +142,7 @@ export default function AddProduct({ brands, warranties }: Props) {
                                     {errors.description && (
                                         <p className="text-red-600 text-sm mt-1">{errors.description}</p>
                                     )}
+                                    {clientErrors.description && <p className="text-red-600 text-sm mt-1">{clientErrors.description}</p>}
                                 </div>
 
                                 {/* Price */}
@@ -273,7 +290,7 @@ export default function AddProduct({ brands, warranties }: Props) {
                                 </Link>
                                 <button
                                     type="submit"
-                                    disabled={processing}
+                                    disabled={processing || Object.keys(clientErrors).length > 0}
                                     className="px-6 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
                                 >
                                     {processing ? 'Adding...' : 'Add Product'}
