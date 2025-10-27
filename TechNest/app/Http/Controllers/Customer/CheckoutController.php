@@ -113,9 +113,13 @@ class CheckoutController extends Controller
             ->values()
             ->all();
 
-        $sellerIds = $items->map(function ($it) {
-            return data_get($it, 'product.seller_id');
-        })->filter()->unique()->values()->all();
+        // --- replaced: ensure we collect seller IDs from product.created_by and cast to int ---
+        $sellerIds = $items->map(fn($it) => data_get($it, 'product.seller_id'))
+            ->filter() // remove null/empty
+            ->map(fn($id) => (int) $id) // cast to int to avoid type mismatch
+            ->unique()
+            ->values()
+            ->all();
 
         Log::info('Checkout - collected IDs', [
             'products' => $productIds,
@@ -138,14 +142,18 @@ class CheckoutController extends Controller
                   ->orWhereRaw('used_count < usage_limit');
             });
 
-        // Filter by seller (admin + specific sellers)
+        // Filter by seller (include global promotions + promotions created by those sellers)
         if (!empty($sellerIds)) {
             $promotionsQuery->where(function ($q) use ($sellerIds) {
-                $q->whereNull('seller_id')->orWhereIn('seller_id', $sellerIds);
+                $q->whereNull('seller_id')
+                  ->orWhereIn('seller_id', $sellerIds);
             });
         } else {
+            // no seller in cart -> only global promotions
             $promotionsQuery->whereNull('seller_id');
         }
+
+        Log::debug('Promotions query - sellers', ['seller_ids' => $sellerIds]);
 
         $allPromotions = $promotionsQuery->get();
 

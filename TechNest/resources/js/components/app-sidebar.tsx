@@ -34,19 +34,9 @@ export function AppSidebar() {
         mainNavItems = [
             ...mainNavItems,
             {
-                title: 'Sản phẩm chờ duyệt',
-                href: '/admin/products/pending',
-                icon: Clock,
-            },
-            {
-                title: 'Sản phẩm đã duyệt',
-                href: '/admin/products/approved',
-                icon: CheckCircle,
-            },
-            {
-                title: 'Sản phẩm bị từ chối',
-                href: '/admin/products/rejected',
-                icon: XCircle,
+                title: 'Quản lý sản phẩm',
+                href: '/admin/products',
+                icon: Package,
             },
             {
                 title: 'Quản lý danh mục',
