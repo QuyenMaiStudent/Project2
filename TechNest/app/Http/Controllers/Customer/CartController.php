@@ -148,4 +148,30 @@ class CartController extends Controller
         $item->delete();
         return redirect()->route('cart.index')->with('success', 'Đã xóa sản phẩm khỏi giỏ');
     }
+
+    // Xóa tất cả sản phẩm khỏi giỏ
+    public function clearAll(Request $request)
+    {
+        // Xử lý giống các endpoint khác (Inertia / AJAX)
+        $isInertia = $request->header('X-Inertia') !== null;
+        $expectsJson = $request->wantsJson() || $request->expectsJson();
+        $api = $isInertia || $expectsJson;
+
+        $cart = Cart::firstWhere('user_id', Auth::id());
+        if (!$cart) {
+            if ($api) {
+                return response()->json(['success' => true, 'cartCount' => 0], 200);
+            }
+            return redirect()->route('cart.index')->with('success', 'Giỏ hàng đã rỗng');
+        }
+
+        // Xóa tất cả items
+        $cart->items()->delete();
+
+        if ($api) {
+            return response()->json(['success' => true, 'cartCount' => 0], 200);
+        }
+
+        return redirect()->route('cart.index')->with('success', 'Đã xóa tất cả sản phẩm khỏi giỏ');
+    }
 }

@@ -1,6 +1,6 @@
 // @ts-nocheck
-import React, { useEffect } from 'react';
-import { Head, useForm } from '@inertiajs/react';
+import React, { useEffect, useState } from 'react';
+import { Head, useForm, usePage } from '@inertiajs/react';
 import AppLayout from '@/layouts/app-layout';
 
 interface Product {
@@ -56,6 +56,10 @@ export default function Checkout({
   placeOrderUrl, 
   cart_item_id = null 
 }: any) {
+  const page = usePage();
+  // toast message (floating) shown on top of page for any errors
+  const [toastMessage, setToastMessage] = useState<string | null>(null);
+
   const { data, setData, post, processing, errors } = useForm({
     shipping_address_id: addresses.length ? addresses.find((a: Address) => a.is_default)?.id ?? addresses[0].id : null,
     payment_method_id: paymentMethods.length ? paymentMethods[0].id : null,
@@ -85,25 +89,28 @@ export default function Checkout({
     
     // Validate required fields
     if (!data.shipping_address_id) {
-        alert('Vui lòng chọn địa chỉ giao hàng');
+        setToastMessage('Vui lòng chọn địa chỉ giao hàng.');
         return;
     }
     if (!data.payment_method_id) {
-        alert('Vui lòng chọn phương thức thanh toán');
+        setToastMessage('Vui lòng chọn phương thức thanh toán.');
         return;
     }
     
     post(placeOrderUrl, {
         preserveScroll: true,
         onBefore: () => {
+            setToastMessage(null);
             console.log('Starting payment process...');
         },
         onError: (errors) => {
             console.error('Payment error:', errors);
-            alert('Có lỗi xảy ra. Vui lòng thử lại.');
+            // show only a generic message to avoid exposing internal errors
+            setToastMessage('Có lỗi xảy ra khi tạo đơn hàng. Vui lòng thử lại hoặc liên hệ hỗ trợ.');
         },
         onSuccess: (page) => {
             // Inertia::location() sẽ tự động redirect đến external URL
+            setToastMessage(null);
             console.log('Payment initiated successfully');
         },
     });
@@ -135,6 +142,22 @@ export default function Checkout({
     }
   }, [promotions]);
 
+  // If server flashed an error (detailed), mask it and show generic toast
+  useEffect(() => {
+    const flashedError = page.props?.flash?.error || page.props?.flash?.errors;
+    if (flashedError) {
+      setToastMessage('Có lỗi xảy ra khi tạo đơn hàng. Vui lòng thử lại hoặc liên hệ hỗ trợ.');
+    }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [page.props?.flash]);
+
+  // auto-dismiss toast
+  useEffect(() => {
+    if (!toastMessage) return;
+    const t = setTimeout(() => setToastMessage(null), 6000);
+    return () => clearTimeout(t);
+  }, [toastMessage]);
+
   return (
     <AppLayout
       breadcrumbs={[
@@ -145,6 +168,18 @@ export default function Checkout({
       <Head title="Thanh toán" />
 
       <div className="max-w-screen-2xl mx-auto px-12 py-10">
+        {/* Floating toast on top-center */}
+        {toastMessage && (
+          <div className="fixed top-4 left-1/2 transform -translate-x-1/2 z-50">
+            <div className="max-w-xl bg-red-50 border border-red-200 text-red-700 rounded p-3 shadow-lg">
+              <div className="flex items-center justify-between gap-4">
+                <div className="text-sm">{toastMessage}</div>
+                <button onClick={() => setToastMessage(null)} className="text-red-500 hover:text-red-700 text-sm">✕</button>
+              </div>
+            </div>
+          </div>
+        )}
+
         {(!cart || !cart.items || cart.items.length === 0) ? (
           <>
             <h1 className="text-4xl font-bold mb-8">Xác nhận đơn hàng</h1>
@@ -186,6 +221,8 @@ export default function Checkout({
 
             {/* Aside: chiếm 5/12 - giờ sẽ đứng ngang hàng với phần sản phẩm */}
             <aside className="col-span-5">
+              {/* (Lỗi hiển thị bằng toast ở trên, không render inline ở đây) */}
+
               {/* Địa chỉ giao hàng */}
               <div className="mb-6">
                 <h3 className="font-semibold text-2xl mb-4">Địa chỉ giao hàng</h3>

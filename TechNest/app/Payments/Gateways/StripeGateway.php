@@ -36,16 +36,24 @@ class StripeGateway implements PaymentGateway
     {
         $rate = $this->fetchVndToUsdRate();
 
-        $currency = config('services.stripe.currency', 'usd');
+        $currency = strtolower(config('services.stripe.currency', 'usd'));
+
         $lineItems = $order->items->map(function ($item) use ($rate, $currency) {
-            $unitUsd = round((float)$item->price * $rate, 2);
-            $unitCents = max(50, (int) round($unitUsd * 100)); // Tối thiểu 50 cents cho Stripe
+            // Nếu cấu hình là VND -> gửi trực tiếp amount bằng VND (Stripe expects smallest currency unit)
+            if ($currency === 'vnd') {
+                // item->price đang là VND, unit_amount là số nguyên VND
+                $unitAmount = max(1, (int) round((float) $item->price));
+            } else {
+                // Chuyển VND -> USD và dùng cents cho currencies như 'usd'
+                $unitUsd = round((float)$item->price * $rate, 2);
+                $unitAmount = max(50, (int) round($unitUsd * 100)); // tối thiểu 50 cents
+            }
 
             return [
                 'price_data' => [
                     'currency'     => $currency,
                     'product_data' => ['name' => $item->product->name],
-                    'unit_amount'  => $unitCents,
+                    'unit_amount'  => $unitAmount,
                 ],
                 'quantity' => (int) $item->quantity,
             ];
@@ -60,16 +68,19 @@ class StripeGateway implements PaymentGateway
             'metadata'             => [
                 'order_id' => (string) $order->id,
                 'rate'     => (string) $rate,
+                'currency' => $currency,
             ],
-            // Thêm các option để đảm bảo redirect
             'automatic_tax' => ['enabled' => false],
             'billing_address_collection' => 'auto',
+            'locale' => 'vi',
         ]);
 
         Log::info('Stripe session created', [
             'session_id' => $session->id,
             'order_id' => $order->id,
-            'url' => $session->url
+            'url' => $session->url,
+            'currency' => $currency,
+            'line_items' => $lineItems,
         ]);
 
         return $session->url;
