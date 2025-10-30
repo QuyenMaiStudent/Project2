@@ -2,6 +2,7 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
+use App\Models\CartItem;
 use App\Models\Category;
 use App\Models\Product;
 use Illuminate\Http\Request;
@@ -24,6 +25,19 @@ class AdminProductController extends Controller
         }
 
         $products = $query->orderBy('created_at', 'desc')->paginate(12)->withQueryString();
+
+        // Kiểm tra xem sản phẩm nào có trong giỏ hàng
+        $productsIds = $products->pluck('id')->toArray();
+        $productsInCart = CartItem::whereIn('product_id', $productsIds)
+            ->pluck('product_id')
+            ->unique()
+            ->toArray();
+
+        // Thêm thông tin có trong giỏ hàng vào từng sản phẩm
+        $products->getCollection()->transform(function ($product) use ($productsInCart) {
+            $product->is_in_cart = in_array($product->id, $productsInCart);
+            return $product;
+        });
 
         return Inertia::render('Admin/ManageProducts', [
             'products' => $products,
@@ -57,6 +71,13 @@ class AdminProductController extends Controller
         $request->validate([
             'status' => ['required', Rule::in(['draft','active','inactive','archived','approved','rejected'])],
         ]);
+
+        // Kiểm tra xem sản phẩm có trong giỏ hàng không
+        $isInCart = CartItem::where('product_id', $product->id)->exists();
+
+        if ($isInCart) {
+            return back()->withErrors(['status' => 'Không thể thay đổi trạng thái sản phẩm vì đang trong giỏ hàng của khách hàng']);
+        }
 
         $product->update(['status' => $request->status]);
 

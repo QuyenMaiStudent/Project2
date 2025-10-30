@@ -1,7 +1,7 @@
 import { queryParams, type RouteQueryOptions, type RouteDefinition, type RouteFormDefinition, applyUrlDefaults } from './../../../../../wayfinder'
 /**
 * @see \App\Http\Controllers\Admin\AdminProductController::index
- * @see app/Http/Controllers/Admin/AdminProductController.php:14
+ * @see app/Http/Controllers/Admin/AdminProductController.php:15
  * @route '/admin/products'
  */
 export const index = (options?: RouteQueryOptions): RouteDefinition<'get'> => ({
@@ -16,7 +16,7 @@ index.definition = {
 
 /**
 * @see \App\Http\Controllers\Admin\AdminProductController::index
- * @see app/Http/Controllers/Admin/AdminProductController.php:14
+ * @see app/Http/Controllers/Admin/AdminProductController.php:15
  * @route '/admin/products'
  */
 index.url = (options?: RouteQueryOptions) => {
@@ -25,7 +25,7 @@ index.url = (options?: RouteQueryOptions) => {
 
 /**
 * @see \App\Http\Controllers\Admin\AdminProductController::index
- * @see app/Http/Controllers/Admin/AdminProductController.php:14
+ * @see app/Http/Controllers/Admin/AdminProductController.php:15
  * @route '/admin/products'
  */
 index.get = (options?: RouteQueryOptions): RouteDefinition<'get'> => ({
@@ -34,7 +34,7 @@ index.get = (options?: RouteQueryOptions): RouteDefinition<'get'> => ({
 })
 /**
 * @see \App\Http\Controllers\Admin\AdminProductController::index
- * @see app/Http/Controllers/Admin/AdminProductController.php:14
+ * @see app/Http/Controllers/Admin/AdminProductController.php:15
  * @route '/admin/products'
  */
 index.head = (options?: RouteQueryOptions): RouteDefinition<'head'> => ({
@@ -44,7 +44,7 @@ index.head = (options?: RouteQueryOptions): RouteDefinition<'head'> => ({
 
     /**
 * @see \App\Http\Controllers\Admin\AdminProductController::index
- * @see app/Http/Controllers/Admin/AdminProductController.php:14
+ * @see app/Http/Controllers/Admin/AdminProductController.php:15
  * @route '/admin/products'
  */
     const indexForm = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
@@ -54,7 +54,7 @@ index.head = (options?: RouteQueryOptions): RouteDefinition<'head'> => ({
 
             /**
 * @see \App\Http\Controllers\Admin\AdminProductController::index
- * @see app/Http/Controllers/Admin/AdminProductController.php:14
+ * @see app/Http/Controllers/Admin/AdminProductController.php:15
  * @route '/admin/products'
  */
         indexForm.get = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
@@ -63,7 +63,7 @@ index.head = (options?: RouteQueryOptions): RouteDefinition<'head'> => ({
         })
             /**
 * @see \App\Http\Controllers\Admin\AdminProductController::index
- * @see app/Http/Controllers/Admin/AdminProductController.php:14
+ * @see app/Http/Controllers/Admin/AdminProductController.php:15
  * @route '/admin/products'
  */
         indexForm.head = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
@@ -79,7 +79,7 @@ index.head = (options?: RouteQueryOptions): RouteDefinition<'head'> => ({
     index.form = indexForm
 /**
 * @see \App\Http\Controllers\Admin\AdminProductController::show
- * @see app/Http/Controllers/Admin/AdminProductController.php:35
+ * @see app/Http/Controllers/Admin/AdminProductController.php:49
  * @route '/admin/products/{product}'
  */
 export const show = (args: { product: number | { id: number } } | [product: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions): RouteDefinition<'get'> => ({
@@ -94,7 +94,7 @@ show.definition = {
 
 /**
 * @see \App\Http\Controllers\Admin\AdminProductController::show
- * @see app/Http/Controllers/Admin/AdminProductController.php:35
+ * @see app/Http/Controllers/Admin/AdminProductController.php:49
  * @route '/admin/products/{product}'
  */
 show.url = (args: { product: number | { id: number } } | [product: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions) => {
@@ -127,7 +127,7 @@ show.url = (args: { product: number | { id: number } } | [product: number | { id
 
 /**
 * @see \App\Http\Controllers\Admin\AdminProductController::show
- * @see app/Http/Controllers/Admin/AdminProductController.php:35
+ * @see app/Http/Controllers/Admin/AdminProductController.php:49
  * @route '/admin/products/{product}'
  */
 show.get = (args: { product: number | { id: number } } | [product: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions): RouteDefinition<'get'> => ({
@@ -136,7 +136,7 @@ show.get = (args: { product: number | { id: number } } | [product: number | { id
 })
 /**
 * @see \App\Http\Controllers\Admin\AdminProductController::show
- * @see app/Http/Controllers/Admin/AdminProductController.php:35
+ * @see app/Http/Controllers/Admin/AdminProductController.php:49
  * @route '/admin/products/{product}'
  */
 show.head = (args: { product: number | { id: number } } | [product: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions): RouteDefinition<'head'> => ({
@@ -146,7 +146,7 @@ show.head = (args: { product: number | { id: number } } | [product: number | { i
 
     /**
 * @see \App\Http\Controllers\Admin\AdminProductController::show
- * @see app/Http/Controllers/Admin/AdminProductController.php:35
+ * @see app/Http/Controllers/Admin/AdminProductController.php:49
  * @route '/admin/products/{product}'
  */
     const showForm = (args: { product: number | { id: number } } | [product: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
@@ -156,7 +156,7 @@ show.head = (args: { product: number | { id: number } } | [product: number | { i
 
             /**
 * @see \App\Http\Controllers\Admin\AdminProductController::show
- * @see app/Http/Controllers/Admin/AdminProductController.php:35
+ * @see app/Http/Controllers/Admin/AdminProductController.php:49
  * @route '/admin/products/{product}'
  */
         showForm.get = (args: { product: number | { id: number } } | [product: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
@@ -165,7 +165,7 @@ show.head = (args: { product: number | { id: number } } | [product: number | { i
         })
             /**
 * @see \App\Http\Controllers\Admin\AdminProductController::show
- * @see app/Http/Controllers/Admin/AdminProductController.php:35
+ * @see app/Http/Controllers/Admin/AdminProductController.php:49
  * @route '/admin/products/{product}'
  */
         showForm.head = (args: { product: number | { id: number } } | [product: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
@@ -181,7 +181,7 @@ show.head = (args: { product: number | { id: number } } | [product: number | { i
     show.form = showForm
 /**
 * @see \App\Http\Controllers\Admin\AdminProductController::updateCategories
- * @see app/Http/Controllers/Admin/AdminProductController.php:67
+ * @see app/Http/Controllers/Admin/AdminProductController.php:88
  * @route '/admin/products/{product}/categories'
  */
 export const updateCategories = (args: { product: number | { id: number } } | [product: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions): RouteDefinition<'post'> => ({
@@ -196,7 +196,7 @@ updateCategories.definition = {
 
 /**
 * @see \App\Http\Controllers\Admin\AdminProductController::updateCategories
- * @see app/Http/Controllers/Admin/AdminProductController.php:67
+ * @see app/Http/Controllers/Admin/AdminProductController.php:88
  * @route '/admin/products/{product}/categories'
  */
 updateCategories.url = (args: { product: number | { id: number } } | [product: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions) => {
@@ -229,7 +229,7 @@ updateCategories.url = (args: { product: number | { id: number } } | [product: n
 
 /**
 * @see \App\Http\Controllers\Admin\AdminProductController::updateCategories
- * @see app/Http/Controllers/Admin/AdminProductController.php:67
+ * @see app/Http/Controllers/Admin/AdminProductController.php:88
  * @route '/admin/products/{product}/categories'
  */
 updateCategories.post = (args: { product: number | { id: number } } | [product: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions): RouteDefinition<'post'> => ({
@@ -239,7 +239,7 @@ updateCategories.post = (args: { product: number | { id: number } } | [product: 
 
     /**
 * @see \App\Http\Controllers\Admin\AdminProductController::updateCategories
- * @see app/Http/Controllers/Admin/AdminProductController.php:67
+ * @see app/Http/Controllers/Admin/AdminProductController.php:88
  * @route '/admin/products/{product}/categories'
  */
     const updateCategoriesForm = (args: { product: number | { id: number } } | [product: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
@@ -249,7 +249,7 @@ updateCategories.post = (args: { product: number | { id: number } } | [product: 
 
             /**
 * @see \App\Http\Controllers\Admin\AdminProductController::updateCategories
- * @see app/Http/Controllers/Admin/AdminProductController.php:67
+ * @see app/Http/Controllers/Admin/AdminProductController.php:88
  * @route '/admin/products/{product}/categories'
  */
         updateCategoriesForm.post = (args: { product: number | { id: number } } | [product: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
@@ -260,7 +260,7 @@ updateCategories.post = (args: { product: number | { id: number } } | [product: 
     updateCategories.form = updateCategoriesForm
 /**
 * @see \App\Http\Controllers\Admin\AdminProductController::updateStatus
- * @see app/Http/Controllers/Admin/AdminProductController.php:55
+ * @see app/Http/Controllers/Admin/AdminProductController.php:69
  * @route '/admin/products/{product}/status'
  */
 export const updateStatus = (args: { product: number | { id: number } } | [product: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions): RouteDefinition<'post'> => ({
@@ -275,7 +275,7 @@ updateStatus.definition = {
 
 /**
 * @see \App\Http\Controllers\Admin\AdminProductController::updateStatus
- * @see app/Http/Controllers/Admin/AdminProductController.php:55
+ * @see app/Http/Controllers/Admin/AdminProductController.php:69
  * @route '/admin/products/{product}/status'
  */
 updateStatus.url = (args: { product: number | { id: number } } | [product: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions) => {
@@ -308,7 +308,7 @@ updateStatus.url = (args: { product: number | { id: number } } | [product: numbe
 
 /**
 * @see \App\Http\Controllers\Admin\AdminProductController::updateStatus
- * @see app/Http/Controllers/Admin/AdminProductController.php:55
+ * @see app/Http/Controllers/Admin/AdminProductController.php:69
  * @route '/admin/products/{product}/status'
  */
 updateStatus.post = (args: { product: number | { id: number } } | [product: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions): RouteDefinition<'post'> => ({
@@ -318,7 +318,7 @@ updateStatus.post = (args: { product: number | { id: number } } | [product: numb
 
     /**
 * @see \App\Http\Controllers\Admin\AdminProductController::updateStatus
- * @see app/Http/Controllers/Admin/AdminProductController.php:55
+ * @see app/Http/Controllers/Admin/AdminProductController.php:69
  * @route '/admin/products/{product}/status'
  */
     const updateStatusForm = (args: { product: number | { id: number } } | [product: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
@@ -328,7 +328,7 @@ updateStatus.post = (args: { product: number | { id: number } } | [product: numb
 
             /**
 * @see \App\Http\Controllers\Admin\AdminProductController::updateStatus
- * @see app/Http/Controllers/Admin/AdminProductController.php:55
+ * @see app/Http/Controllers/Admin/AdminProductController.php:69
  * @route '/admin/products/{product}/status'
  */
         updateStatusForm.post = (args: { product: number | { id: number } } | [product: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({

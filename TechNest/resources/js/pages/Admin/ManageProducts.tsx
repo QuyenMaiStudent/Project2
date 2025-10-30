@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Head, usePage, router } from '@inertiajs/react';
 import AppLayout from '@/layouts/app-layout';
 
@@ -11,10 +11,13 @@ type Product = {
   brand?: { name?: string } | null;
   status?: string;
   created_at?: string;
+  is_in_cart?: boolean;
 };
 type PageProps = {
   products: { data: Product[]; links?: Link[] } | null;
   filters: { seller?: string; status?: string; q?: string } | null;
+  errors?: { status?: string };
+  flash?: { success?: string };
 };
 
 const statusClasses = (status?: string) => {
@@ -40,13 +43,65 @@ export default function ManageProducts() {
   const { props } = usePage<PageProps>();
   const products = props?.products ?? { data: [], links: [] };
   const filters = props?.filters ?? {};
+  const errors = props?.errors ?? {};
+  const flash = props?.flash ?? {};
 
-  const changeStatus = (productId: number, status: string) => {
-    router.post(`/admin/products/${productId}/status`, { status }, { preserveScroll: true });
+  const [notification, setNotification] = useState<{ type: 'success' | 'error'; message: string } | null>(null);
+
+  // Hiển thị thông báo khi có flash message hoặc error
+  React.useEffect(() => {
+    if (flash.success) {
+      setNotification({ type: 'success', message: flash.success });
+    } else if (errors.status) {
+      setNotification({ type: 'error', message: errors.status });
+    }
+
+    if (notification) {
+      const timer = setTimeout(() => setNotification(null), 5000);
+      return () => clearTimeout(timer);
+    }
+  }, [flash.success, errors.status]);
+
+  const changeStatus = (product: Product, status: string) => {
+    if (product.is_in_cart) {
+      setNotification({ 
+        type: 'error', 
+        message: 'Không thể thay đổi trạng thái sản phẩm vì đang có trong giỏ hàng của khách hàng.' 
+      });
+      return;
+    }
+
+    router.post(`/admin/products/${product.id}/status`, { status }, { 
+      preserveScroll: true,
+      onError: (errors) => {
+        if (errors.status) {
+          setNotification({ type: 'error', message: errors.status });
+        }
+      }
+    });
   };
 
   const content = (
     <div className="p-6">
+      {/* Notification */}
+      {notification && (
+        <div className={`mb-4 p-4 rounded-md ${
+          notification.type === 'success' 
+            ? 'bg-green-50 border border-green-200 text-green-700' 
+            : 'bg-red-50 border border-red-200 text-red-700'
+        }`}>
+          <div className="flex justify-between items-center">
+            <span>{notification.message}</span>
+            <button 
+              onClick={() => setNotification(null)}
+              className="ml-2 text-lg leading-none hover:opacity-70"
+            >
+              ×
+            </button>
+          </div>
+        </div>
+      )}
+
       <header className="mb-6 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         <div>
           <h1 className="text-2xl font-semibold">Quản lý sản phẩm</h1>
@@ -101,9 +156,16 @@ export default function ManageProducts() {
 
                 <td className="px-4 py-3">
                   <div className="flex flex-col">
-                    <a href={`/admin/products/${p.id}`} className="font-medium text-blue-600 hover:underline">
-                      {p.name || `#${p.id}`}
-                    </a>
+                    <div className="flex items-center gap-2">
+                      <a href={`/admin/products/${p.id}`} className="font-medium text-blue-600 hover:underline">
+                        {p.name || `#${p.id}`}
+                      </a>
+                      {p.is_in_cart && (
+                        <span className="inline-flex items-center px-2 py-1 rounded text-xs font-semibold bg-orange-100 text-orange-800">
+                          Trong giỏ hàng
+                        </span>
+                      )}
+                    </div>
                     <span className="text-xs text-gray-500">{p.created_at ? new Date(p.created_at).toLocaleString() : ''}</span>
                   </div>
                 </td>
@@ -137,9 +199,18 @@ export default function ManageProducts() {
 
                     <select
                       aria-label="Đổi trạng thái"
-                      defaultValue={p.status || ''}
-                      onChange={(e) => changeStatus(p.id, e.target.value)}
-                      className="text-sm px-2 py-1 border rounded"
+                      defaultValue=""
+                      onChange={(e) => {
+                        if (e.target.value) {
+                          changeStatus(p, e.target.value);
+                          e.target.value = ""; // Reset select
+                        }
+                      }}
+                      className={`text-sm px-2 py-1 border rounded ${
+                        p.is_in_cart ? 'bg-gray-100 text-gray-400 cursor-not-allowed' : ''
+                      }`}
+                      disabled={p.is_in_cart}
+                      title={p.is_in_cart ? 'Không thể thay đổi vì sản phẩm đang có trong giỏ hàng' : 'Đổi trạng thái'}
                     >
                       <option value="">— đổi trạng thái —</option>
                       <option value="active">active</option>
