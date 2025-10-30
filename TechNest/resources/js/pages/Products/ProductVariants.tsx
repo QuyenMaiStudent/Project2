@@ -4,8 +4,22 @@ import { useState } from 'react';
 
 const containsUrlOrPhone = (t?: string) => {
     if (!t) return false;
-    if (/(https?:\/\/|www\.|[a-z0-9\-]+\.[a-z]{2,})/i.test(t)) return true;
-    return t.replace(/\D+/g, '').length >= 7;
+    const text = t.trim();
+    if (text === '') return false;
+
+    // Detect explicit URLs: http(s)://... or www.... or hostname.tld (require a dot + TLD)
+    if (/\b(https?:\/\/|www\.)[^\s]+/i.test(text) ||
+        /\b[a-z0-9\-]+\.[a-z]{2,63}(\b|\/)/i.test(text)) {
+        return true;
+    }
+
+    // Detect a contiguous digit sequence of length >= 7 (phone-like).
+    // Use lookarounds to avoid matching digits that are part of alphanumeric tokens.
+    if (/(?<!\d)\d{7,}(?!\d)/.test(text)) {
+        return true;
+    }
+
+    return false;
 };
 
 // format money: drop trailing .00 and add " đ"
