@@ -4,6 +4,8 @@ use App\Http\Controllers\Customer\CartController;
 use App\Http\Controllers\Customer\CustomerController;
 use App\Http\Controllers\Customer\OrderController;
 use App\Http\Controllers\Customer\ShippingAddressController;
+use App\Http\Controllers\Customer\CheckoutController;
+use App\Http\Controllers\Customer\TransactionController;
 use Illuminate\Support\Facades\Route;
 
 Route::middleware(['auth', 'customer'])->group(function () {
@@ -20,7 +22,18 @@ Route::middleware(['auth', 'customer'])->group(function () {
     Route::put('/shipping-addresses/{shippingAddress}', [ShippingAddressController::class, 'update'])->name('shipping_addresses.update');
     Route::delete('/shipping-addresses/{shippingAddress}', [ShippingAddressController::class, 'destroy'])->name('shipping_addresses.destroy');
 
-    // Order routes
-    Route::get('/checkout', [OrderController::class, 'checkout'])->name('customer.checkout');
+    // Checkout routes (GET moved to CheckoutController)
+    Route::get('/checkout', [CheckoutController::class, 'index'])->name('customer.checkout');
     Route::post('/checkout', [OrderController::class, 'placeOrder'])->name('customer.checkout.placeOrder');
+
+    // Order routes
+    Route::get('/orders', [OrderController::class, 'index'])->name('customer.orders.index');
+    Route::get('/orders/{order}', [OrderController::class, 'show'])->name('customer.orders.show');
+    
+    // Thêm route này để PaymentResult có thể redirect đúng
+    Route::get('/customer/orders/{order}', [OrderController::class, 'show'])->name('customer.orders.detail');
+
+    //Transaction routes
+    Route::get('/transactions', [TransactionController::class, 'index'])->name('customer.transactions.index');
+    Route::get('transactions/{transaction}', [TransactionController::class, 'show'])->name('customer.transactions.show');
 });

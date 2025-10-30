@@ -2,26 +2,50 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
+use App\Models\CartItem;
 use App\Models\Category;
 use App\Models\Product;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
+use Illuminate\Validation\Rule;
 
 class AdminProductController extends Controller
 {
-    //Hiển thị danh sách sản phẩm chờ duyệt
-    public function pending()
+    // Quản lý danh sách sản phẩm (có thể filter theo seller)
+    public function index(Request $request)
     {
-        $products = Product::with(['brand', 'seller'])
-            ->where('status', 'pending')
-            ->paginate(12);
+        $query = Product::with(['brand', 'seller']);
 
-        return Inertia::render('Admin/PendingProducts', [
+        if ($request->filled('seller')) {
+            $query->where('created_by', $request->input('seller'));
+        }
+
+        if ($request->filled('status')) {
+            $query->where('status', $request->input('status'));
+        }
+
+        $products = $query->orderBy('created_at', 'desc')->paginate(12)->withQueryString();
+
+        // Kiểm tra xem sản phẩm nào có trong giỏ hàng
+        $productsIds = $products->pluck('id')->toArray();
+        $productsInCart = CartItem::whereIn('product_id', $productsIds)
+            ->pluck('product_id')
+            ->unique()
+            ->toArray();
+
+        // Thêm thông tin có trong giỏ hàng vào từng sản phẩm
+        $products->getCollection()->transform(function ($product) use ($productsInCart) {
+            $product->is_in_cart = in_array($product->id, $productsInCart);
+            return $product;
+        });
+
+        return Inertia::render('Admin/ManageProducts', [
             'products' => $products,
+            'filters' => $request->only(['seller', 'status']),
         ]);
     }
 
-    //Hiển thị chi tiết sản phẩm
+    // Hiển thị chi tiết sản phẩm (giữ nguyên)
     public function show(Product $product)
     {
         $product->load([
@@ -41,51 +65,26 @@ class AdminProductController extends Controller
         ]);
     }
 
-    //Duyệt sản phẩm
-    public function approve(Product $product)
+    // Cập nhật status sản phẩm trực tiếp (admin quản lý)
+    public function updateStatus(Request $request, Product $product)
     {
-        if ($product->status !== 'pending') {
-            return back()->with('error', 'Chỉ có thể duyệt sản phẩm đang chờ duyệt.');
-        }
-        $product->update(['status' => 'approved']);
-        return back()->with('success', 'Sản phẩm đã được duyệt thành công.');
-    }
-
-    //Từ chối sản phẩm
-    public function reject(Product $product)
-    {
-        if ($product->status !== 'pending') {
-            return back()->with('error', 'Chỉ có thể từ chối sản phẩm đang chờ duyệt.');
-        }
-        $product->update(['status' => 'rejected']);
-        return back()->with('success', 'Sản phẩm đã bị từ chối.');
-    }
-
-    //Danh sách sản phẩm đã duyệt
-    public function approved()
-    {
-        $products = Product::with(['brand', 'seller'])
-            ->where('status', 'approved')
-            ->paginate(12);
-
-        return Inertia::render('Admin/ApprovedProducts', [
-            'products' => $products,
+        $request->validate([
+            'status' => ['required', Rule::in(['draft','active','inactive','archived','approved','rejected'])],
         ]);
+
+        // Kiểm tra xem sản phẩm có trong giỏ hàng không
+        $isInCart = CartItem::where('product_id', $product->id)->exists();
+
+        if ($isInCart) {
+            return back()->withErrors(['status' => 'Không thể thay đổi trạng thái sản phẩm vì đang trong giỏ hàng của khách hàng']);
+        }
+
+        $product->update(['status' => $request->status]);
+
+        return back()->with('success', 'Trạng thái sản phẩm đã được cập nhật.');
     }
 
-    //Danh sách sản phẩm bị từ chối
-    public function rejected()
-    {
-        $products = Product::with(['brand', 'seller'])
-            ->where('status', 'rejected')
-            ->paginate(12);
-
-        return Inertia::render('Admin/RejectedProducts', [
-            'products' => $products,
-        ]);
-    }
-
-    //Cập nhật category
+    // Cập nhật category (giữ nguyên)
     public function updateCategories(Request $request, Product $product)
     {
         $request->validate([

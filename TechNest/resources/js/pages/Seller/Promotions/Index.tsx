@@ -21,7 +21,9 @@ export default function Index() {
 
   const promotions = page.promotions ?? { data: [], links: [] };
   const brands = page.brands ?? [];
+  const products = page.products ?? [];
   const brandMap = Object.fromEntries(brands.map((b: any) => [String(b.id), b.name]));
+  const productMap = Object.fromEntries(products.map((p: any) => [String(p.id), p.name || (`#${p.id}`)]));
   const filters = page.filters ?? {};
   const flash = page.flash ?? {};
   const breadcrumbs = [
@@ -124,8 +126,8 @@ export default function Index() {
                     const parts = conds.length === 0
                       ? ['Tất cả sản phẩm của tôi']
                       : conds.map((c: any) => {
+                          if (c.condition_type === 'product') return `Sản phẩm: ${productMap[String(c.target_id)] ?? ('#' + c.target_id)}`;
                           if (c.condition_type === 'brand') return `Thương hiệu: ${brandMap[String(c.target_id)] ?? ('#' + c.target_id)}`;
-                          if (c.condition_type === 'product') return `Sản phẩm: #${c.target_id}`;
                           if (c.condition_type === 'category') return `Danh mục: #${c.target_id}`;
                           return `${c.condition_type}:${c.target_id}`;
                         });

@@ -1,5 +1,7 @@
 import { queryParams, type RouteQueryOptions, type RouteDefinition, type RouteFormDefinition } from './../../wayfinder'
 import checkoutFb28ab from './checkout'
+import orders from './orders'
+import transactions from './transactions'
 /**
 * @see \App\Http\Controllers\Customer\CustomerController::dashboard
  * @see app/Http/Controllers/Customer/CustomerController.php:10
@@ -79,8 +81,8 @@ dashboard.head = (options?: RouteQueryOptions): RouteDefinition<'head'> => ({
     
     dashboard.form = dashboardForm
 /**
-* @see \App\Http\Controllers\Customer\OrderController::checkout
- * @see app/Http/Controllers/Customer/OrderController.php:22
+* @see \App\Http\Controllers\Customer\CheckoutController::checkout
+ * @see app/Http/Controllers/Customer/CheckoutController.php:17
  * @route '/checkout'
  */
 export const checkout = (options?: RouteQueryOptions): RouteDefinition<'get'> => ({
@@ -94,8 +96,8 @@ checkout.definition = {
 } satisfies RouteDefinition<["get","head"]>
 
 /**
-* @see \App\Http\Controllers\Customer\OrderController::checkout
- * @see app/Http/Controllers/Customer/OrderController.php:22
+* @see \App\Http\Controllers\Customer\CheckoutController::checkout
+ * @see app/Http/Controllers/Customer/CheckoutController.php:17
  * @route '/checkout'
  */
 checkout.url = (options?: RouteQueryOptions) => {
@@ -103,8 +105,8 @@ checkout.url = (options?: RouteQueryOptions) => {
 }
 
 /**
-* @see \App\Http\Controllers\Customer\OrderController::checkout
- * @see app/Http/Controllers/Customer/OrderController.php:22
+* @see \App\Http\Controllers\Customer\CheckoutController::checkout
+ * @see app/Http/Controllers/Customer/CheckoutController.php:17
  * @route '/checkout'
  */
 checkout.get = (options?: RouteQueryOptions): RouteDefinition<'get'> => ({
@@ -112,8 +114,8 @@ checkout.get = (options?: RouteQueryOptions): RouteDefinition<'get'> => ({
     method: 'get',
 })
 /**
-* @see \App\Http\Controllers\Customer\OrderController::checkout
- * @see app/Http/Controllers/Customer/OrderController.php:22
+* @see \App\Http\Controllers\Customer\CheckoutController::checkout
+ * @see app/Http/Controllers/Customer/CheckoutController.php:17
  * @route '/checkout'
  */
 checkout.head = (options?: RouteQueryOptions): RouteDefinition<'head'> => ({
@@ -122,8 +124,8 @@ checkout.head = (options?: RouteQueryOptions): RouteDefinition<'head'> => ({
 })
 
     /**
-* @see \App\Http\Controllers\Customer\OrderController::checkout
- * @see app/Http/Controllers/Customer/OrderController.php:22
+* @see \App\Http\Controllers\Customer\CheckoutController::checkout
+ * @see app/Http/Controllers/Customer/CheckoutController.php:17
  * @route '/checkout'
  */
     const checkoutForm = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
@@ -132,8 +134,8 @@ checkout.head = (options?: RouteQueryOptions): RouteDefinition<'head'> => ({
     })
 
             /**
-* @see \App\Http\Controllers\Customer\OrderController::checkout
- * @see app/Http/Controllers/Customer/OrderController.php:22
+* @see \App\Http\Controllers\Customer\CheckoutController::checkout
+ * @see app/Http/Controllers/Customer/CheckoutController.php:17
  * @route '/checkout'
  */
         checkoutForm.get = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
@@ -141,8 +143,8 @@ checkout.head = (options?: RouteQueryOptions): RouteDefinition<'head'> => ({
             method: 'get',
         })
             /**
-* @see \App\Http\Controllers\Customer\OrderController::checkout
- * @see app/Http/Controllers/Customer/OrderController.php:22
+* @see \App\Http\Controllers\Customer\CheckoutController::checkout
+ * @see app/Http/Controllers/Customer/CheckoutController.php:17
  * @route '/checkout'
  */
         checkoutForm.head = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
@@ -159,6 +161,8 @@ checkout.head = (options?: RouteQueryOptions): RouteDefinition<'head'> => ({
 const customer = {
     dashboard: Object.assign(dashboard, dashboard),
 checkout: Object.assign(checkout, checkoutFb28ab),
+orders: Object.assign(orders, orders),
+transactions: Object.assign(transactions, transactions),
 }
 
 export default customer

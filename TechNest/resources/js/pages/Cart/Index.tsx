@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Head, router, Link } from '@inertiajs/react';
 import AppLayout from '@/layouts/app-layout';
 
@@ -30,6 +30,9 @@ interface CartProps {
 }
 
 export default function Index({ cart }: CartProps) {
+  const [showClearModal, setShowClearModal] = useState(false);
+  const [processingClear, setProcessingClear] = useState(false);
+
   const handleUpdate = (itemId: number, quantity: number) => {
     router.post(`/cart/update/${itemId}`, { quantity });
   };
@@ -45,6 +48,21 @@ export default function Index({ cart }: CartProps) {
     return Number(v).toLocaleString('vi-VN') + '₫';
   };
 
+  const handleClearConfirmed = () => {
+    setProcessingClear(true);
+    router.post('/cart/clear', {}, {
+      onSuccess: () => {
+        setProcessingClear(false);
+        setShowClearModal(false);
+        router.reload();
+      },
+      onError: () => {
+        setProcessingClear(false);
+        alert('Xóa thất bại, thử lại.');
+      }
+    });
+  };
+
   return (
     <AppLayout
       breadcrumbs={[
@@ -57,6 +75,27 @@ export default function Index({ cart }: CartProps) {
       {/* tăng chiều ngang: lớn hơn container + cho phép cuộn ngang nếu cần */}
       <div className="max-w-6xl mx-auto p-6"> 
         <h1 className="text-2xl font-bold mb-6">Giỏ hàng của bạn</h1>
+
+        <div className="flex items-center justify-between mb-4 gap-2">
+          <div className="text-sm text-gray-600">
+            Tổng mặt hàng: {cart.items.length}
+          </div>
+          <div className="flex items-center gap-2">
+            <Link
+              href="/checkout"
+              className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700"
+            >
+              Mua tất cả
+            </Link>
+
+            <button
+              onClick={() => setShowClearModal(true)}
+              className="bg-red-600 text-white px-4 py-2 rounded hover:bg-red-700"
+            >
+              Xóa tất cả
+            </button>
+          </div>
+        </div>
 
         {cart.items.length === 0 ? (
           <div className="text-gray-500 text-center py-12">Giỏ hàng trống.</div>
@@ -129,6 +168,35 @@ export default function Index({ cart }: CartProps) {
             </table>
           </div>
         )}
+
+        {/* Modal Xóa tất cả */}
+        {showClearModal ? (
+          <div className="fixed inset-0 z-50 flex items-center justify-center">
+            <div className="absolute inset-0 bg-black opacity-40" onClick={() => setShowClearModal(false)}></div>
+            <div className="bg-white rounded-lg shadow-lg z-10 max-w-md w-full p-6">
+              <h3 className="text-lg font-semibold mb-2">Xóa tất cả sản phẩm</h3>
+              <p className="text-sm text-gray-600 mb-4">Bạn có chắc muốn xóa tất cả sản phẩm trong giỏ hàng?</p>
+              <div className="flex justify-end gap-2">
+                <button
+                  type="button"
+                  className="px-4 py-2 rounded border"
+                  onClick={() => setShowClearModal(false)}
+                  disabled={processingClear}
+                >
+                  Hủy
+                </button>
+                <button
+                  type="button"
+                  className="px-4 py-2 rounded bg-red-600 text-white"
+                  onClick={handleClearConfirmed}
+                  disabled={processingClear}
+                >
+                  {processingClear ? 'Đang xóa...' : 'Xóa tất cả'}
+                </button>
+              </div>
+            </div>
+          </div>
+        ) : null}
       </div>
     </AppLayout>
   );

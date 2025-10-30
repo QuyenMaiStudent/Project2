@@ -5,7 +5,8 @@ import { Sidebar, SidebarContent, SidebarFooter } from '@/components/ui/sidebar'
 import { SharedData, type NavItem } from '@/types';
 import { Link, usePage } from '@inertiajs/react';
 import { BookOpen, CheckCircle, Clock, DollarSign, Folder, LayoutGrid, Package, Users, 
-         XCircle, Plus, Eye, Tag, ShoppingCart, MapPin, Home } from 'lucide-react'; // Thêm icons mới
+         XCircle, Plus, Eye, Tag, ShoppingCart, MapPin, Home, 
+         CreditCard} from 'lucide-react'; // Thêm icons mới
 import AppLogo from './app-logo';
 
 export function AppSidebar() {
@@ -33,19 +34,9 @@ export function AppSidebar() {
         mainNavItems = [
             ...mainNavItems,
             {
-                title: 'Sản phẩm chờ duyệt',
-                href: '/admin/products/pending',
-                icon: Clock,
-            },
-            {
-                title: 'Sản phẩm đã duyệt',
-                href: '/admin/products/approved',
-                icon: CheckCircle,
-            },
-            {
-                title: 'Sản phẩm bị từ chối',
-                href: '/admin/products/rejected',
-                icon: XCircle,
+                title: 'Quản lý sản phẩm',
+                href: '/admin/products',
+                icon: Package,
             },
             {
                 title: 'Quản lý danh mục',
@@ -100,6 +91,11 @@ export function AppSidebar() {
         mainNavItems = [
             ...mainNavItems,
             {
+                title: 'Đơn hàng',
+                href: '/orders',
+                icon: BookOpen,
+            },
+            {
                 title: 'Giỏ hàng',
                 href: '/cart',
                 icon: ShoppingCart,
@@ -108,6 +104,11 @@ export function AppSidebar() {
                 title: 'Địa chỉ giao hàng',
                 href: '/shipping-addresses',
                 icon: MapPin,
+            },
+            {
+                title: 'Lịch sử giao dịch',
+                href: '/transactions',
+                icon: CreditCard,
             },
         ];
     }

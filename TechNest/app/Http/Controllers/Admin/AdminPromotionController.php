@@ -11,6 +11,8 @@ use App\Models\Category;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
 use Illuminate\Support\Facades\DB;
+use Carbon\Carbon;
+use Illuminate\Validation\ValidationException;
 
 class AdminPromotionController extends Controller
 {
@@ -68,6 +70,16 @@ class AdminPromotionController extends Controller
             'conditions.*.condition_type' => 'required_with:conditions|in:brand,product,category',
             'conditions.*.target_id' => 'required_with:conditions|integer|min:1',
         ]);
+
+        // starts_at không được ở quá khứ (phải >= now)
+        if (!empty($data['starts_at'])) {
+            $starts = Carbon::parse($data['starts_at']);
+            if ($starts->lt(Carbon::now())) {
+                throw ValidationException::withMessages([
+                    'starts_at' => 'Thời gian bắt đầu phải là hiện tại hoặc tương lai. Vui lòng chọn ngày/giờ từ bây giờ trở đi.'
+                ]);
+            }
+        }
 
         DB::transaction(function () use ($data) {
             $promotion = Promotion::create([
@@ -135,6 +147,16 @@ class AdminPromotionController extends Controller
             'conditions.*.condition_type' => 'required_with:conditions|in:brand,product,category',
             'conditions.*.target_id' => 'required_with:conditions|integer|min:1',
         ]);
+
+        // starts_at không được ở quá khứ (phải >= now)
+        if (!empty($data['starts_at'])) {
+            $starts = Carbon::parse($data['starts_at']);
+            if ($starts->lt(Carbon::now())) {
+                throw ValidationException::withMessages([
+                    'starts_at' => 'Thời gian bắt đầu phải là hiện tại hoặc tương lai. Vui lòng chọn ngày/giờ từ bây giờ trở đi.'
+                ]);
+            }
+        }
 
         DB::transaction(function () use ($promotion, $data) {
             $promotion->update([

@@ -1,9 +1,19 @@
 // @ts-nocheck
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Head, Link, useForm, usePage } from '@inertiajs/react';
 import AppLayout from '@/layouts/app-layout';
 
-function toInputDatetime(dt:any){ if(!dt) return ''; const d = new Date(dt); if(Number.isNaN(d.getTime())) return ''; return d.toISOString().slice(0,16); }
+function toInputDatetime(dt:any){
+  if(!dt) return '';
+  // normalize server "YYYY-MM-DD HH:mm:SS" to ISO-ish "YYYY-MM-DDTHH:mm"
+  let raw = dt;
+  if (typeof raw === 'string' && raw.includes(' ')) {
+    raw = raw.replace(' ', 'T').split(':00')[0];
+  }
+  const d = new Date(raw);
+  if(Number.isNaN(d.getTime())) return '';
+  return d.toISOString().slice(0,16);
+}
 
 export default function Edit() {
   const page = usePage().props as any;
@@ -28,6 +38,8 @@ export default function Edit() {
     no_min_amount: (promotion?.min_order_amount === 0), // pre-check if stored as 0
     no_usage_limit: (promotion?.usage_limit === null),
   });
+  const [startError, setStartError] = useState<string>('');
+  const [endError, setEndError] = useState<string>('');
 
   useEffect(()=>{
     if (promotion) {
@@ -48,6 +60,44 @@ export default function Edit() {
     }
   }, [promotion]);
 
+  const validateStart = (local?: string) => {
+    if (!local) { setStartError(''); return true; }
+    let s = local;
+    if (s.includes(' ')) s = s.replace(' ', 'T').split(':00')[0];
+    if (!s.includes('T') && s.length >= 16) s = s.slice(0,16);
+    const sel = new Date(s);
+    if (Number.isNaN(sel.getTime())) { setStartError('Ngày/giờ không hợp lệ'); return false; }
+    const now = new Date();
+    if (sel < now) { setStartError('Thời gian bắt đầu phải là hiện tại hoặc tương lai.'); return false; }
+    setStartError('');
+    return true;
+  };
+
+  const validateEnd = (localEnd?: string, localStart?: string) => {
+    if (!localEnd) { setEndError(''); return true; }
+    let e = localEnd;
+    if (e.includes(' ')) e = e.replace(' ', 'T').split(':00')[0];
+    if (!e.includes('T') && e.length >= 16) e = e.slice(0,16);
+    const endDate = new Date(e);
+    if (Number.isNaN(endDate.getTime())) { setEndError('Ngày/giờ kết thúc không hợp lệ'); return false; }
+
+    if (localStart) {
+      let s = localStart;
+      if (s.includes(' ')) s = s.replace(' ', 'T').split(':00')[0];
+      if (!s.includes('T') && s.length >= 16) s = s.slice(0,16);
+      const startDate = new Date(s);
+      if (!Number.isNaN(startDate.getTime())) {
+        if (endDate <= startDate) {
+          setEndError('Thời gian kết thúc phải sau thời gian bắt đầu.');
+          return false;
+        }
+      }
+    }
+
+    setEndError('');
+    return true;
+  };
+
   const submit = (e:any) => {
     e.preventDefault();
     const starts = form.data.starts_at ? form.data.starts_at.replace('T',' ') + ':00' : null;
@@ -55,10 +105,14 @@ export default function Edit() {
     const min = form.data.no_min_amount ? 0 : (form.data.min_order_amount === '' ? null : form.data.min_order_amount);
     const limit = form.data.no_usage_limit ? null : (form.data.usage_limit === '' ? null : form.data.usage_limit);
 
-    form.setData('starts_at', starts);
-    form.setData('expires_at', expires);
+    // client-side check
+    if (!validateStart(form.data.starts_at as string)) return;
+    if (!validateEnd(form.data.expires_at as string, form.data.starts_at as string)) return;
+
     form.setData('min_order_amount', min);
     form.setData('usage_limit', limit);
+    form.setData('starts_at', starts);
+    form.setData('expires_at', expires);
 
     form.put(`/admin/promotions/${promotion.id}`);
   };
@@ -128,11 +182,26 @@ export default function Edit() {
             <div className="grid grid-cols-2 gap-3">
               <div>
                 <label className="block mb-1">Bắt đầu</label>
-                <input type="datetime-local" value={form.data.starts_at} onChange={e=>form.setData('starts_at', e.target.value)} className="w-full border rounded px-3 py-2" />
+                <input
+                  type="datetime-local"
+                  value={form.data.starts_at}
+                  onChange={e=>{ form.setData('starts_at', e.target.value); validateStart(e.target.value); validateEnd(form.data.expires_at as string, e.target.value); }}
+                  onBlur={e=>{ validateStart(e.target.value); validateEnd(form.data.expires_at as string, e.target.value); }}
+                  className={`w-full border rounded px-3 py-2 ${startError || form.errors.starts_at ? 'border-red-400' : ''}`}
+                />
+                {(form.errors.starts_at) && <div className="text-red-600 text-sm mt-1">{form.errors.starts_at}</div>}
+                {startError && <div className="text-red-600 text-sm mt-1">{startError}</div>}
               </div>
               <div>
                 <label className="block mb-1">Kết thúc</label>
-                <input type="datetime-local" value={form.data.expires_at} onChange={e=>form.setData('expires_at', e.target.value)} className="w-full border rounded px-3 py-2" />
+                <input
+                  type="datetime-local"
+                  value={form.data.expires_at}
+                  onChange={e=>{ form.setData('expires_at', e.target.value); validateEnd(e.target.value, form.data.starts_at as string); }}
+                  onBlur={e=>validateEnd(e.target.value, form.data.starts_at as string)}
+                  className={`w-full border rounded px-3 py-2 ${endError ? 'border-red-400' : ''}`}
+                />
+                {endError && <div className="text-red-600 text-sm mt-1">{endError}</div>}
               </div>
             </div>
           </div>

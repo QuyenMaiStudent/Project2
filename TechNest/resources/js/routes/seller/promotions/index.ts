@@ -1,7 +1,7 @@
 import { queryParams, type RouteQueryOptions, type RouteDefinition, type RouteFormDefinition, applyUrlDefaults } from './../../../wayfinder'
 /**
 * @see \App\Http\Controllers\Seller\SellerPromotionController::index
- * @see app/Http/Controllers/Seller/SellerPromotionController.php:18
+ * @see app/Http/Controllers/Seller/SellerPromotionController.php:19
  * @route '/seller/promotions'
  */
 export const index = (options?: RouteQueryOptions): RouteDefinition<'get'> => ({
@@ -16,7 +16,7 @@ index.definition = {
 
 /**
 * @see \App\Http\Controllers\Seller\SellerPromotionController::index
- * @see app/Http/Controllers/Seller/SellerPromotionController.php:18
+ * @see app/Http/Controllers/Seller/SellerPromotionController.php:19
  * @route '/seller/promotions'
  */
 index.url = (options?: RouteQueryOptions) => {
@@ -25,7 +25,7 @@ index.url = (options?: RouteQueryOptions) => {
 
 /**
 * @see \App\Http\Controllers\Seller\SellerPromotionController::index
- * @see app/Http/Controllers/Seller/SellerPromotionController.php:18
+ * @see app/Http/Controllers/Seller/SellerPromotionController.php:19
  * @route '/seller/promotions'
  */
 index.get = (options?: RouteQueryOptions): RouteDefinition<'get'> => ({
@@ -34,7 +34,7 @@ index.get = (options?: RouteQueryOptions): RouteDefinition<'get'> => ({
 })
 /**
 * @see \App\Http\Controllers\Seller\SellerPromotionController::index
- * @see app/Http/Controllers/Seller/SellerPromotionController.php:18
+ * @see app/Http/Controllers/Seller/SellerPromotionController.php:19
  * @route '/seller/promotions'
  */
 index.head = (options?: RouteQueryOptions): RouteDefinition<'head'> => ({
@@ -44,7 +44,7 @@ index.head = (options?: RouteQueryOptions): RouteDefinition<'head'> => ({
 
     /**
 * @see \App\Http\Controllers\Seller\SellerPromotionController::index
- * @see app/Http/Controllers/Seller/SellerPromotionController.php:18
+ * @see app/Http/Controllers/Seller/SellerPromotionController.php:19
  * @route '/seller/promotions'
  */
     const indexForm = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
@@ -54,7 +54,7 @@ index.head = (options?: RouteQueryOptions): RouteDefinition<'head'> => ({
 
             /**
 * @see \App\Http\Controllers\Seller\SellerPromotionController::index
- * @see app/Http/Controllers/Seller/SellerPromotionController.php:18
+ * @see app/Http/Controllers/Seller/SellerPromotionController.php:19
  * @route '/seller/promotions'
  */
         indexForm.get = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
@@ -63,7 +63,7 @@ index.head = (options?: RouteQueryOptions): RouteDefinition<'head'> => ({
         })
             /**
 * @see \App\Http\Controllers\Seller\SellerPromotionController::index
- * @see app/Http/Controllers/Seller/SellerPromotionController.php:18
+ * @see app/Http/Controllers/Seller/SellerPromotionController.php:19
  * @route '/seller/promotions'
  */
         indexForm.head = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
@@ -79,7 +79,7 @@ index.head = (options?: RouteQueryOptions): RouteDefinition<'head'> => ({
     index.form = indexForm
 /**
 * @see \App\Http\Controllers\Seller\SellerPromotionController::create
- * @see app/Http/Controllers/Seller/SellerPromotionController.php:40
+ * @see app/Http/Controllers/Seller/SellerPromotionController.php:44
  * @route '/seller/promotions/create'
  */
 export const create = (options?: RouteQueryOptions): RouteDefinition<'get'> => ({
@@ -94,7 +94,7 @@ create.definition = {
 
 /**
 * @see \App\Http\Controllers\Seller\SellerPromotionController::create
- * @see app/Http/Controllers/Seller/SellerPromotionController.php:40
+ * @see app/Http/Controllers/Seller/SellerPromotionController.php:44
  * @route '/seller/promotions/create'
  */
 create.url = (options?: RouteQueryOptions) => {
@@ -103,7 +103,7 @@ create.url = (options?: RouteQueryOptions) => {
 
 /**
 * @see \App\Http\Controllers\Seller\SellerPromotionController::create
- * @see app/Http/Controllers/Seller/SellerPromotionController.php:40
+ * @see app/Http/Controllers/Seller/SellerPromotionController.php:44
  * @route '/seller/promotions/create'
  */
 create.get = (options?: RouteQueryOptions): RouteDefinition<'get'> => ({
@@ -112,7 +112,7 @@ create.get = (options?: RouteQueryOptions): RouteDefinition<'get'> => ({
 })
 /**
 * @see \App\Http\Controllers\Seller\SellerPromotionController::create
- * @see app/Http/Controllers/Seller/SellerPromotionController.php:40
+ * @see app/Http/Controllers/Seller/SellerPromotionController.php:44
  * @route '/seller/promotions/create'
  */
 create.head = (options?: RouteQueryOptions): RouteDefinition<'head'> => ({
@@ -122,7 +122,7 @@ create.head = (options?: RouteQueryOptions): RouteDefinition<'head'> => ({
 
     /**
 * @see \App\Http\Controllers\Seller\SellerPromotionController::create
- * @see app/Http/Controllers/Seller/SellerPromotionController.php:40
+ * @see app/Http/Controllers/Seller/SellerPromotionController.php:44
  * @route '/seller/promotions/create'
  */
     const createForm = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
@@ -132,7 +132,7 @@ create.head = (options?: RouteQueryOptions): RouteDefinition<'head'> => ({
 
             /**
 * @see \App\Http\Controllers\Seller\SellerPromotionController::create
- * @see app/Http/Controllers/Seller/SellerPromotionController.php:40
+ * @see app/Http/Controllers/Seller/SellerPromotionController.php:44
  * @route '/seller/promotions/create'
  */
         createForm.get = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
@@ -141,7 +141,7 @@ create.head = (options?: RouteQueryOptions): RouteDefinition<'head'> => ({
         })
             /**
 * @see \App\Http\Controllers\Seller\SellerPromotionController::create
- * @see app/Http/Controllers/Seller/SellerPromotionController.php:40
+ * @see app/Http/Controllers/Seller/SellerPromotionController.php:44
  * @route '/seller/promotions/create'
  */
         createForm.head = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
@@ -157,7 +157,7 @@ create.head = (options?: RouteQueryOptions): RouteDefinition<'head'> => ({
     create.form = createForm
 /**
 * @see \App\Http\Controllers\Seller\SellerPromotionController::store
- * @see app/Http/Controllers/Seller/SellerPromotionController.php:51
+ * @see app/Http/Controllers/Seller/SellerPromotionController.php:58
  * @route '/seller/promotions'
  */
 export const store = (options?: RouteQueryOptions): RouteDefinition<'post'> => ({
@@ -172,7 +172,7 @@ store.definition = {
 
 /**
 * @see \App\Http\Controllers\Seller\SellerPromotionController::store
- * @see app/Http/Controllers/Seller/SellerPromotionController.php:51
+ * @see app/Http/Controllers/Seller/SellerPromotionController.php:58
  * @route '/seller/promotions'
  */
 store.url = (options?: RouteQueryOptions) => {
@@ -181,7 +181,7 @@ store.url = (options?: RouteQueryOptions) => {
 
 /**
 * @see \App\Http\Controllers\Seller\SellerPromotionController::store
- * @see app/Http/Controllers/Seller/SellerPromotionController.php:51
+ * @see app/Http/Controllers/Seller/SellerPromotionController.php:58
  * @route '/seller/promotions'
  */
 store.post = (options?: RouteQueryOptions): RouteDefinition<'post'> => ({
@@ -191,7 +191,7 @@ store.post = (options?: RouteQueryOptions): RouteDefinition<'post'> => ({
 
     /**
 * @see \App\Http\Controllers\Seller\SellerPromotionController::store
- * @see app/Http/Controllers/Seller/SellerPromotionController.php:51
+ * @see app/Http/Controllers/Seller/SellerPromotionController.php:58
  * @route '/seller/promotions'
  */
     const storeForm = (options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
@@ -201,7 +201,7 @@ store.post = (options?: RouteQueryOptions): RouteDefinition<'post'> => ({
 
             /**
 * @see \App\Http\Controllers\Seller\SellerPromotionController::store
- * @see app/Http/Controllers/Seller/SellerPromotionController.php:51
+ * @see app/Http/Controllers/Seller/SellerPromotionController.php:58
  * @route '/seller/promotions'
  */
         storeForm.post = (options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
@@ -212,7 +212,7 @@ store.post = (options?: RouteQueryOptions): RouteDefinition<'post'> => ({
     store.form = storeForm
 /**
 * @see \App\Http\Controllers\Seller\SellerPromotionController::edit
- * @see app/Http/Controllers/Seller/SellerPromotionController.php:98
+ * @see app/Http/Controllers/Seller/SellerPromotionController.php:123
  * @route '/seller/promotions/{id}/edit'
  */
 export const edit = (args: { id: string | number } | [id: string | number ] | string | number, options?: RouteQueryOptions): RouteDefinition<'get'> => ({
@@ -227,7 +227,7 @@ edit.definition = {
 
 /**
 * @see \App\Http\Controllers\Seller\SellerPromotionController::edit
- * @see app/Http/Controllers/Seller/SellerPromotionController.php:98
+ * @see app/Http/Controllers/Seller/SellerPromotionController.php:123
  * @route '/seller/promotions/{id}/edit'
  */
 edit.url = (args: { id: string | number } | [id: string | number ] | string | number, options?: RouteQueryOptions) => {
@@ -255,7 +255,7 @@ edit.url = (args: { id: string | number } | [id: string | number ] | string | nu
 
 /**
 * @see \App\Http\Controllers\Seller\SellerPromotionController::edit
- * @see app/Http/Controllers/Seller/SellerPromotionController.php:98
+ * @see app/Http/Controllers/Seller/SellerPromotionController.php:123
  * @route '/seller/promotions/{id}/edit'
  */
 edit.get = (args: { id: string | number } | [id: string | number ] | string | number, options?: RouteQueryOptions): RouteDefinition<'get'> => ({
@@ -264,7 +264,7 @@ edit.get = (args: { id: string | number } | [id: string | number ] | string | nu
 })
 /**
 * @see \App\Http\Controllers\Seller\SellerPromotionController::edit
- * @see app/Http/Controllers/Seller/SellerPromotionController.php:98
+ * @see app/Http/Controllers/Seller/SellerPromotionController.php:123
  * @route '/seller/promotions/{id}/edit'
  */
 edit.head = (args: { id: string | number } | [id: string | number ] | string | number, options?: RouteQueryOptions): RouteDefinition<'head'> => ({
@@ -274,7 +274,7 @@ edit.head = (args: { id: string | number } | [id: string | number ] | string | n
 
     /**
 * @see \App\Http\Controllers\Seller\SellerPromotionController::edit
- * @see app/Http/Controllers/Seller/SellerPromotionController.php:98
+ * @see app/Http/Controllers/Seller/SellerPromotionController.php:123
  * @route '/seller/promotions/{id}/edit'
  */
     const editForm = (args: { id: string | number } | [id: string | number ] | string | number, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
@@ -284,7 +284,7 @@ edit.head = (args: { id: string | number } | [id: string | number ] | string | n
 
             /**
 * @see \App\Http\Controllers\Seller\SellerPromotionController::edit
- * @see app/Http/Controllers/Seller/SellerPromotionController.php:98
+ * @see app/Http/Controllers/Seller/SellerPromotionController.php:123
  * @route '/seller/promotions/{id}/edit'
  */
         editForm.get = (args: { id: string | number } | [id: string | number ] | string | number, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
@@ -293,7 +293,7 @@ edit.head = (args: { id: string | number } | [id: string | number ] | string | n
         })
             /**
 * @see \App\Http\Controllers\Seller\SellerPromotionController::edit
- * @see app/Http/Controllers/Seller/SellerPromotionController.php:98
+ * @see app/Http/Controllers/Seller/SellerPromotionController.php:123
  * @route '/seller/promotions/{id}/edit'
  */
         editForm.head = (args: { id: string | number } | [id: string | number ] | string | number, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
@@ -309,7 +309,7 @@ edit.head = (args: { id: string | number } | [id: string | number ] | string | n
     edit.form = editForm
 /**
 * @see \App\Http\Controllers\Seller\SellerPromotionController::update
- * @see app/Http/Controllers/Seller/SellerPromotionController.php:112
+ * @see app/Http/Controllers/Seller/SellerPromotionController.php:139
  * @route '/seller/promotions/{id}'
  */
 export const update = (args: { id: string | number } | [id: string | number ] | string | number, options?: RouteQueryOptions): RouteDefinition<'put'> => ({
@@ -324,7 +324,7 @@ update.definition = {
 
 /**
 * @see \App\Http\Controllers\Seller\SellerPromotionController::update
- * @see app/Http/Controllers/Seller/SellerPromotionController.php:112
+ * @see app/Http/Controllers/Seller/SellerPromotionController.php:139
  * @route '/seller/promotions/{id}'
  */
 update.url = (args: { id: string | number } | [id: string | number ] | string | number, options?: RouteQueryOptions) => {
@@ -352,7 +352,7 @@ update.url = (args: { id: string | number } | [id: string | number ] | string | 
 
 /**
 * @see \App\Http\Controllers\Seller\SellerPromotionController::update
- * @see app/Http/Controllers/Seller/SellerPromotionController.php:112
+ * @see app/Http/Controllers/Seller/SellerPromotionController.php:139
  * @route '/seller/promotions/{id}'
  */
 update.put = (args: { id: string | number } | [id: string | number ] | string | number, options?: RouteQueryOptions): RouteDefinition<'put'> => ({
@@ -362,7 +362,7 @@ update.put = (args: { id: string | number } | [id: string | number ] | string | 
 
     /**
 * @see \App\Http\Controllers\Seller\SellerPromotionController::update
- * @see app/Http/Controllers/Seller/SellerPromotionController.php:112
+ * @see app/Http/Controllers/Seller/SellerPromotionController.php:139
  * @route '/seller/promotions/{id}'
  */
     const updateForm = (args: { id: string | number } | [id: string | number ] | string | number, options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
@@ -377,7 +377,7 @@ update.put = (args: { id: string | number } | [id: string | number ] | string | 
 
             /**
 * @see \App\Http\Controllers\Seller\SellerPromotionController::update
- * @see app/Http/Controllers/Seller/SellerPromotionController.php:112
+ * @see app/Http/Controllers/Seller/SellerPromotionController.php:139
  * @route '/seller/promotions/{id}'
  */
         updateForm.put = (args: { id: string | number } | [id: string | number ] | string | number, options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
@@ -393,7 +393,7 @@ update.put = (args: { id: string | number } | [id: string | number ] | string | 
     update.form = updateForm
 /**
 * @see \App\Http\Controllers\Seller\SellerPromotionController::destroy
- * @see app/Http/Controllers/Seller/SellerPromotionController.php:158
+ * @see app/Http/Controllers/Seller/SellerPromotionController.php:203
  * @route '/seller/promotions/{id}'
  */
 export const destroy = (args: { id: string | number } | [id: string | number ] | string | number, options?: RouteQueryOptions): RouteDefinition<'delete'> => ({
@@ -408,7 +408,7 @@ destroy.definition = {
 
 /**
 * @see \App\Http\Controllers\Seller\SellerPromotionController::destroy
- * @see app/Http/Controllers/Seller/SellerPromotionController.php:158
+ * @see app/Http/Controllers/Seller/SellerPromotionController.php:203
  * @route '/seller/promotions/{id}'
  */
 destroy.url = (args: { id: string | number } | [id: string | number ] | string | number, options?: RouteQueryOptions) => {
@@ -436,7 +436,7 @@ destroy.url = (args: { id: string | number } | [id: string | number ] | string |
 
 /**
 * @see \App\Http\Controllers\Seller\SellerPromotionController::destroy
- * @see app/Http/Controllers/Seller/SellerPromotionController.php:158
+ * @see app/Http/Controllers/Seller/SellerPromotionController.php:203
  * @route '/seller/promotions/{id}'
  */
 destroy.delete = (args: { id: string | number } | [id: string | number ] | string | number, options?: RouteQueryOptions): RouteDefinition<'delete'> => ({
@@ -446,7 +446,7 @@ destroy.delete = (args: { id: string | number } | [id: string | number ] | strin
 
     /**
 * @see \App\Http\Controllers\Seller\SellerPromotionController::destroy
- * @see app/Http/Controllers/Seller/SellerPromotionController.php:158
+ * @see app/Http/Controllers/Seller/SellerPromotionController.php:203
  * @route '/seller/promotions/{id}'
  */
     const destroyForm = (args: { id: string | number } | [id: string | number ] | string | number, options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
@@ -461,7 +461,7 @@ destroy.delete = (args: { id: string | number } | [id: string | number ] | strin
 
             /**
 * @see \App\Http\Controllers\Seller\SellerPromotionController::destroy
- * @see app/Http/Controllers/Seller/SellerPromotionController.php:158
+ * @see app/Http/Controllers/Seller/SellerPromotionController.php:203
  * @route '/seller/promotions/{id}'
  */
         destroyForm.delete = (args: { id: string | number } | [id: string | number ] | string | number, options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
@@ -477,7 +477,7 @@ destroy.delete = (args: { id: string | number } | [id: string | number ] | strin
     destroy.form = destroyForm
 /**
 * @see \App\Http\Controllers\Seller\SellerPromotionController::toggleStatus
- * @see app/Http/Controllers/Seller/SellerPromotionController.php:172
+ * @see app/Http/Controllers/Seller/SellerPromotionController.php:217
  * @route '/seller/promotions/{id}/toggle-status'
  */
 export const toggleStatus = (args: { id: string | number } | [id: string | number ] | string | number, options?: RouteQueryOptions): RouteDefinition<'post'> => ({
@@ -492,7 +492,7 @@ toggleStatus.definition = {
 
 /**
 * @see \App\Http\Controllers\Seller\SellerPromotionController::toggleStatus
- * @see app/Http/Controllers/Seller/SellerPromotionController.php:172
+ * @see app/Http/Controllers/Seller/SellerPromotionController.php:217
  * @route '/seller/promotions/{id}/toggle-status'
  */
 toggleStatus.url = (args: { id: string | number } | [id: string | number ] | string | number, options?: RouteQueryOptions) => {
@@ -520,7 +520,7 @@ toggleStatus.url = (args: { id: string | number } | [id: string | number ] | str
 
 /**
 * @see \App\Http\Controllers\Seller\SellerPromotionController::toggleStatus
- * @see app/Http/Controllers/Seller/SellerPromotionController.php:172
+ * @see app/Http/Controllers/Seller/SellerPromotionController.php:217
  * @route '/seller/promotions/{id}/toggle-status'
  */
 toggleStatus.post = (args: { id: string | number } | [id: string | number ] | string | number, options?: RouteQueryOptions): RouteDefinition<'post'> => ({
@@ -530,7 +530,7 @@ toggleStatus.post = (args: { id: string | number } | [id: string | number ] | st
 
     /**
 * @see \App\Http\Controllers\Seller\SellerPromotionController::toggleStatus
- * @see app/Http/Controllers/Seller/SellerPromotionController.php:172
+ * @see app/Http/Controllers/Seller/SellerPromotionController.php:217
  * @route '/seller/promotions/{id}/toggle-status'
  */
     const toggleStatusForm = (args: { id: string | number } | [id: string | number ] | string | number, options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
@@ -540,7 +540,7 @@ toggleStatus.post = (args: { id: string | number } | [id: string | number ] | st
 
             /**
 * @see \App\Http\Controllers\Seller\SellerPromotionController::toggleStatus
- * @see app/Http/Controllers/Seller/SellerPromotionController.php:172
+ * @see app/Http/Controllers/Seller/SellerPromotionController.php:217
  * @route '/seller/promotions/{id}/toggle-status'
  */
         toggleStatusForm.post = (args: { id: string | number } | [id: string | number ] | string | number, options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
@@ -551,7 +551,7 @@ toggleStatus.post = (args: { id: string | number } | [id: string | number ] | st
     toggleStatus.form = toggleStatusForm
 /**
 * @see \App\Http\Controllers\Seller\SellerPromotionController::usageStats
- * @see app/Http/Controllers/Seller/SellerPromotionController.php:184
+ * @see app/Http/Controllers/Seller/SellerPromotionController.php:229
  * @route '/seller/promotions/{id}/usage'
  */
 export const usageStats = (args: { id: string | number } | [id: string | number ] | string | number, options?: RouteQueryOptions): RouteDefinition<'get'> => ({
@@ -566,7 +566,7 @@ usageStats.definition = {
 
 /**
 * @see \App\Http\Controllers\Seller\SellerPromotionController::usageStats
- * @see app/Http/Controllers/Seller/SellerPromotionController.php:184
+ * @see app/Http/Controllers/Seller/SellerPromotionController.php:229
  * @route '/seller/promotions/{id}/usage'
  */
 usageStats.url = (args: { id: string | number } | [id: string | number ] | string | number, options?: RouteQueryOptions) => {
@@ -594,7 +594,7 @@ usageStats.url = (args: { id: string | number } | [id: string | number ] | strin
 
 /**
 * @see \App\Http\Controllers\Seller\SellerPromotionController::usageStats
- * @see app/Http/Controllers/Seller/SellerPromotionController.php:184
+ * @see app/Http/Controllers/Seller/SellerPromotionController.php:229
  * @route '/seller/promotions/{id}/usage'
  */
 usageStats.get = (args: { id: string | number } | [id: string | number ] | string | number, options?: RouteQueryOptions): RouteDefinition<'get'> => ({
@@ -603,7 +603,7 @@ usageStats.get = (args: { id: string | number } | [id: string | number ] | strin
 })
 /**
 * @see \App\Http\Controllers\Seller\SellerPromotionController::usageStats
- * @see app/Http/Controllers/Seller/SellerPromotionController.php:184
+ * @see app/Http/Controllers/Seller/SellerPromotionController.php:229
  * @route '/seller/promotions/{id}/usage'
  */
 usageStats.head = (args: { id: string | number } | [id: string | number ] | string | number, options?: RouteQueryOptions): RouteDefinition<'head'> => ({
@@ -613,7 +613,7 @@ usageStats.head = (args: { id: string | number } | [id: string | number ] | stri
 
     /**
 * @see \App\Http\Controllers\Seller\SellerPromotionController::usageStats
- * @see app/Http/Controllers/Seller/SellerPromotionController.php:184
+ * @see app/Http/Controllers/Seller/SellerPromotionController.php:229
  * @route '/seller/promotions/{id}/usage'
  */
     const usageStatsForm = (args: { id: string | number } | [id: string | number ] | string | number, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
@@ -623,7 +623,7 @@ usageStats.head = (args: { id: string | number } | [id: string | number ] | stri
 
             /**
 * @see \App\Http\Controllers\Seller\SellerPromotionController::usageStats
- * @see app/Http/Controllers/Seller/SellerPromotionController.php:184
+ * @see app/Http/Controllers/Seller/SellerPromotionController.php:229
  * @route '/seller/promotions/{id}/usage'
  */
         usageStatsForm.get = (args: { id: string | number } | [id: string | number ] | string | number, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
@@ -632,7 +632,7 @@ usageStats.head = (args: { id: string | number } | [id: string | number ] | stri
         })
             /**
 * @see \App\Http\Controllers\Seller\SellerPromotionController::usageStats
- * @see app/Http/Controllers/Seller/SellerPromotionController.php:184
+ * @see app/Http/Controllers/Seller/SellerPromotionController.php:229
  * @route '/seller/promotions/{id}/usage'
  */
         usageStatsForm.head = (args: { id: string | number } | [id: string | number ] | string | number, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
