@@ -268,7 +268,7 @@ update.put = (args: { product: number | { id: number }, spec: number | { id: num
     update.form = updateForm
 /**
 * @see \App\Http\Controllers\Seller\ProductSpecController::destroy
- * @see app/Http/Controllers/Seller/ProductSpecController.php:86
+ * @see app/Http/Controllers/Seller/ProductSpecController.php:97
  * @route '/seller/products/{product}/specs/{spec}'
  */
 export const destroy = (args: { product: number | { id: number }, spec: number | { id: number } } | [product: number | { id: number }, spec: number | { id: number } ], options?: RouteQueryOptions): RouteDefinition<'delete'> => ({
@@ -283,7 +283,7 @@ destroy.definition = {
 
 /**
 * @see \App\Http\Controllers\Seller\ProductSpecController::destroy
- * @see app/Http/Controllers/Seller/ProductSpecController.php:86
+ * @see app/Http/Controllers/Seller/ProductSpecController.php:97
  * @route '/seller/products/{product}/specs/{spec}'
  */
 destroy.url = (args: { product: number | { id: number }, spec: number | { id: number } } | [product: number | { id: number }, spec: number | { id: number } ], options?: RouteQueryOptions) => {
@@ -313,7 +313,7 @@ destroy.url = (args: { product: number | { id: number }, spec: number | { id: nu
 
 /**
 * @see \App\Http\Controllers\Seller\ProductSpecController::destroy
- * @see app/Http/Controllers/Seller/ProductSpecController.php:86
+ * @see app/Http/Controllers/Seller/ProductSpecController.php:97
  * @route '/seller/products/{product}/specs/{spec}'
  */
 destroy.delete = (args: { product: number | { id: number }, spec: number | { id: number } } | [product: number | { id: number }, spec: number | { id: number } ], options?: RouteQueryOptions): RouteDefinition<'delete'> => ({
@@ -323,7 +323,7 @@ destroy.delete = (args: { product: number | { id: number }, spec: number | { id:
 
     /**
 * @see \App\Http\Controllers\Seller\ProductSpecController::destroy
- * @see app/Http/Controllers/Seller/ProductSpecController.php:86
+ * @see app/Http/Controllers/Seller/ProductSpecController.php:97
  * @route '/seller/products/{product}/specs/{spec}'
  */
     const destroyForm = (args: { product: number | { id: number }, spec: number | { id: number } } | [product: number | { id: number }, spec: number | { id: number } ], options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
@@ -338,7 +338,7 @@ destroy.delete = (args: { product: number | { id: number }, spec: number | { id:
 
             /**
 * @see \App\Http\Controllers\Seller\ProductSpecController::destroy
- * @see app/Http/Controllers/Seller/ProductSpecController.php:86
+ * @see app/Http/Controllers/Seller/ProductSpecController.php:97
  * @route '/seller/products/{product}/specs/{spec}'
  */
         destroyForm.delete = (args: { product: number | { id: number }, spec: number | { id: number } } | [product: number | { id: number }, spec: number | { id: number } ], options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({

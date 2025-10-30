@@ -244,14 +244,15 @@ class ProductController extends Controller
         $t = trim($text);
         if ($t === '') return false;
 
-        // detect URLs (http(s):// or www. or domains like example.com)
-        if (preg_match('/(https?:\/\/|www\.|[a-z0-9\-]+\.[a-z]{2,})/i', $t)) {
+        // Detect explicit URLs: http(s)://... or www.... or hostname.tld (require a dot + TLD)
+        if (preg_match('/\b(https?:\/\/|www\.)[^\s]+/i', $t) ||
+            preg_match('/\b[a-z0-9\-]+\.[a-z]{2,63}(\b|\/)/i', $t)) {
             return true;
         }
 
-        // detect phone-like patterns: sequence of digits with length >=7 (allow +, spaces, dashes, parentheses)
-        $digitsOnly = preg_replace('/\D+/', '', $t);
-        if (strlen($digitsOnly) >= 7) {
+        // Detect a contiguous digit sequence of length >= 7 (phone-like).
+        // Use lookarounds to avoid matching digits that are part of alphanumeric tokens.
+        if (preg_match('/(?<!\d)\d{7,}(?!\d)/', $t)) {
             return true;
         }
 

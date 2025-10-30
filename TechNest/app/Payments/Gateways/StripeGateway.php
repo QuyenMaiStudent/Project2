@@ -2,9 +2,12 @@
 
 namespace App\Payments\Gateways;
 
+use App\Models\Cart;
 use App\Models\Order;
 use App\Models\Payment;
 use App\Models\ProductVariant;
+use App\Models\Promotion;
+use App\Models\Transaction;
 use App\Payments\Contracts\PaymentGateway;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
@@ -30,6 +33,21 @@ class StripeGateway implements PaymentGateway
             // fallback nếu API hỏng (chỉnh theo thực tế)
             return $rate ? (float)$rate : 0.000042;
         });
+    }
+
+    /**
+     * Map payment status để đảm bảo tương thích với enum
+     */
+    private function mapPaymentStatus(string $status): string
+    {
+        return match(strtolower($status)) {
+            'success', 'completed', 'paid', 'succeeded' => 'succeeded',
+            'pending', 'processing', 'waiting' => 'pending',
+            'failed', 'error', 'declined' => 'failed',
+            'canceled', 'cancelled', 'voided' => 'canceled',
+            'refunded', 'refund' => 'refunded',
+            default => 'pending'
+        };
     }
 
     public function createPayment(Order $order): string
@@ -89,9 +107,140 @@ class StripeGateway implements PaymentGateway
     public function handleReturn(array $payload): array
     {
         $status = $payload['status'] ?? 'cancel';
-        if ($status === 'success') return ['status' => 'succeeded', 'transaction_id' => $payload['session_id'] ?? null, 'message' => 'Checkout completed'];
-        if ($status === 'cancel')  return ['status' => 'canceled',  'transaction_id' => null, 'message' => 'User canceled'];
+        
+        if ($status === 'success') {
+            $sessionId = $payload['session_id'] ?? null;
+            $orderId = $payload['order_id'] ?? null;
+            
+            // Fallback: Nếu webhook chưa xử lý, xử lý ở đây
+            if ($sessionId && $orderId) {
+                try {
+                    $session = $this->stripe->checkout->sessions->retrieve($sessionId);
+                    if ($session->payment_status === 'paid') {
+                        // Gọi logic completion tương tự webhook
+                        $this->completePayment($orderId, $session->payment_intent, 'return_' . $sessionId);
+                    }
+                } catch (\Throwable $e) {
+                    Log::warning('Failed to process return fallback', ['error' => $e->getMessage()]);
+                }
+            }
+            
+            return ['status' => 'succeeded', 'transaction_id' => $sessionId, 'message' => 'Checkout completed'];
+        }
+        
+        if ($status === 'cancel') return ['status' => 'canceled', 'transaction_id' => null, 'message' => 'User canceled'];
         return ['status' => 'failed', 'transaction_id' => null, 'message' => 'Unknown status'];
+    }
+
+    public function completePayment(?string $orderId, ?string $pi, string $eventId): void
+    {
+        if (!$orderId) {
+            Log::warning('No order ID found', ['event_id' => $eventId]);
+            return;
+        }
+        
+        DB::transaction(function () use ($orderId, $pi, $eventId) {
+            $order = Order::with(['items', 'user'])->lockForUpdate()->findOrFail($orderId);
+            
+            if ($order->status === 'paid') {
+                Log::info('Order already paid', ['order_id' => $order->id, 'event_id' => $eventId]);
+                return;
+            }
+            
+            // Trừ stock cho từng item
+            foreach ($order->items as $item) {
+                $qty = (int) $item->quantity;
+                
+                if ($item->product_variant_id) {
+                    $affected = ProductVariant::where('id', $item->product_variant_id)
+                        ->where('stock', '>=', $qty)
+                        ->decrement('stock', $qty);
+                    
+                    if ($affected === 0) {
+                        throw new RuntimeException("Không đủ tồn kho cho variant ID {$item->product_variant_id}");
+                    }
+                } else {
+                    $affected = DB::table('products')
+                        ->where('id', $item->product_id)
+                        ->where('stock', '>=', $qty)
+                        ->decrement('stock', $qty);
+                    
+                    if ($affected === 0) {
+                        throw new RuntimeException("Không đủ tồn kho cho sản phẩm ID {$item->product_id}");
+                    }
+                }
+            }
+            
+            // XÓA ITEMS KHỎI GIỎ HÀNG
+            $cart = Cart::where('user_id', $order->user_id)->first();
+            if ($cart) {
+                foreach ($order->items as $orderItem) {
+                    $cart->items()
+                        ->where('product_id', $orderItem->product_id)
+                        ->where('product_variant_id', $orderItem->product_variant_id)
+                        ->delete();
+                }
+            }
+            
+            // Cập nhật payment và tạo transaction với status mapping
+            $payment = Payment::where('order_id', $order->id)
+                ->whereRaw('LOWER(provider) = ?', ['stripe'])
+                ->first();
+
+            if ($payment) {
+                $mappedStatus = $this->mapPaymentStatus('succeeded');
+                
+                $payment->update([
+                    'status' => $mappedStatus,
+                    'transaction_id' => $pi,
+                    'gateway_event_id' => $eventId,
+                    'paid_at' => now(),
+                ]);
+
+                Transaction::create([
+                    'payment_id' => $payment->id,
+                    'gateway' => 'stripe',
+                    'transaction_code' => $pi,
+                    'status' => $mappedStatus, // Sử dụng mapped status
+                    'amount' => $order->total_amount,
+                    'processed_at' => now(),
+                ]);
+            }
+            
+            // Cập nhật order
+            $order->update(['status' => 'paid']);
+            
+            // Xử lý promotion
+            if (!empty($order->promotion_id)) {
+                try {
+                    Promotion::where('id', $order->promotion_id)->increment('used_count');
+
+                    $exists = DB::table('promotion_usages')
+                        ->where('promotion_id', $order->promotion_id)
+                        ->where('user_id', $order->user_id)
+                        ->exists();
+
+                    if ($exists) {
+                        DB::table('promotion_usages')
+                            ->where('promotion_id', $order->promotion_id)
+                            ->where('user_id', $order->user_id)
+                            ->increment('used_times', 1);
+                    } else {
+                        DB::table('promotion_usages')->insert([
+                            'promotion_id' => $order->promotion_id,
+                            'user_id' => $order->user_id,
+                            'used_times' => 1,
+                            'created_at' => now(),
+                            'updated_at' => now(),
+                        ]);
+                    }
+                } catch (\Throwable $ex) {
+                    Log::warning('Failed to update promotion usage', ['error' => $ex->getMessage()]);
+                }
+            }
+            
+            Log::info('Payment completed', ['order_id' => $order->id, 'event_id' => $eventId]);
+        });
     }
 
     public function handleWebhook(array $payload, ?string $signature = null): array
@@ -111,68 +260,7 @@ class StripeGateway implements PaymentGateway
             return ['status' => 'failed', 'transaction_id' => null, 'message' => 'Missing session/order metadata'];
         }
 
-        DB::transaction(function () use ($orderId, $pi, $eventId) {
-            $order = Order::with(['items'])->lockForUpdate()->findOrFail($orderId);
-
-            if ($order->status === 'paid') {
-                Log::info('Order already paid', ['order_id' => $order->id]);
-                return;
-            }
-
-            // Trừ stock cho từng item
-            foreach ($order->items as $item) {
-                $qty = (int) $item->quantity;
-
-                // Nếu có variant, trừ stock từ variant
-                if ($item->product_variant_id) {
-                    $affected = ProductVariant::where('id', $item->product_variant_id)
-                        ->where('stock', '>=', $qty)
-                        ->decrement('stock', $qty);
-
-                    if ($affected === 0) {
-                        throw new RuntimeException("Không đủ tồn kho cho variant ID {$item->product_variant_id}");
-                    }
-
-                    Log::info('Stock decremented for variant', [
-                        'variant_id' => $item->product_variant_id,
-                        'quantity' => $qty
-                    ]);
-                } else {
-                    // Nếu không có variant, trừ stock từ product
-                    $affected = DB::table('products')
-                        ->where('id', $item->product_id)
-                        ->where('stock', '>=', $qty)
-                        ->decrement('stock', $qty);
-
-                    if ($affected === 0) {
-                        throw new RuntimeException("Không đủ tồn kho cho sản phẩm ID {$item->product_id}");
-                    }
-
-                    Log::info('Stock decremented for product', [
-                        'product_id' => $item->product_id,
-                        'quantity' => $qty
-                    ]);
-                }
-            }
-
-            // Cập nhật payment
-            Payment::where('order_id', $order->id)
-                ->whereRaw('LOWER(provider) = ?', ['stripe'])
-                ->update([
-                    'status'           => 'succeeded',
-                    'transaction_id'   => $pi,
-                    'gateway_event_id' => $eventId,
-                    'paid_at'          => now(),
-                ]);
-
-            // Cập nhật order status
-            $order->update(['status' => 'paid']);
-
-            Log::info('Payment webhook completed', [
-                'order_id' => $order->id,
-                'event_id' => $eventId
-            ]);
-        });
+        $this->completePayment($orderId, $pi, $eventId);
 
         return ['status' => 'succeeded', 'transaction_id' => $pi, 'message' => 'Stock decremented & order paid'];
     }

@@ -35,9 +35,18 @@ export default function AddProduct({ brands, warranties }: Props) {
   const containsUrlOrPhone = (text?: string) => {
     const t = (text ?? '').trim();
     if (!t) return false;
-    if (/(https?:\/\/|www\.|[a-z0-9\-]+\.[a-z]{2,})/i.test(t)) return true;
-    const digits = t.replace(/\D+/g, '');
-    return digits.length >= 7;
+
+    // explicit URLs (http(s) or www.) or domain-like (with a dot + tld)
+    if (/(https?:\/\/|www\.)[^\s]+/i.test(t) || /\b[a-z0-9\-]+\.[a-z]{2,63}(\b|\/)/i.test(t)) {
+      return true;
+    }
+
+    // detect a contiguous digit sequence of length >= 7 (phone-like)
+    if (/\b\d{7,}\b/.test(t)) {
+      return true;
+    }
+
+    return false;
   };
 
   const validateField = (field: string, value: string) => {

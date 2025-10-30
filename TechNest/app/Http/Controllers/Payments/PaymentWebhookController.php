@@ -3,15 +3,11 @@
 namespace App\Http\Controllers\Payments;
 
 use App\Http\Controllers\Controller;
-use App\Models\Cart;
 use App\Models\Order;
-use App\Models\Payment;
-use App\Models\ProductVariant;
+use App\Payments\Gateways\StripeGateway;
 use App\Services\PaymentService;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
-use RuntimeException;
 use Stripe\StripeClient;
 use Stripe\Webhook;
 use Throwable;
@@ -70,69 +66,9 @@ class PaymentWebhookController extends Controller
             return;
         }
         
-        DB::transaction(function () use ($orderId, $pi, $eventId) {
-            $order = Order::with(['items', 'user'])->lockForUpdate()->findOrFail($orderId);
-            
-            if ($order->status === 'paid') {
-                Log::info('Order already paid', ['order_id' => $order->id, 'event_id' => $eventId]);
-                return;
-            }
-            
-            // Trừ stock cho từng item
-            foreach ($order->items as $item) {
-                $qty = (int) $item->quantity;
-                
-                // Nếu có variant, trừ stock từ variant
-                if ($item->product_variant_id) {
-                    $affected = ProductVariant::where('id', $item->product_variant_id)
-                        ->where('stock', '>=', $qty)
-                        ->decrement('stock', $qty);
-                    
-                    if ($affected === 0) {
-                        throw new RuntimeException("Không đủ tồn kho cho variant ID {$item->product_variant_id}");
-                    }
-                } else {
-                    // Nếu không có variant, trừ stock từ product
-                    $affected = DB::table('products')
-                        ->where('id', $item->product_id)
-                        ->where('stock', '>=', $qty)
-                        ->decrement('stock', $qty);
-                    
-                    if ($affected === 0) {
-                        throw new RuntimeException("Không đủ tồn kho cho sản phẩm ID {$item->product_id}");
-                    }
-                }
-            }
-            
-            // XÓA ITEMS KHỎI GIỎ HÀNG SAU KHI THANH TOÁN THÀNH CÔNG
-            $cart = Cart::where('user_id', $order->user_id)->first();
-            if ($cart) {
-                foreach ($order->items as $orderItem) {
-                    $cart->items()
-                        ->where('product_id', $orderItem->product_id)
-                        ->where('product_variant_id', $orderItem->product_variant_id)
-                        ->delete();
-                }
-            }
-            
-            // Cập nhật payment
-            Payment::where('order_id', $order->id)
-                ->where('provider', 'stripe')
-                ->update([
-                    'status'           => 'succeeded',
-                    'transaction_id'   => $pi,
-                    'gateway_event_id' => $eventId,
-                    'paid_at'          => now(),
-                ]);
-            
-            // Cập nhật order
-            $order->update(['status' => 'paid']);
-            
-            Log::info('Webhook payment completed', [
-                'order_id' => $order->id,
-                'event_id' => $eventId
-            ]);
-        });
+        // Sử dụng method từ StripeGateway để đảm bảo logic consistent
+        $gateway = app(StripeGateway::class);
+        $gateway->completePayment($orderId, $pi, $eventId);
     }
 
     public function momo(Request $req)
@@ -147,22 +83,81 @@ class PaymentWebhookController extends Controller
 
     private function generic(string $provider, Request $req)
     {
-        $gateway = PaymentService::make($provider);
-        $result = $gateway->handleWebhook($req->all());
-        $orderId = $req->input('orderId') ?? $req->input('vnp_TxnRef');
-        
-        if ($orderId && $order = Order::find($orderId)) {
-            $payment = $order->payment;
-            $payment->update([
-                'status' => $result['status'],
-                'transaction_id' => $result['transaction_id'] ?? $payment->transaction_id,
-                'raw_payload' => $req->all(),
+        try {
+            $gateway = PaymentService::make($provider);
+            $result = $gateway->handleWebhook($req->all());
+            $orderId = $req->input('orderId') ?? $req->input('vnp_TxnRef');
+            
+            if ($orderId && $order = Order::find($orderId)) {
+                $payment = $order->payment;
+                
+                // Map status để đảm bảo tương thích với enum
+                $mappedStatus = $this->mapPaymentStatus($result['status']);
+                
+                $payment->update([
+                    'status' => $mappedStatus,
+                    'transaction_id' => $result['transaction_id'] ?? $payment->transaction_id,
+                    'raw_payload' => $req->all(),
+                    'gateway_event_id' => $req->input('eventId') ?? null,
+                ]);
+                
+                // Cập nhật order status
+                $orderStatus = $this->mapOrderStatus($mappedStatus);
+                $order->update([
+                    'status' => $orderStatus
+                ]);
+                
+                Log::info('Payment updated via webhook', [
+                    'provider' => $provider,
+                    'order_id' => $orderId,
+                    'payment_status' => $mappedStatus,
+                    'order_status' => $orderStatus
+                ]);
+            } else {
+                Log::warning('Order not found for webhook', [
+                    'provider' => $provider,
+                    'order_id' => $orderId
+                ]);
+            }
+            
+        } catch (Throwable $e) {
+            Log::error('Webhook processing failed', [
+                'provider' => $provider,
+                'error' => $e->getMessage(),
+                'trace' => $e->getTraceAsString()
             ]);
-            $order->update([
-                'status' => $result['status'] === 'succeeded' ? 'paid' : 'failed'
-            ]);
+            return response('Webhook processing failed', 500);
         }
         
         return response('OK');
+    }
+
+    /**
+     * Map các status từ payment gateway về enum values
+     */
+    private function mapPaymentStatus(string $status): string
+    {
+        return match(strtolower($status)) {
+            'success', 'completed', 'paid', 'succeeded' => 'succeeded',
+            'pending', 'processing', 'waiting' => 'pending',
+            'failed', 'error', 'declined' => 'failed',
+            'canceled', 'cancelled', 'voided' => 'canceled',
+            'refunded', 'refund' => 'refunded',
+            default => 'pending' // fallback safety
+        };
+    }
+
+    /**
+     * Map payment status sang order status (đã fix để khớp với enum orders)
+     */
+    private function mapOrderStatus(string $paymentStatus): string
+    {
+        return match($paymentStatus) {
+            'succeeded' => 'paid',           // Bây giờ 'paid' đã có trong enum
+            'failed' => 'cancelled',        // Map 'failed' -> 'cancelled' 
+            'canceled' => 'cancelled',      // Map 'canceled' -> 'cancelled'
+            'refunded' => 'cancelled',      // Map 'refunded' -> 'cancelled'
+            default => 'placed'             // Default -> 'placed' thay vì 'pending'
+        };
     }
 }

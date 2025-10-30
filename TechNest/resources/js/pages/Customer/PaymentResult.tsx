@@ -151,7 +151,7 @@ export default function PaymentResult({ provider, status, message, order }: Paym
                     {status === 'succeeded' && order ? (
                         <>
                             <Link
-                                href={`customer/orders/${order.id}`}
+                                href={`/customer/orders/${order.id}`}
                                 className="flex-1 bg-blue-600 hover:bg-blue-700 text-white font-semibold py-3 px-6 rounded-lg transition-colors flex items-center justify-center"
                             >
                                 Xem chi tiết đơn hàng

@@ -9,12 +9,12 @@ use App\Models\Cart;
 use App\Models\PaymentMethod;
 use App\Models\Promotion;
 use App\Models\ShippingAddress;
-use App\Services\PaymentService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use Inertia\Inertia;
+use App\Models\Payment;
 
 class OrderController extends Controller
 {
@@ -125,15 +125,14 @@ class OrderController extends Controller
                     // Items sẽ được xóa trong webhook khi thanh toán thành công
                 }
 
-                // Tạo payment record với status pending
-                DB::table('payments')->insert([
+                // Tạo payment record với status pending (dùng Eloquent để dễ truy xuất id)
+                Payment::create([
                     'order_id' => $order->id,
                     'payment_method_id' => $paymentMethod->id,
-                    'provider' => $paymentMethod->provider,
+                    // store provider normalized to lowercase to avoid case-mismatch later
+                    'provider' => strtolower($paymentMethod->provider ?? 'unknown'),
                     'amount' => $finalTotal,
-                    'status' => 'pending', // Quan trọng: phải là pending
-                    'created_at' => now(),
-                    'updated_at' => now(),
+                    'status' => 'pending',
                 ]);
 
                 // Không cập nhật order status thành 'paid' ở đây
@@ -147,8 +146,21 @@ class OrderController extends Controller
                 return $order;
             });
 
+            // reload relations so gateway can access item->product safely
+            $order->load('items.product', 'items.variant');
+
+            // Validate provider and create gateway (catch unsupported provider early)
+            try {
+                if (empty($paymentMethod->provider)) {
+                    throw new \InvalidArgumentException('Invalid payment provider');
+                }
+                $gateway = \App\Services\PaymentService::make($paymentMethod->provider);
+            } catch (\Throwable $e) {
+                Log::error('Payment provider error', ['provider' => $paymentMethod->provider ?? null, 'error' => $e->getMessage()]);
+                return back()->withErrors(['payment_method_id' => 'Phương thức thanh toán không hợp lệ. Vui lòng thử lại hoặc chọn phương thức khác.']);
+            }
+
             // Tạo payment URL
-            $gateway = PaymentService::make($paymentMethod->provider);
             $paymentUrl = $gateway->createPayment($order);
 
             Log::info('Payment URL created', [
@@ -175,8 +187,9 @@ class OrderController extends Controller
                 'trace' => $e->getTraceAsString()
             ]);
 
+            // trả về message chung, chi tiết đã được log
             return back()->withErrors([
-                'payment' => 'Có lỗi xảy ra khi tạo đơn hàng: ' . $e->getMessage()
+                'payment' => 'Có lỗi xảy ra khi tạo đơn hàng. Vui lòng thử lại hoặc liên hệ hỗ trợ.'
             ]);
         }
     }
@@ -324,7 +337,10 @@ class OrderController extends Controller
             return ['valid' => false, 'error' => 'Đơn hàng chưa đủ giá trị tối thiểu để áp dụng mã.'];
         }
 
-        $sellerIds = $selectedItems->pluck('product.created_by')->filter()->unique()->values()->all();
+        // ensure we reliably extract seller ids from related product
+        $sellerIds = $selectedItems->map(function ($it) {
+            return $it->product?->created_by ?? null;
+        })->filter()->unique()->values()->all();
         if ($promotion->seller_id !== null && !in_array($promotion->seller_id, $sellerIds, true)) {
             return ['valid' => false, 'error' => 'Mã khuyến mãi không áp dụng cho sản phẩm trong giỏ.'];
         }

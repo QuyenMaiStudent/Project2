@@ -9,6 +9,15 @@ class Order extends Model
 {
     use HasFactory;
 
+    // Thêm constants cho status
+    const STATUS_DRAFT = 'draft';
+    const STATUS_PLACED = 'placed';
+    const STATUS_PROCESSING = 'processing';
+    const STATUS_PAID = 'paid';
+    const STATUS_SHIPPED = 'shipped';
+    const STATUS_DELIVERED = 'delivered';
+    const STATUS_CANCELLED = 'cancelled';
+
     protected $fillable = [
         'user_id',
         'status',
@@ -58,5 +67,12 @@ class Order extends Model
     public function promotion()
     {
         return $this->belongsTo(Promotion::class);
+    }
+
+    public function transactions()
+    {
+        return $this->hasMany(Transaction::class, 'payment_id', 'id')
+                   ->join('payments', 'transactions.payment_id', '=', 'payments.id')
+                   ->where('payments.order_id', $this->id);
     }
 }

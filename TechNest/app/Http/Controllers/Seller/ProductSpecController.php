@@ -75,11 +75,22 @@ class ProductSpecController extends Controller
     // reuse same detection heuristic
     protected function containsUrlOrPhone($text)
     {
-        $t = trim((string)$text);
+        $t = trim($text);
         if ($t === '') return false;
-        if (preg_match('/(https?:\/\/|www\.|[a-z0-9\-]+\.[a-z]{2,})/i', $t)) return true;
-        $digitsOnly = preg_replace('/\D+/', '', $t);
-        return strlen($digitsOnly) >= 7;
+
+        // Detect explicit URLs: http(s)://... or www.... or hostname.tld (require a dot + TLD)
+        if (preg_match('/\b(https?:\/\/|www\.)[^\s]+/i', $t) ||
+            preg_match('/\b[a-z0-9\-]+\.[a-z]{2,63}(\b|\/)/i', $t)) {
+            return true;
+        }
+
+        // Detect a contiguous digit sequence of length >= 7 (phone-like).
+        // Use lookarounds to avoid matching digits that are part of alphanumeric tokens.
+        if (preg_match('/(?<!\d)\d{7,}(?!\d)/', $t)) {
+            return true;
+        }
+
+        return false;
     }
 
     //Xóa
