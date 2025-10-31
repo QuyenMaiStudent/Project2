@@ -164,6 +164,61 @@ vnpay.post = (options?: RouteQueryOptions): RouteDefinition<'post'> => ({
         })
     
     vnpay.form = vnpayForm
-const PaymentWebhookController = { stripe, momo, vnpay }
+/**
+* @see \App\Http\Controllers\Payments\PaymentWebhookController::paypalWebhook
+ * @see app/Http/Controllers/Payments/PaymentWebhookController.php:164
+ * @route '/webhooks/paypal'
+ */
+export const paypalWebhook = (options?: RouteQueryOptions): RouteDefinition<'post'> => ({
+    url: paypalWebhook.url(options),
+    method: 'post',
+})
+
+paypalWebhook.definition = {
+    methods: ["post"],
+    url: '/webhooks/paypal',
+} satisfies RouteDefinition<["post"]>
+
+/**
+* @see \App\Http\Controllers\Payments\PaymentWebhookController::paypalWebhook
+ * @see app/Http/Controllers/Payments/PaymentWebhookController.php:164
+ * @route '/webhooks/paypal'
+ */
+paypalWebhook.url = (options?: RouteQueryOptions) => {
+    return paypalWebhook.definition.url + queryParams(options)
+}
+
+/**
+* @see \App\Http\Controllers\Payments\PaymentWebhookController::paypalWebhook
+ * @see app/Http/Controllers/Payments/PaymentWebhookController.php:164
+ * @route '/webhooks/paypal'
+ */
+paypalWebhook.post = (options?: RouteQueryOptions): RouteDefinition<'post'> => ({
+    url: paypalWebhook.url(options),
+    method: 'post',
+})
+
+    /**
+* @see \App\Http\Controllers\Payments\PaymentWebhookController::paypalWebhook
+ * @see app/Http/Controllers/Payments/PaymentWebhookController.php:164
+ * @route '/webhooks/paypal'
+ */
+    const paypalWebhookForm = (options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
+        action: paypalWebhook.url(options),
+        method: 'post',
+    })
+
+            /**
+* @see \App\Http\Controllers\Payments\PaymentWebhookController::paypalWebhook
+ * @see app/Http/Controllers/Payments/PaymentWebhookController.php:164
+ * @route '/webhooks/paypal'
+ */
+        paypalWebhookForm.post = (options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
+            action: paypalWebhook.url(options),
+            method: 'post',
+        })
+    
+    paypalWebhook.form = paypalWebhookForm
+const PaymentWebhookController = { stripe, momo, vnpay, paypalWebhook }
 
 export default PaymentWebhookController

@@ -47,4 +47,26 @@ return [
         'webhook_secret' => env('STRIPE_WEBHOOK_SECRET'),
         'currency' => env('STRIPE_CURRENCY', 'USD'),
     ],
+
+    'paypal' => [
+        'client_id' => env('PAYPAL_CLIENT_ID'),
+        'client_secret' => env('PAYPAL_CLIENT_SECRET'),
+        'mode' => env('PAYPAL_MODE', 'sandbox'),
+    ],
+
+    'momo' => [
+        'partner_code' => env('MOMO_PARTNER_CODE'),
+        'access_key' => env('MOMO_ACCESS_KEY'),
+        'secret_key' => env('MOMO_SECRET_KEY'),
+        'endpoint' => env('MOMO_ENDPOINT'),
+        'redirect' => env('MOMO_REDIRECT_URL'),
+        'ipn' => env('MOMO_IPN_URL'),
+        'convert_rate' => env('MOMO_CONVERT_RATE'),
+    ],
+    'vnpay' => [
+        'tmn_code' => env('VNP_TMN_CODE'),
+        'hash_secret' => env('VNP_HASH_SECRET'),
+        'payment_url' => env('VNP_PAYMENT_URL'),
+        'return_url' => env('VNP_RETURN_URL'),
+    ],
 ];

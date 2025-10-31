@@ -160,4 +160,15 @@ class PaymentWebhookController extends Controller
             default => 'placed'             // Default -> 'placed' thay vì 'pending'
         };
     }
+
+    public function paypalWebhook(Request $request)
+    {
+        $gateway = PaymentService::make('paypal');
+        $data = $gateway->handleWebhook(
+            $request->all(),
+            $request->header('Paypal-Transmission-Sig'),
+        );
+
+        return response()->json($data);
+    }
 }

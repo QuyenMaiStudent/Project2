@@ -260,26 +260,33 @@ export default function Checkout({
                 {paymentMethods.length === 0 ? (
                   <div className="text-lg text-red-600">Không có phương thức thanh toán khả dụng.</div>
                 ) : (
-                  <div className="space-y-3">
+                  <select
+                    value={data.payment_method_id ?? ''}
+                    onChange={(e) => setData('payment_method_id', e.target.value ? Number(e.target.value) : null)}
+                    className="border p-4 rounded w-full text-lg"
+                  >
+                    <option value="">-- Chọn phương thức thanh toán --</option>
                     {paymentMethods.map((pm: PaymentMethod) => (
-                      <label key={pm.id} className="flex items-center gap-3 p-4 border rounded cursor-pointer hover:bg-gray-50">
-                        <input
-                          type="radio"
-                          name="payment_method"
-                          value={pm.id}
-                          checked={Number(data.payment_method_id) === Number(pm.id)}
-                          onChange={() => setData('payment_method_id', pm.id)}
-                          className="w-4 h-4"
-                        />
-                        <div>
-                          <div className="font-medium">{pm.name}</div>
-                          {pm.provider && <div className="text-sm text-gray-500">{pm.provider}</div>}
-                        </div>
-                      </label>
+                      <option key={pm.id} value={pm.id}>
+                        {pm.name} {pm.provider && `(${pm.provider.toUpperCase()})`}
+                      </option>
                     ))}
-                  </div>
+                  </select>
                 )}
                 {errors.payment_method_id && <div className="text-red-600 text-sm mt-2">{errors.payment_method_id}</div>}
+                
+                {/* Hiển thị thông tin phương thức đã chọn */}
+                {selectedPayment && (
+                  <div className="mt-4 p-4 bg-blue-50 rounded text-base">
+                    <div className="font-semibold">{selectedPayment.name}</div>
+                    <div className="text-gray-600 text-sm">
+                      {selectedPayment.provider === 'stripe' && 'Thanh toán bằng thẻ tín dụng/ghi nợ'}
+                      {selectedPayment.provider === 'paypal' && 'Thanh toán qua tài khoản PayPal'}
+                      {selectedPayment.provider === 'momo' && 'Thanh toán qua ví MoMo'}
+                      {selectedPayment.provider === 'vnpay' && 'Thanh toán qua VNPay'}
+                    </div>
+                  </div>
+                )}
               </div>
 
               {/* Mã khuyến mãi */}

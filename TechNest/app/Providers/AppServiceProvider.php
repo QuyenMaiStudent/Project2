@@ -3,6 +3,7 @@
 namespace App\Providers;
 
 use App\Models\Cart;
+use App\Payments\Gateways\PaypalGateway;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\ServiceProvider;
 use Inertia\Inertia;
@@ -15,9 +16,13 @@ class AppServiceProvider extends ServiceProvider
      */
     public function register(): void
     {
+        // Stripe
         $this->app->singleton(StripeClient::class, function () {
             return new StripeClient(config('services.stripe.secret'));
         });
+
+        // PayPal Gateway
+        $this->app->bind(PaypalGateway::class, fn() => new PaypalGateway());
     }
 
     /**
