@@ -3,6 +3,7 @@
 namespace App\Providers;
 
 use App\Models\Cart;
+use App\Payments\Gateways\MomoGateway;
 use App\Payments\Gateways\PaypalGateway;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\ServiceProvider;
@@ -23,6 +24,9 @@ class AppServiceProvider extends ServiceProvider
 
         // PayPal Gateway
         $this->app->bind(PaypalGateway::class, fn() => new PaypalGateway());
+
+        // MoMo Gateway
+        $this->app->bind(MomoGateway::class, fn() => new MomoGateway());
     }
 
     /**

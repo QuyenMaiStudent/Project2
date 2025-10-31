@@ -71,6 +71,61 @@ home.head = (options?: RouteQueryOptions): RouteDefinition<'head'> => ({
     
     home.form = homeForm
 /**
+* @see \App\Http\Controllers\Payments\PaymentReturnController::momo
+ * @see app/Http/Controllers/Payments/PaymentReturnController.php:0
+ * @route '/webhooks/momo'
+ */
+export const momo = (options?: RouteQueryOptions): RouteDefinition<'post'> => ({
+    url: momo.url(options),
+    method: 'post',
+})
+
+momo.definition = {
+    methods: ["post"],
+    url: '/webhooks/momo',
+} satisfies RouteDefinition<["post"]>
+
+/**
+* @see \App\Http\Controllers\Payments\PaymentReturnController::momo
+ * @see app/Http/Controllers/Payments/PaymentReturnController.php:0
+ * @route '/webhooks/momo'
+ */
+momo.url = (options?: RouteQueryOptions) => {
+    return momo.definition.url + queryParams(options)
+}
+
+/**
+* @see \App\Http\Controllers\Payments\PaymentReturnController::momo
+ * @see app/Http/Controllers/Payments/PaymentReturnController.php:0
+ * @route '/webhooks/momo'
+ */
+momo.post = (options?: RouteQueryOptions): RouteDefinition<'post'> => ({
+    url: momo.url(options),
+    method: 'post',
+})
+
+    /**
+* @see \App\Http\Controllers\Payments\PaymentReturnController::momo
+ * @see app/Http/Controllers/Payments/PaymentReturnController.php:0
+ * @route '/webhooks/momo'
+ */
+    const momoForm = (options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
+        action: momo.url(options),
+        method: 'post',
+    })
+
+            /**
+* @see \App\Http\Controllers\Payments\PaymentReturnController::momo
+ * @see app/Http/Controllers/Payments/PaymentReturnController.php:0
+ * @route '/webhooks/momo'
+ */
+        momoForm.post = (options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
+            action: momo.url(options),
+            method: 'post',
+        })
+    
+    momo.form = momoForm
+/**
 * @see \App\Http\Controllers\Auth\RegisteredUserController::register
  * @see app/Http/Controllers/Auth/RegisteredUserController.php:23
  * @route '/register'

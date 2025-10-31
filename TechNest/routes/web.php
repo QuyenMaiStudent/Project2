@@ -39,6 +39,10 @@ Route::post('/webhooks/vnpay', [PaymentWebhookController::class, 'vnpay']);
 // PayPal
 Route::post('/webhooks/paypal', [PaymentWebhookController::class, 'paypalWebhook'])->name('paypal.webhook');
 
+// Momo
+Route::post('/webhooks/momo', [PaymentReturnController::class, 'momoReturn'])->name('momo');
+Route::post('/webhooks/momo/ipn', [PaymentWebhookController::class, 'momo']);
+
 // Thêm dòng này để load customer routes
 Route::middleware('web')->group(base_path('routes/customer.php'));
 

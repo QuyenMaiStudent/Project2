@@ -55,61 +55,6 @@ stripe.post = (options?: RouteQueryOptions): RouteDefinition<'post'> => ({
     
     stripe.form = stripeForm
 /**
-* @see \App\Http\Controllers\Payments\PaymentWebhookController::momo
- * @see app/Http/Controllers/Payments/PaymentWebhookController.php:74
- * @route '/webhooks/momo'
- */
-export const momo = (options?: RouteQueryOptions): RouteDefinition<'post'> => ({
-    url: momo.url(options),
-    method: 'post',
-})
-
-momo.definition = {
-    methods: ["post"],
-    url: '/webhooks/momo',
-} satisfies RouteDefinition<["post"]>
-
-/**
-* @see \App\Http\Controllers\Payments\PaymentWebhookController::momo
- * @see app/Http/Controllers/Payments/PaymentWebhookController.php:74
- * @route '/webhooks/momo'
- */
-momo.url = (options?: RouteQueryOptions) => {
-    return momo.definition.url + queryParams(options)
-}
-
-/**
-* @see \App\Http\Controllers\Payments\PaymentWebhookController::momo
- * @see app/Http/Controllers/Payments/PaymentWebhookController.php:74
- * @route '/webhooks/momo'
- */
-momo.post = (options?: RouteQueryOptions): RouteDefinition<'post'> => ({
-    url: momo.url(options),
-    method: 'post',
-})
-
-    /**
-* @see \App\Http\Controllers\Payments\PaymentWebhookController::momo
- * @see app/Http/Controllers/Payments/PaymentWebhookController.php:74
- * @route '/webhooks/momo'
- */
-    const momoForm = (options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
-        action: momo.url(options),
-        method: 'post',
-    })
-
-            /**
-* @see \App\Http\Controllers\Payments\PaymentWebhookController::momo
- * @see app/Http/Controllers/Payments/PaymentWebhookController.php:74
- * @route '/webhooks/momo'
- */
-        momoForm.post = (options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
-            action: momo.url(options),
-            method: 'post',
-        })
-    
-    momo.form = momoForm
-/**
 * @see \App\Http\Controllers\Payments\PaymentWebhookController::vnpay
  * @see app/Http/Controllers/Payments/PaymentWebhookController.php:79
  * @route '/webhooks/vnpay'
@@ -219,6 +164,61 @@ paypalWebhook.post = (options?: RouteQueryOptions): RouteDefinition<'post'> => (
         })
     
     paypalWebhook.form = paypalWebhookForm
-const PaymentWebhookController = { stripe, momo, vnpay, paypalWebhook }
+/**
+* @see \App\Http\Controllers\Payments\PaymentWebhookController::momo
+ * @see app/Http/Controllers/Payments/PaymentWebhookController.php:74
+ * @route '/webhooks/momo/ipn'
+ */
+export const momo = (options?: RouteQueryOptions): RouteDefinition<'post'> => ({
+    url: momo.url(options),
+    method: 'post',
+})
+
+momo.definition = {
+    methods: ["post"],
+    url: '/webhooks/momo/ipn',
+} satisfies RouteDefinition<["post"]>
+
+/**
+* @see \App\Http\Controllers\Payments\PaymentWebhookController::momo
+ * @see app/Http/Controllers/Payments/PaymentWebhookController.php:74
+ * @route '/webhooks/momo/ipn'
+ */
+momo.url = (options?: RouteQueryOptions) => {
+    return momo.definition.url + queryParams(options)
+}
+
+/**
+* @see \App\Http\Controllers\Payments\PaymentWebhookController::momo
+ * @see app/Http/Controllers/Payments/PaymentWebhookController.php:74
+ * @route '/webhooks/momo/ipn'
+ */
+momo.post = (options?: RouteQueryOptions): RouteDefinition<'post'> => ({
+    url: momo.url(options),
+    method: 'post',
+})
+
+    /**
+* @see \App\Http\Controllers\Payments\PaymentWebhookController::momo
+ * @see app/Http/Controllers/Payments/PaymentWebhookController.php:74
+ * @route '/webhooks/momo/ipn'
+ */
+    const momoForm = (options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
+        action: momo.url(options),
+        method: 'post',
+    })
+
+            /**
+* @see \App\Http\Controllers\Payments\PaymentWebhookController::momo
+ * @see app/Http/Controllers/Payments/PaymentWebhookController.php:74
+ * @route '/webhooks/momo/ipn'
+ */
+        momoForm.post = (options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
+            action: momo.url(options),
+            method: 'post',
+        })
+    
+    momo.form = momoForm
+const PaymentWebhookController = { stripe, vnpay, paypalWebhook, momo }
 
 export default PaymentWebhookController

@@ -5,7 +5,6 @@ namespace App\Payments\Gateways;
 use App\Models\Cart;
 use App\Models\Order;
 use App\Models\Payment;
-use App\Models\Product;
 use App\Models\ProductVariant;
 use App\Models\Promotion;
 use App\Models\Transaction;

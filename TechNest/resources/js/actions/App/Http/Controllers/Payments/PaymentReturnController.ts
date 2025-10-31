@@ -96,6 +96,61 @@ handle.head = (args: { provider: string | number } | [provider: string | number 
         })
     
     handle.form = handleForm
-const PaymentReturnController = { handle }
+/**
+* @see \App\Http\Controllers\Payments\PaymentReturnController::momoReturn
+ * @see app/Http/Controllers/Payments/PaymentReturnController.php:0
+ * @route '/webhooks/momo'
+ */
+export const momoReturn = (options?: RouteQueryOptions): RouteDefinition<'post'> => ({
+    url: momoReturn.url(options),
+    method: 'post',
+})
+
+momoReturn.definition = {
+    methods: ["post"],
+    url: '/webhooks/momo',
+} satisfies RouteDefinition<["post"]>
+
+/**
+* @see \App\Http\Controllers\Payments\PaymentReturnController::momoReturn
+ * @see app/Http/Controllers/Payments/PaymentReturnController.php:0
+ * @route '/webhooks/momo'
+ */
+momoReturn.url = (options?: RouteQueryOptions) => {
+    return momoReturn.definition.url + queryParams(options)
+}
+
+/**
+* @see \App\Http\Controllers\Payments\PaymentReturnController::momoReturn
+ * @see app/Http/Controllers/Payments/PaymentReturnController.php:0
+ * @route '/webhooks/momo'
+ */
+momoReturn.post = (options?: RouteQueryOptions): RouteDefinition<'post'> => ({
+    url: momoReturn.url(options),
+    method: 'post',
+})
+
+    /**
+* @see \App\Http\Controllers\Payments\PaymentReturnController::momoReturn
+ * @see app/Http/Controllers/Payments/PaymentReturnController.php:0
+ * @route '/webhooks/momo'
+ */
+    const momoReturnForm = (options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
+        action: momoReturn.url(options),
+        method: 'post',
+    })
+
+            /**
+* @see \App\Http\Controllers\Payments\PaymentReturnController::momoReturn
+ * @see app/Http/Controllers/Payments/PaymentReturnController.php:0
+ * @route '/webhooks/momo'
+ */
+        momoReturnForm.post = (options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
+            action: momoReturn.url(options),
+            method: 'post',
+        })
+    
+    momoReturn.form = momoReturnForm
+const PaymentReturnController = { handle, momoReturn }
 
 export default PaymentReturnController
