@@ -6,7 +6,9 @@ use App\Http\Controllers\Admin\CategoryController;
 use App\Http\Controllers\Admin\ManageUserController;
 use App\Http\Controllers\Admin\AdminPromotionController;
 use App\Http\Controllers\Admin\BrandController;
+use App\Http\Controllers\Admin\LocationController;
 use Illuminate\Support\Facades\Route;
+use Inertia\Inertia;
 
 Route::middleware(['auth', 'admin'])->group(function () {
     Route::get('/admin/dashboard', [AdminController::class, 'dashboard'])->name('admin.dashboard');
@@ -32,8 +34,7 @@ Route::middleware(['auth', 'admin'])->group(function () {
     Route::put('/admin/categories/{category}/update', [CategoryController::class, 'update'])->name('admin.categories.update');
     Route::delete('/admin/categories/{category}/delete', [CategoryController::class, 'destroy'])->name('admin.categories.destroy');
 
-    // Manage users routes (no delete route) — NO route-level superadmin middleware any more.
-    // Controller will determine access and frontend will show message instead of redirect.
+    // Manage users routes
     Route::get('/admin/users', [ManageUserController::class, 'index'])->name('admin.users.index');
     Route::get('/admin/users/create', [ManageUserController::class, 'create'])->name('admin.users.create');
     Route::post('/admin/users', [ManageUserController::class, 'store'])->name('admin.users.store');
@@ -60,5 +61,30 @@ Route::middleware(['auth', 'admin'])->group(function () {
     Route::get('/admin/brands/{id}/edit', [BrandController::class, 'edit'])->name('admin.brands.edit');
     Route::put('/admin/brands/{id}', [BrandController::class, 'update'])->name('admin.brands.update');
     Route::delete('/admin/brands/{id}', [BrandController::class, 'destroy'])->name('admin.brands.destroy');
-});
-?>
+
+
+// ============================
+    // LOCATION MANAGEMENT (Tỉnh / Huyện / Xã)
+    // ============================
+    Route::get('/admin/locations', [LocationController::class, 'index'])->name('admin.locations.index');
+    Route::get('/admin/locationtest', [LocationController::class, 'index'])->name('admin.locationtest');
+
+
+    // --- TỈNH / THÀNH PHỐ ---
+    Route::get('/admin/locations/provinces', [LocationController::class, 'listProvinces']);
+    Route::post('/admin/locations/provinces', [LocationController::class, 'storeProvince']);
+    Route::put('/admin/locations/provinces/{id}', [LocationController::class, 'updateProvince']);
+    Route::delete('/admin/locations/provinces/{id}', [LocationController::class, 'deleteProvince']);
+
+    // --- QUẬN / HUYỆN ---
+    Route::get('/admin/locations/provinces/{provinceId}/districts', [LocationController::class, 'listDistricts']);
+    Route::post('/admin/locations/provinces/{provinceId}/districts', [LocationController::class, 'storeDistrict']);
+    Route::put('/admin/locations/districts/{id}', [LocationController::class, 'updateDistrict']);
+    Route::delete('/admin/locations/districts/{id}', [LocationController::class, 'deleteDistrict']);
+
+    // --- PHƯỜNG / XÃ ---
+    Route::get('/admin/locations/districts/{districtId}/wards', [LocationController::class, 'listWards']);
+    Route::post('/admin/locations/districts/{districtId}/wards', [LocationController::class, 'storeWard']);
+    Route::put('/admin/locations/wards/{id}', [LocationController::class, 'updateWard']);
+    Route::delete('/admin/locations/wards/{id}', [LocationController::class, 'deleteWard']);
+});?>

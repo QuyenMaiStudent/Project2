@@ -61,7 +61,12 @@ export function AppSidebar() {
                 title: 'Quản lý thương hiệu',
                 href: '/admin/brands',
                 icon: Tag,
-            }
+            },
+            {
+                title: 'Quản lý địa chỉ',
+                href: '/admin/locationtest',
+                icon: MapPin,
+            },
         ];
 
         if (user?.isSuperAdmin) {
