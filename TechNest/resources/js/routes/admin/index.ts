@@ -4,6 +4,7 @@ import categories from './categories'
 import users from './users'
 import promotions from './promotions'
 import brands from './brands'
+import locations from './locations'
 /**
 * @see \App\Http\Controllers\Admin\AdminController::dashboard
  * @see app/Http/Controllers/Admin/AdminController.php:16
@@ -89,6 +90,7 @@ categories: Object.assign(categories, categories),
 users: Object.assign(users, users),
 promotions: Object.assign(promotions, promotions),
 brands: Object.assign(brands, brands),
+locations: Object.assign(locations, locations),
 }
 
 export default admin

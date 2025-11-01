@@ -1,6 +1,6 @@
+import { dashboard } from '@/actions/App/Http/Controllers/Admin/AdminController';
 import { PlaceholderPattern } from '@/components/ui/placeholder-pattern';
 import AppLayout from '@/layouts/app-layout';
-import { dashboard } from '@/routes';
 import { type BreadcrumbItem } from '@/types';
 import { Head } from '@inertiajs/react';
 

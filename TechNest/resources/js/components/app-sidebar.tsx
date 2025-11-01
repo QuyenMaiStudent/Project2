@@ -44,6 +44,11 @@ export function AppSidebar() {
                 icon: Package,
             },
             {
+                title: 'Quản lý địa điểm',
+                href: '/admin/locations',
+                icon: MapPin,
+            },
+            {
                 title: 'Quản lý khuyến mãi',
                 href: '/admin/promotions',
                 icon: DollarSign,

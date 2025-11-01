@@ -6,6 +6,7 @@ use App\Http\Controllers\Admin\CategoryController;
 use App\Http\Controllers\Admin\ManageUserController;
 use App\Http\Controllers\Admin\AdminPromotionController;
 use App\Http\Controllers\Admin\BrandController;
+use App\Http\Controllers\Admin\ManageLocationController;
 use Illuminate\Support\Facades\Route;
 
 Route::middleware(['auth', 'admin'])->group(function () {
@@ -57,5 +58,25 @@ Route::middleware(['auth', 'admin'])->group(function () {
     Route::get('/admin/brands/{id}/edit', [BrandController::class, 'edit'])->name('admin.brands.edit');
     Route::put('/admin/brands/{id}', [BrandController::class, 'update'])->name('admin.brands.update');
     Route::delete('/admin/brands/{id}', [BrandController::class, 'destroy'])->name('admin.brands.destroy');
+
+    // Manage locations (view + API)
+    Route::get('/admin/locations', [ManageLocationController::class, 'index'])->name('admin.locations.index');
+
+    // API for frontend
+    Route::prefix('admin/api')->group(function () {
+        Route::get('/locations/tree', [ManageLocationController::class, 'tree']);
+
+        Route::post('/provinces', [ManageLocationController::class, 'storeProvince']);
+        Route::put('/provinces/{province}', [ManageLocationController::class, 'updateProvince']);
+        Route::delete('/provinces/{province}', [ManageLocationController::class, 'destroyProvince']);
+        
+        Route::post('/districts', [ManageLocationController::class, 'storeDistrict']);
+        Route::put('/districts/{district}', [ManageLocationController::class, 'updateDistrict']);
+        Route::delete('/districts/{district}', [ManageLocationController::class, 'destroyDistrict']);
+
+        Route::post('/wards', [ManageLocationController::class, 'storeWard']);
+        Route::put('/wards/{ward}', [ManageLocationController::class, 'updateWard']);
+        Route::delete('/wards/{ward}', [ManageLocationController::class, 'destroyWard']);
+    });
 });
 ?>
