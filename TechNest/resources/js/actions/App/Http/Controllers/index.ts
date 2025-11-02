@@ -4,6 +4,7 @@ import ProductIndexController from './ProductIndexController'
 import ProductDetailController from './ProductDetailController'
 import Payments from './Payments'
 import Customer from './Customer'
+import CommentController from './CommentController'
 import Settings from './Settings'
 import Seller from './Seller'
 import Admin from './Admin'
@@ -14,6 +15,7 @@ ProductIndexController: Object.assign(ProductIndexController, ProductIndexContro
 ProductDetailController: Object.assign(ProductDetailController, ProductDetailController),
 Payments: Object.assign(Payments, Payments),
 Customer: Object.assign(Customer, Customer),
+CommentController: Object.assign(CommentController, CommentController),
 Settings: Object.assign(Settings, Settings),
 Seller: Object.assign(Seller, Seller),
 Admin: Object.assign(Admin, Admin),

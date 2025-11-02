@@ -7,6 +7,7 @@ use App\Http\Controllers\Payments\PaymentWebhookController;
 use App\Http\Controllers\ProductDetailController;
 use App\Http\Controllers\ProductIndexController;
 use App\Http\Controllers\Seller\ProductController;
+use App\Http\Controllers\CommentController;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
@@ -50,6 +51,19 @@ Route::middleware('web')->group(base_path('routes/customer.php'));
 Route::get('/test-place-order', function() {
     Log::info('Test place order route called');
     return 'Test route works';
+});
+
+// Public read
+Route::get('/comments/{productId}', [CommentController::class, 'index'])->name('comments.index');
+
+// Auth required (customer & seller both)
+Route::middleware('auth')->group(function () {
+    Route::post('/comments/{productId}', [CommentController::class, 'store'])->name('comments.store');
+    Route::post('/comments/{id}/like', [CommentController::class, 'like'])->name('comments.like');
+    Route::post('/comments/{id}/report', [CommentController::class, 'report'])->name('comments.report');
+    // admin actions
+    Route::post('/comments/{id}/pin', [CommentController::class, 'pin'])->name('comments.pin')->middleware('can:admin');
+    Route::post('/comments/{id}/hide', [CommentController::class, 'hide'])->name('comments.hide')->middleware('can:admin');
 });
 
 require __DIR__.'/settings.php';

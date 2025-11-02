@@ -3,6 +3,7 @@ import React, { useState } from 'react';
 import { type SharedData } from '@/types';
 import CartIcon from '@/components/Cart/CartIcon';
 import PublicLayout from '@/layouts/public-layout';
+import CommentsSection from '@/components/comments/CommentsSection';
 
 interface Image { url: string; alt_text?: string; is_primary?: boolean; }
 interface Variant { id: number; variant_name: string; price: number; stock: number; image_url?: string | null; }
@@ -272,6 +273,11 @@ export default function ProductDetail({ product }: Props) {
                         )}
                     </div>
                 </div>
+            </div>
+
+            {/* COMMENTS */}
+            <div className='max-w-6xl mx-auto mt-6'>
+                <CommentsSection productId={product.id} />
             </div>
         </PublicLayout>
     );
