@@ -89,6 +89,11 @@ class Product extends Model
         return $this->belongsTo(User::class, 'created_by');
     }
 
+    public function getSellerIdAttribute()
+    {
+        return $this->created_by;
+    }
+
     public function canSubmitForApproval()
     {
         return 

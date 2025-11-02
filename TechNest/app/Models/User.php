@@ -146,6 +146,33 @@ class User extends Authenticatable implements MustVerifyEmail
         return $this->hasMany(Comment::class);
     }
 
+    // Thêm các relationship cho chat
+    public function customerConversations()
+    {
+        return $this->hasMany(Conversation::class, 'buyer_id'); // buyer_id thực chất là customer_id
+    }
+
+    public function buyerConversations()
+    {
+        return $this->hasMany(Conversation::class, 'buyer_id');
+    }
+
+    public function sellerConversations()
+    {
+        return $this->hasMany(Conversation::class, 'seller_id');
+    }
+
+    public function sentMessages()
+    {
+        return $this->hasMany(Message::class, 'sender_id');
+    }
+
+    // Relationship cho products (seller)
+    public function products()
+    {
+        return $this->hasMany(Product::class, 'created_by');
+    }
+
     public function isSeller()
     {
         if ($this->role && $this->role->name === 'seller') {

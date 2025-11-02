@@ -4,6 +4,7 @@ import { type SharedData } from '@/types';
 import CartIcon from '@/components/Cart/CartIcon';
 import PublicLayout from '@/layouts/public-layout';
 import CommentsSection from '@/components/comments/CommentsSection';
+import { MessageCircle } from 'lucide-react';
 
 interface Image { url: string; alt_text?: string; is_primary?: boolean; }
 interface Variant { id: number; variant_name: string; price: number; stock: number; image_url?: string | null; }
@@ -18,6 +19,7 @@ interface Product {
     images: Image[];
     variants: Variant[];
     specs: Spec[];
+    created_by: number; // seller id
 }
 
 interface Props { product: Product; }
@@ -117,6 +119,47 @@ export default function ProductDetail({ product }: Props) {
             window.dispatchEvent(new CustomEvent('cart:updated', { detail: { cartCount: data.cartCount } }));
             router.reload({ only: ['cartCount'] });
         } catch (e) {
+            showToast('error', 'Không thể kết nối tới server.');
+        }
+    };
+
+    const startChat = async () => {
+        if (!auth.user) {
+            showToast('error', 'Bạn cần đăng nhập để liên hệ người bán!');
+            router.visit('/login');
+            return;
+        }
+
+        //Kiểm tra nếu người dùng là người bán
+        if (auth.user.id === product.created_by) {
+            showToast('error', "Bạn không thể liên hệ với chính mình!");
+            return;
+        }
+
+        const message = 'Xin chào, tôi quan tâm đến sản phẩm này.';
+
+        try {
+            const response = await fetch('/chat/start', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') || ''
+                },
+                body: JSON.stringify({
+                    product_id: product.id,
+                    message: message
+                })
+            });
+
+            if (response.ok) {
+                const data = await response.json();
+                router.visit(`/chat/${data.conversation_id}`);
+            } else {
+                const errorData = await response.json();
+                showToast('error', errorData.message || 'Có lỗi xảy ra khi tạo cuộc hội thoại này.');
+            }
+        } catch (error) {
+            console.error('Error starting chat:', error);
             showToast('error', 'Không thể kết nối tới server.');
         }
     };
@@ -247,6 +290,16 @@ export default function ProductDetail({ product }: Props) {
                             <button className="px-8 py-3 bg-[#0AC1EF] text-white rounded font-bold text-lg hover:bg-[#0999c2] transition-colors">
                                 Mua ngay
                             </button>
+                            {/* Thêm nút chat */}
+                            {auth.user && auth.user.id !== product.created_by && (
+                                <button
+                                    onClick={startChat}
+                                    className='flex items-center space-x-2 px-6 py-3 border-2 border-blue-500 text-blue-500 rounded font-bold text-lg hover:bg-blue-50 transition-colors'
+                                >
+                                    <MessageCircle className='w-5 h-5' />
+                                    <span>Chat với người bán</span>
+                                </button>
+                            )}
                         </div>
                         {/* Mô tả */}
                         {product.description && (

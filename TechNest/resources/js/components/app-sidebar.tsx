@@ -6,7 +6,8 @@ import { SharedData, type NavItem } from '@/types';
 import { Link, usePage } from '@inertiajs/react';
 import { BookOpen, CheckCircle, Clock, DollarSign, Folder, LayoutGrid, Package, Users, 
          XCircle, Plus, Eye, Tag, ShoppingCart, MapPin, Home, 
-         CreditCard} from 'lucide-react'; // Thêm icons mới
+         CreditCard,
+         MessageCircle} from 'lucide-react'; // Thêm icons mới
 import AppLogo from './app-logo';
 
 export function AppSidebar() {
@@ -88,6 +89,11 @@ export function AppSidebar() {
                 href: '/seller/promotions',
                 icon: Tag,
             },
+            {
+                title: 'Tin nhắn',
+                href: '/chat',
+                icon: MessageCircle,
+            },
         ];
     }
     
@@ -114,6 +120,11 @@ export function AppSidebar() {
                 title: 'Lịch sử giao dịch',
                 href: '/transactions',
                 icon: CreditCard,
+            },
+            {
+                title: 'Tin nhắn',
+                href: '/chat',
+                icon: MessageCircle,
             },
         ];
     }

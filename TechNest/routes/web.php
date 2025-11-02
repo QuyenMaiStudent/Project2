@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\Auth\GoogleController;
 use App\Http\Controllers\Chat\ChatBotController;
+use App\Http\Controllers\Chat\ChatController;
 use App\Http\Controllers\Payments\PaymentReturnController;
 use App\Http\Controllers\Payments\PaymentWebhookController;
 use App\Http\Controllers\ProductDetailController;
@@ -64,6 +65,15 @@ Route::middleware('auth')->group(function () {
     // admin actions
     Route::post('/comments/{id}/pin', [CommentController::class, 'pin'])->name('comments.pin')->middleware('can:admin');
     Route::post('/comments/{id}/hide', [CommentController::class, 'hide'])->name('comments.hide')->middleware('can:admin');
+});
+
+//Chat routes
+Route::middleware('auth')->group(function () {
+    Route::get('/chat', [ChatController::class, 'index'])->name('chat.index');
+    Route::get('/chat/{conversation}', [ChatController::class, 'show'])->name('chat.show');
+    Route::get('/chat/{conversation}/messages', [ChatController::class, 'getMessages'])->name('chat.messages.get');
+    Route::post('/chat/{conversation}/messages', [ChatController::class, 'store'])->name('chat.messages.store');
+    Route::post('/chat/start', [ChatController::class, 'startConversation'])->name('chat.start');
 });
 
 require __DIR__.'/settings.php';
