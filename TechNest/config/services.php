@@ -68,5 +68,6 @@ return [
         'hash_secret' => env('VNP_HASH_SECRET'),
         'payment_url' => env('VNP_PAYMENT_URL'),
         'return_url' => env('VNP_RETURN_URL'),
+        'convert_rate' => env('VNP_CONVERT_RATE'),
     ],
 ];

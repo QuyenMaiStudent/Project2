@@ -59,12 +59,12 @@ stripe.post = (options?: RouteQueryOptions): RouteDefinition<'post'> => ({
  * @see app/Http/Controllers/Payments/PaymentWebhookController.php:79
  * @route '/webhooks/vnpay'
  */
-export const vnpay = (options?: RouteQueryOptions): RouteDefinition<'post'> => ({
-    url: vnpay.url(options),
+const vnpayab6696fe4b4c7b88e5c06c6161cfec9f = (options?: RouteQueryOptions): RouteDefinition<'post'> => ({
+    url: vnpayab6696fe4b4c7b88e5c06c6161cfec9f.url(options),
     method: 'post',
 })
 
-vnpay.definition = {
+vnpayab6696fe4b4c7b88e5c06c6161cfec9f.definition = {
     methods: ["post"],
     url: '/webhooks/vnpay',
 } satisfies RouteDefinition<["post"]>
@@ -74,8 +74,8 @@ vnpay.definition = {
  * @see app/Http/Controllers/Payments/PaymentWebhookController.php:79
  * @route '/webhooks/vnpay'
  */
-vnpay.url = (options?: RouteQueryOptions) => {
-    return vnpay.definition.url + queryParams(options)
+vnpayab6696fe4b4c7b88e5c06c6161cfec9f.url = (options?: RouteQueryOptions) => {
+    return vnpayab6696fe4b4c7b88e5c06c6161cfec9f.definition.url + queryParams(options)
 }
 
 /**
@@ -83,8 +83,8 @@ vnpay.url = (options?: RouteQueryOptions) => {
  * @see app/Http/Controllers/Payments/PaymentWebhookController.php:79
  * @route '/webhooks/vnpay'
  */
-vnpay.post = (options?: RouteQueryOptions): RouteDefinition<'post'> => ({
-    url: vnpay.url(options),
+vnpayab6696fe4b4c7b88e5c06c6161cfec9f.post = (options?: RouteQueryOptions): RouteDefinition<'post'> => ({
+    url: vnpayab6696fe4b4c7b88e5c06c6161cfec9f.url(options),
     method: 'post',
 })
 
@@ -93,8 +93,8 @@ vnpay.post = (options?: RouteQueryOptions): RouteDefinition<'post'> => ({
  * @see app/Http/Controllers/Payments/PaymentWebhookController.php:79
  * @route '/webhooks/vnpay'
  */
-    const vnpayForm = (options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
-        action: vnpay.url(options),
+    const vnpayab6696fe4b4c7b88e5c06c6161cfec9fForm = (options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
+        action: vnpayab6696fe4b4c7b88e5c06c6161cfec9f.url(options),
         method: 'post',
     })
 
@@ -103,12 +103,73 @@ vnpay.post = (options?: RouteQueryOptions): RouteDefinition<'post'> => ({
  * @see app/Http/Controllers/Payments/PaymentWebhookController.php:79
  * @route '/webhooks/vnpay'
  */
-        vnpayForm.post = (options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
-            action: vnpay.url(options),
+        vnpayab6696fe4b4c7b88e5c06c6161cfec9fForm.post = (options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
+            action: vnpayab6696fe4b4c7b88e5c06c6161cfec9f.url(options),
             method: 'post',
         })
     
-    vnpay.form = vnpayForm
+    vnpayab6696fe4b4c7b88e5c06c6161cfec9f.form = vnpayab6696fe4b4c7b88e5c06c6161cfec9fForm
+    /**
+* @see \App\Http\Controllers\Payments\PaymentWebhookController::vnpay
+ * @see app/Http/Controllers/Payments/PaymentWebhookController.php:79
+ * @route '/payments/vnpay/ipn'
+ */
+const vnpaye77a4efb72462bc9be86c18a6845d39a = (options?: RouteQueryOptions): RouteDefinition<'post'> => ({
+    url: vnpaye77a4efb72462bc9be86c18a6845d39a.url(options),
+    method: 'post',
+})
+
+vnpaye77a4efb72462bc9be86c18a6845d39a.definition = {
+    methods: ["post"],
+    url: '/payments/vnpay/ipn',
+} satisfies RouteDefinition<["post"]>
+
+/**
+* @see \App\Http\Controllers\Payments\PaymentWebhookController::vnpay
+ * @see app/Http/Controllers/Payments/PaymentWebhookController.php:79
+ * @route '/payments/vnpay/ipn'
+ */
+vnpaye77a4efb72462bc9be86c18a6845d39a.url = (options?: RouteQueryOptions) => {
+    return vnpaye77a4efb72462bc9be86c18a6845d39a.definition.url + queryParams(options)
+}
+
+/**
+* @see \App\Http\Controllers\Payments\PaymentWebhookController::vnpay
+ * @see app/Http/Controllers/Payments/PaymentWebhookController.php:79
+ * @route '/payments/vnpay/ipn'
+ */
+vnpaye77a4efb72462bc9be86c18a6845d39a.post = (options?: RouteQueryOptions): RouteDefinition<'post'> => ({
+    url: vnpaye77a4efb72462bc9be86c18a6845d39a.url(options),
+    method: 'post',
+})
+
+    /**
+* @see \App\Http\Controllers\Payments\PaymentWebhookController::vnpay
+ * @see app/Http/Controllers/Payments/PaymentWebhookController.php:79
+ * @route '/payments/vnpay/ipn'
+ */
+    const vnpaye77a4efb72462bc9be86c18a6845d39aForm = (options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
+        action: vnpaye77a4efb72462bc9be86c18a6845d39a.url(options),
+        method: 'post',
+    })
+
+            /**
+* @see \App\Http\Controllers\Payments\PaymentWebhookController::vnpay
+ * @see app/Http/Controllers/Payments/PaymentWebhookController.php:79
+ * @route '/payments/vnpay/ipn'
+ */
+        vnpaye77a4efb72462bc9be86c18a6845d39aForm.post = (options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
+            action: vnpaye77a4efb72462bc9be86c18a6845d39a.url(options),
+            method: 'post',
+        })
+    
+    vnpaye77a4efb72462bc9be86c18a6845d39a.form = vnpaye77a4efb72462bc9be86c18a6845d39aForm
+
+export const vnpay = {
+    '/webhooks/vnpay': vnpayab6696fe4b4c7b88e5c06c6161cfec9f,
+    '/payments/vnpay/ipn': vnpaye77a4efb72462bc9be86c18a6845d39a,
+}
+
 /**
 * @see \App\Http\Controllers\Payments\PaymentWebhookController::paypalWebhook
  * @see app/Http/Controllers/Payments/PaymentWebhookController.php:164

@@ -5,6 +5,7 @@ use App\Payments\Contracts\PaymentGateway;
 use App\Payments\Gateways\MomoGateway;
 use App\Payments\Gateways\PaypalGateway;
 use App\Payments\Gateways\StripeGateway;
+use App\Payments\Gateways\VnpayGateway;
 use InvalidArgumentException;
 
 class PaymentService
@@ -17,7 +18,7 @@ class PaymentService
             'stripe' => app(StripeGateway::class),
             'paypal' => app(PaypalGateway::class),
             'momo' => app(MomoGateway::class),
-            //'vnpay' => app(VnpayGateway::class),
+            'vnpay' => app(VnpayGateway::class),
             default => throw new InvalidArgumentException("Unsupported payment provider: {$provider}"),
         };
     }

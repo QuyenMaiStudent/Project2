@@ -6,6 +6,7 @@ use App\Models\Cart;
 use App\Payments\Gateways\MomoGateway;
 use App\Payments\Gateways\PaypalGateway;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\URL;
 use Illuminate\Support\ServiceProvider;
 use Inertia\Inertia;
 use Stripe\StripeClient;
