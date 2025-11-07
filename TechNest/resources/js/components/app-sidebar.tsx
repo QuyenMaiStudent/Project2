@@ -6,8 +6,7 @@ import { SharedData, type NavItem } from '@/types';
 import { Link, usePage } from '@inertiajs/react';
 import { BookOpen, CheckCircle, Clock, DollarSign, Folder, LayoutGrid, Package, Users, 
          XCircle, Plus, Eye, Tag, ShoppingCart, MapPin, Home, 
-         CreditCard,
-         MessageCircle} from 'lucide-react'; // Thêm icons mới
+         CreditCard, MessageCircle, Video} from 'lucide-react'; // Thêm Video icon
 import AppLogo from './app-logo';
 
 export function AppSidebar() {
@@ -18,7 +17,7 @@ export function AppSidebar() {
     const dashboardHref = () => {
         if (user?.isAdmin || user?.isSuperAdmin) return '/admin/dashboard';
         if (user?.isSeller) return '/seller/dashboard';
-        return '/customer/dashboard'; // Thay đổi thành customer dashboard
+        return '/customer/dashboard';
     };
 
     // Menu cơ bản
@@ -75,6 +74,11 @@ export function AppSidebar() {
         mainNavItems = [
             ...mainNavItems,
             {
+                title: 'Live Stream',
+                href: '/seller/live',
+                icon: Video,
+            },
+            {
                 title: 'Thêm sản phẩm',
                 href: '/seller/products/create',
                 icon: Plus,
@@ -101,6 +105,11 @@ export function AppSidebar() {
     if (user && !user.isAdmin && !user.isSuperAdmin && !user.isSeller) {
         mainNavItems = [
             ...mainNavItems,
+            {
+                title: 'Live Streams',
+                href: '/live',
+                icon: Video,
+            },
             {
                 title: 'Đơn hàng',
                 href: '/orders',

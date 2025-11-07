@@ -8,6 +8,7 @@ import CommentController from './CommentController'
 import Settings from './Settings'
 import Seller from './Seller'
 import Admin from './Admin'
+import LiveStreamController from './LiveStreamController'
 const Controllers = {
     Chat: Object.assign(Chat, Chat),
 Auth: Object.assign(Auth, Auth),
@@ -19,6 +20,7 @@ CommentController: Object.assign(CommentController, CommentController),
 Settings: Object.assign(Settings, Settings),
 Seller: Object.assign(Seller, Seller),
 Admin: Object.assign(Admin, Admin),
+LiveStreamController: Object.assign(LiveStreamController, LiveStreamController),
 }
 
 export default Controllers

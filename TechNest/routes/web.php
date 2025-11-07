@@ -79,8 +79,18 @@ Route::middleware('auth')->group(function () {
     Route::post('/chat/start', [ChatController::class, 'startConversation'])->name('chat.start');
 });
 
+Route::get('/test-zego', function() {
+    return response()->json([
+        'appID' => config('zego.app_id'),
+        'serverSecret' => config('zego.server_secret'),
+        'env_app_id' => env('ZEGO_APP_ID'),
+        'env_server_secret' => env('ZEGO_SERVER_SECRET'),
+    ]);
+});
+
 require __DIR__.'/settings.php';
 require __DIR__.'/auth.php';
 require __DIR__.'/seller.php';
 require __DIR__.'/admin.php';
 require __DIR__.'/customer.php';
+require __DIR__.'/live.php';

@@ -219,4 +219,10 @@ class User extends Authenticatable implements MustVerifyEmail
     {
         return $this->hasMany(Promotion::class, 'seller_id');
     }
+
+    // relationship cho live streams (seller)
+    public function liveStreams()
+    {
+        return $this->hasMany(LiveStream::class, 'seller_id');
+    }
 }
