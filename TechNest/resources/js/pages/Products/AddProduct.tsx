@@ -25,39 +25,43 @@ interface Warranty {
 }
 
 interface Props {
-    brands: Brand[];
-    warranties: Warranty[];
+    brands?: Brand[]; // Thêm ? để optional
+    warranties?: Warranty[]; // Thêm ? để optional
 }
 
-export default function AddProduct({ brands, warranties }: Props) {
-  const [clientErrors, setClientErrors] = useState<Record<string,string>>({});
+export default function AddProduct({ brands = [], warranties = [] }: Props) {
+    const [clientErrors, setClientErrors] = useState<Record<string,string>>({});
 
-  const containsUrlOrPhone = (text?: string) => {
-    const t = (text ?? '').trim();
-    if (!t) return false;
+    // Đảm bảo brands và warranties là mảng
+    const safebrands = Array.isArray(brands) ? brands : [];
+    const safeWarranties = Array.isArray(warranties) ? warranties : [];
 
-    // explicit URLs (http(s) or www.) or domain-like (with a dot + tld)
-    if (/(https?:\/\/|www\.)[^\s]+/i.test(t) || /\b[a-z0-9\-]+\.[a-z]{2,63}(\b|\/)/i.test(t)) {
-      return true;
-    }
+    const containsUrlOrPhone = (text?: string) => {
+        const t = (text ?? '').trim();
+        if (!t) return false;
 
-    // detect a contiguous digit sequence of length >= 7 (phone-like)
-    if (/\b\d{7,}\b/.test(t)) {
-      return true;
-    }
+        // explicit URLs (http(s) or www.) or domain-like (with a dot + tld)
+        if (/(https?:\/\/|www\.)[^\s]+/i.test(t) || /\b[a-z0-9\-]+\.[a-z]{2,63}(\b|\/)/i.test(t)) {
+            return true;
+        }
 
-    return false;
-  };
+        // detect a contiguous digit sequence of length >= 7 (phone-like)
+        if (/\b\d{7,}\b/.test(t)) {
+            return true;
+        }
 
-  const validateField = (field: string, value: string) => {
-    if (containsUrlOrPhone(value)) {
-      setClientErrors(prev => ({ ...prev, [field]: 'Không được chứa đường link hoặc số điện thoại.' }));
-      return false;
-    } else {
-      setClientErrors(prev => { const c = { ...prev }; delete c[field]; return c; });
-      return true;
-    }
-  };
+        return false;
+    };
+
+    const validateField = (field: string, value: string) => {
+        if (containsUrlOrPhone(value)) {
+            setClientErrors(prev => ({ ...prev, [field]: 'Không được chứa đường link hoặc số điện thoại.' }));
+            return false;
+        } else {
+            setClientErrors(prev => { const c = { ...prev }; delete c[field]; return c; });
+            return true;
+        }
+    };
 
     const { data, setData, post, processing, errors } = useForm({
         name: '',
@@ -70,21 +74,66 @@ export default function AddProduct({ brands, warranties }: Props) {
         image: null as File | null,
     });
 
+    // Thêm state cho preview ảnh
+    const [imagePreview, setImagePreview] = useState<string | null>(null);
+
     const handleImageChange = (e: ChangeEvent<HTMLInputElement>) => {
-        setData('image', e.target.files ? e.target.files[0] : null);
+        const file = e.target.files ? e.target.files[0] : null;
+        setData('image', file);
+        
+        // Tạo preview
+        if (file) {
+            const reader = new FileReader();
+            reader.onload = (e) => {
+                setImagePreview(e.target?.result as string);
+            };
+            reader.readAsDataURL(file);
+        } else {
+            setImagePreview(null);
+        }
     };
 
     const handleSubmit = (e: FormEvent) => {
         e.preventDefault();
+        
+        // Debug log
+        console.log('Form submission started', {
+            data,
+            imageSelected: data.image?.name,
+            imageSize: data.image?.size,
+            clientErrors
+        });
+        
         // client-side validation
         const okName = validateField('name', data.name);
         const okDesc = validateField('description', data.description);
-        if (!okName || !okDesc) return;
+        
+        if (!okName || !okDesc) {
+            console.log('Client validation failed');
+            return;
+        }
+
+        if (!data.image) {
+            alert('Vui lòng chọn ảnh sản phẩm!');
+            return;
+        }
 
         // use useForm.post so Inertia knows about our form state (useForm supports files)
         post('/seller/products', {
             forceFormData: true,
             preserveScroll: true,
+            onStart: () => {
+                console.log('Request started');
+            },
+            onProgress: (progress) => {
+                console.log('Upload progress:', progress);
+            },
+            onError: (errors) => {
+                console.error('Form submission errors:', errors);
+            },
+            onSuccess: () => {
+                console.log('Form submitted successfully');
+            }
         });
     };
 
@@ -104,7 +153,9 @@ export default function AddProduct({ brands, warranties }: Props) {
                                 <div className="text-red-800">
                                     <ul className="list-disc list-inside">
                                         {Object.entries(errors).map(([field, error]) => (
-                                            <li key={field}>{Array.isArray(error) ? error[0] : error}</li>
+                                            <li key={field}>
+                                                {typeof error === 'string' ? error : (Array.isArray(error) ? error[0] : String(error))}
+                                            </li>
                                         ))}
                                     </ul>
                                 </div>
@@ -212,14 +263,16 @@ export default function AddProduct({ brands, warranties }: Props) {
                                         required
                                     >
                                         <option value="">-- Select Brand --</option>
-                                        {brands.map((brand) => (
+                                        {safebrands.map((brand) => (
                                             <option key={brand.id} value={brand.id}>
                                                 {brand.name}
                                             </option>
                                         ))}
                                     </select>
                                     {errors.brand_id && (
-                                        <p className="text-red-600 text-sm mt-1">{errors.brand_id}</p>
+                                        <p className="text-red-600 text-sm mt-1">
+                                            {typeof errors.brand_id === 'string' ? errors.brand_id : (Array.isArray(errors.brand_id) ? errors.brand_id[0] : String(errors.brand_id))}
+                                        </p>
                                     )}
                                 </div>
 
@@ -237,14 +290,16 @@ export default function AddProduct({ brands, warranties }: Props) {
                                         }`}
                                     >
                                         <option value="">-- No Warranty --</option>
-                                        {warranties.map((warranty) => (
+                                        {safeWarranties.map((warranty) => (
                                             <option key={warranty.id} value={warranty.id}>
                                                 {warranty.title}
                                             </option>
                                         ))}
                                     </select>
                                     {errors.warranty_id && (
-                                        <p className="text-red-600 text-sm mt-1">{errors.warranty_id}</p>
+                                        <p className="text-red-600 text-sm mt-1">
+                                            {typeof errors.warranty_id === 'string' ? errors.warranty_id : (Array.isArray(errors.warranty_id) ? errors.warranty_id[0] : String(errors.warranty_id))}
+                                        </p>
                                     )}
                                 </div>
 
@@ -266,6 +321,19 @@ export default function AddProduct({ brands, warranties }: Props) {
                                     <p className="text-sm text-gray-500 mt-1">
                                         Select an image (JPEG, PNG, JPG, GIF, WebP - Max 4MB)
                                     </p>
+                                    
+                                    {/* Image Preview */}
+                                    {imagePreview && (
+                                        <div className="mt-3">
+                                            <p className="text-sm font-medium text-gray-700 mb-2">Preview:</p>
+                                            <img 
+                                                src={imagePreview} 
+                                                alt="Preview" 
+                                                className="w-32 h-32 object-cover rounded-lg border shadow-sm"
+                                            />
+                                        </div>
+                                    )}
+                                    
                                     {errors.image && (
                                         <p className="text-red-600 text-sm mt-1">
                                             {Array.isArray(errors.image) ? errors.image[0] : errors.image}

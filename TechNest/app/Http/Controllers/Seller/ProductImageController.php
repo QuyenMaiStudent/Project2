@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Models\Product;
 use App\Models\ProductImage;
+use CloudinaryLabs\CloudinaryLaravel\Facades\Cloudinary;
 use Illuminate\Support\Facades\DB;
 use Inertia\Inertia;
 
@@ -25,7 +26,6 @@ class ProductImageController extends Controller
 
     public function uploadImages(Request $request, Product $product)
     {
-        // giữ hành vi: chỉ upload 1 ảnh chính cho product
         if ($product->created_by !== auth()->id()) {
             return back()->with(['error' => 'Bạn không có quyền thêm ảnh cho sản phẩm này']);
         }
@@ -37,11 +37,17 @@ class ProductImageController extends Controller
         DB::beginTransaction();
 
         try {
-            $file = $request->file('image');
-            $filename = 'product_' . $product->id . '_' . time() . '_' . uniqid() . '.' . $file->getClientOriginalExtension();
-            $destination = public_path('images/products');
-            if (!file_exists($destination)) mkdir($destination, 0777, true);
-            $file->move($destination, $filename);
+            // Upload lên Cloudinary
+            $uploadedFileUrl = Cloudinary::upload($request->file('image')->getRealPath(), [
+                'folder' => 'products',
+                'public_id' => 'product_' . $product->id . '_' . time(),
+                'transformation' => [
+                    'width' => 800,
+                    'height' => 600,
+                    'crop' => 'limit',
+                    'quality' => 'auto'
+                ]
+            ])->getSecurePath();
 
             // unset primary others
             ProductImage::where('product_id', $product->id)->update(['is_primary' => false]);
@@ -49,7 +55,7 @@ class ProductImageController extends Controller
             ProductImage::create([
                 'product_id' => $product->id,
                 'product_variant_id' => null,
-                'url' => rtrim(env('IMAGE_PRODUCT_PATH', '/images/products'), '/') . '/' . $filename,
+                'url' => $uploadedFileUrl,
                 'alt_text' => $product->name . ' - Ảnh đại diện',
                 'is_primary' => true,
             ]);
@@ -74,9 +80,10 @@ class ProductImageController extends Controller
         }
 
         try {
-            $imagePath = str_replace('/storage/', '', $image->url);
-            if (file_exists(storage_path('app/public/' . $imagePath))) {
-                unlink(storage_path('app/public/' . $imagePath));
+            // Xóa trên Cloudinary
+            $publicId = $this->getPublicIdFromUrl($image->url);
+            if ($publicId) {
+                Cloudinary::destroy($publicId);
             }
 
             $image->delete();
@@ -85,5 +92,13 @@ class ProductImageController extends Controller
         } catch (\Exception $e) {
             return back()->with('error', 'Có lỗi xảy ra: ' . $e->getMessage());
         }
+    }
+
+    private function getPublicIdFromUrl($url)
+    {
+        if (preg_match('/\/v\d+\/(.+)\.\w+$/', $url, $matches)) {
+            return $matches[1];
+        }
+        return null;
     }
 }

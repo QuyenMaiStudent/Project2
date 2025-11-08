@@ -94,39 +94,47 @@ export default function ViewProduct({ products }: Props) {
                 ) : (
                     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 xl:grid-cols-3 gap-6">
                         {products.data.map((product) => (
-                            <div key={product.id} className="bg-white rounded-lg shadow-md overflow-hidden">
-                                <div className="aspect-w-16 aspect-h-9">
-                                    {product.primary_image ? (
-                                        <img
-                                            src={product.primary_image.url
-                                                ? product.primary_image.url
-                                                : '/images/no-image.png'}
-                                            alt={product.primary_image.alt_text || product.name}
-                                            className="w-full h-48 object-cover"
-                                        />
-                                    ) : (
-                                        <div className="w-full h-48 bg-gray-200 flex items-center justify-center">
-                                            <Package className="h-12 w-12 text-gray-400" />
-                                        </div>
-                                    )}
+                            <div key={product.id} className="bg-white rounded-lg shadow-md overflow-hidden hover:shadow-lg transition-shadow">
+                                <div className="relative">
+                                    <div className="aspect-w-16 aspect-h-9">
+                                        {product.primary_image ? (
+                                            <img
+                                                src={product.primary_image.url || '/images/no-image.png'}
+                                                alt={product.primary_image.alt_text || product.name}
+                                                className="w-full h-48 object-cover"
+                                                onError={(e) => {
+                                                    e.currentTarget.src = '/images/no-image.png';
+                                                }}
+                                            />
+                                        ) : (
+                                            <div className="w-full h-48 bg-gradient-to-br from-gray-100 to-gray-200 flex items-center justify-center">
+                                                <div className="text-center text-gray-400">
+                                                    <Package className="h-12 w-12 mx-auto mb-2" />
+                                                    <p className="text-sm">Chưa có ảnh</p>
+                                                </div>
+                                            </div>
+                                        )}
+                                    </div>
+                                    
+                                    {/* Status badge */}
+                                    <div className="absolute top-2 right-2">
+                                        <span className={`px-2 py-1 text-xs font-medium rounded-full ${
+                                            product.is_active 
+                                                ? 'bg-green-100 text-green-800 shadow-sm' 
+                                                : 'bg-red-100 text-red-800 shadow-sm'
+                                        }`}>
+                                            {product.is_active ? 'Đang bán' : 'Tạm dừng'}
+                                        </span>
+                                    </div>
                                 </div>
                                 
                                 <div className="p-4">
-                                    <div className="flex items-center justify-between mb-2">
-                                        <h3 className="text-lg font-semibold text-gray-800 truncate">
-                                            {product.name}
-                                        </h3>
-                                        <span className={`px-2 py-1 text-xs font-medium rounded-full ${
-                                            product.is_active 
-                                                ? 'bg-green-100 text-green-800' 
-                                                : 'bg-red-100 text-red-800'
-                                        }`}>
-                                            {product.is_active ? 'Active' : 'Inactive'}
-                                        </span>
-                                    </div>
+                                    <h3 className="text-lg font-semibold text-gray-800 truncate mb-2" title={product.name}>
+                                        {product.name}
+                                    </h3>
                                     
-                                    <p className="text-sm text-gray-600 mb-2">
-                                        Brand: {product.brand?.name || 'N/A'}
+                                    <p className="text-sm text-gray-600 mb-3">
+                                        Thương hiệu: <span className="font-medium">{product.brand?.name || 'Chưa rõ'}</span>
                                     </p>
                                     
                                     <div className="flex justify-between items-center mb-4">
@@ -136,41 +144,51 @@ export default function ViewProduct({ products }: Props) {
                                                 currency: 'VND'
                                             }).format(Number(product.price))}
                                         </span>
-                                        <span className="text-sm text-gray-500">
-                                            Stock: {product.stock}
+                                        <span className={`text-sm px-2 py-1 rounded-full ${
+                                            product.stock > 0 
+                                                ? 'bg-green-50 text-green-700' 
+                                                : 'bg-red-50 text-red-700'
+                                        }`}>
+                                            Kho: {product.stock}
                                         </span>
                                     </div>
                                     
-                                    <div className="flex gap-2 flex-wrap">
-                                        <Link
-                                            href={`/seller/products/${product.id}/preview`}
-                                            className="px-3 py-2 bg-gray-100 text-gray-700 rounded-md hover:bg-gray-200 transition-colors inline-flex items-center justify-center gap-2 min-w-[120px] whitespace-nowrap"
-                                        >
-                                            <Eye className="h-4 w-4" />
-                                            <span className="whitespace-nowrap">Xem trước</span>
-                                        </Link>
+                                    {/* Action buttons - improved spacing */}
+                                    <div className="space-y-2">
+                                        <div className="flex gap-2">
+                                            <Link
+                                                href={`/seller/products/${product.id}/preview`}
+                                                className="flex-1 px-3 py-2 bg-gray-100 text-gray-700 rounded-md hover:bg-gray-200 transition-colors inline-flex items-center justify-center gap-2"
+                                            >
+                                                <Eye className="h-4 w-4" />
+                                                <span>Xem trước</span>
+                                            </Link>
+                                            
+                                            <Link
+                                                href={`/seller/products/${product.id}/edit`}
+                                                className="flex-1 px-3 py-2 bg-blue-100 text-blue-700 rounded-md hover:bg-blue-200 transition-colors inline-flex items-center justify-center gap-2"
+                                            >
+                                                <Edit className="h-4 w-4" />
+                                                <span>Sửa</span>
+                                            </Link>
+                                        </div>
                                         
-                                        <Link
-                                            href={`/seller/products/${product.id}/edit`}
-                                            className="px-3 py-2 bg-blue-100 text-blue-700 rounded-md hover:bg-blue-200 transition-colors inline-flex items-center justify-center gap-2 min-w-[100px] whitespace-nowrap"
-                                        >
-                                            <Edit className="h-4 w-4" />
-                                            <span className="whitespace-nowrap">Edit</span>
-                                        </Link>
+                                        <div className="grid grid-cols-2 gap-2">
+                                            <Link
+                                                href={`/seller/products/${product.id}/specs`}
+                                                className="px-3 py-2 bg-yellow-100 text-yellow-700 rounded-md hover:bg-yellow-200 transition-colors text-center text-sm"
+                                            >
+                                                Thông số
+                                            </Link>
+                                            <Link
+                                                href={`/seller/products/${product.id}/variants`}
+                                                className="px-3 py-2 bg-pink-100 text-pink-700 rounded-md hover:bg-pink-200 transition-colors inline-flex items-center justify-center gap-1 text-sm"
+                                            >
+                                                <Package className="h-3 w-3" />
+                                                <span>Biến thể</span>
+                                            </Link>
+                                        </div>
                                     </div>
-                                    <Link
-                                        href={`/seller/products/${product.id}/specs`}
-                                        className="flex-1 px-3 py-2 bg-yellow-100 text-yellow-700 rounded-md hover:bg-yellow-200 transition-colors flex items-center justify-center space-x-1 mt-2"
-                                    >
-                                        <span>Quản lý thông số</span>
-                                    </Link>
-                                    <Link
-                                        href={`/seller/products/${product.id}/variants`}
-                                        className="flex-1 px-3 py-2 bg-pink-100 text-pink-700 rounded-md hover:bg-pink-200 transition-colors flex items-center justify-center space-x-1 mt-2"
-                                    >
-                                        <Package className="h-4 w-4" />
-                                        <span>Quản lý biến thể</span>
-                                    </Link>
                                 </div>
                             </div>
                         ))}

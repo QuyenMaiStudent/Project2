@@ -35,6 +35,9 @@ export default function PreviewProduct({ product }: any) {
         }
     };
 
+    // Thêm state loading cho ảnh
+    const [imageLoading, setImageLoading] = useState(true);
+
     return (
         <AppLayout
             breadcrumbs={[
@@ -47,15 +50,30 @@ export default function PreviewProduct({ product }: any) {
             <div className="max-w-5xl mx-auto p-8 flex flex-col md:flex-row gap-8 bg-white rounded shadow">
                 {/* Khung ảnh bên trái */}
                 <div className="md:w-1/2 flex flex-col items-center">
-                    <div className="w-full aspect-square bg-gray-100 flex items-center justify-center rounded border mb-4 overflow-hidden">
+                    <div className="w-full aspect-square bg-gray-100 flex items-center justify-center rounded border mb-4 overflow-hidden relative">
                         {images.length > 0 ? (
-                            <img
-                                src={images[mainIndex]?.url}
-                                alt={images[mainIndex]?.alt_text}
-                                className="object-contain w-full h-full transition-all duration-300"
-                            />
+                            <>
+                                {imageLoading && (
+                                    <div className="absolute inset-0 flex items-center justify-center bg-gray-200">
+                                        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
+                                    </div>
+                                )}
+                                <img
+                                    src={images[mainIndex]?.url}
+                                    alt={images[mainIndex]?.alt_text}
+                                    className="object-contain w-full h-full transition-all duration-300"
+                                    onLoad={() => setImageLoading(false)}
+                                    onError={(e) => {
+                                        setImageLoading(false);
+                                        e.currentTarget.src = '/images/no-image.png';
+                                    }}
+                                />
+                            </>
                         ) : (
-                            <span className="text-gray-400">Chưa có ảnh</span>
+                            <div className="text-center text-gray-400">
+                                <div className="text-4xl mb-2">📷</div>
+                                <span>Chưa có ảnh sản phẩm</span>
+                            </div>
                         )}
                     </div>
                     {/* Ảnh phụ */}

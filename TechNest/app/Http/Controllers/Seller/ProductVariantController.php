@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\Product;
 use App\Models\ProductImage;
 use App\Models\ProductVariant;
+use CloudinaryLabs\CloudinaryLaravel\Facades\Cloudinary;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Validation\ValidationException;
@@ -57,16 +58,21 @@ class ProductVariantController extends Controller
             ]);
 
             if ($request->hasFile('image')) {
-                $file = $request->file('image');
-                $filename = 'product_' . $product->id . '_variant_' . $variant->id . '_' . time() . '_' . uniqid() . '.' . $file->getClientOriginalExtension();
-                $destination = public_path('images/products');
-                if (!file_exists($destination)) mkdir($destination, 0777, true);
-                $file->move($destination, $filename);
+                $uploadedFileUrl = Cloudinary::upload($request->file('image')->getRealPath(), [
+                    'folder' => 'products/variants',
+                    'public_id' => 'variant_' . $variant->id . '_' . time(),
+                    'transformation' => [
+                        'width' => 600,
+                        'height' => 600,
+                        'crop' => 'limit',
+                        'quality' => 'auto'
+                    ]
+                ])->getSecurePath();
 
                 ProductImage::create([
                     'product_id' => $product->id,
                     'product_variant_id' => $variant->id,
-                    'url' => rtrim(env('IMAGE_PRODUCT_PATH', '/images/products'), '/') . '/' . $filename,
+                    'url' => $uploadedFileUrl,
                     'alt_text' => $product->name . ' - ' . $variant->variant_name,
                     'is_primary' => false,
                 ]);
@@ -110,30 +116,32 @@ class ProductVariantController extends Controller
             ]);
 
             if ($request->hasFile('image')) {
-                // xóa ảnh cũ của variant (nếu có)
+                // Xóa ảnh cũ trên Cloudinary
                 $old = ProductImage::where('product_variant_id', $variant->id)->first();
                 if ($old) {
-                    try {
-                        $imagePath = str_replace('/storage/', '', $old->url);
-                        if (file_exists(storage_path('app/public/' . $imagePath))) {
-                            unlink(storage_path('app/public/' . $imagePath));
-                        }
-                    } catch (\Exception $e) {
-                        // ignore
+                    $publicId = $this->getPublicIdFromUrl($old->url);
+                    if ($publicId) {
+                        Cloudinary::destroy($publicId);
                     }
                     $old->delete();
                 }
 
-                $file = $request->file('image');
-                $filename = 'product_' . $product->id . '_variant_' . $variant->id . '_' . time() . '_' . uniqid() . '.' . $file->getClientOriginalExtension();
-                $destination = public_path('images/products');
-                if (!file_exists($destination)) mkdir($destination, 0777, true);
-                $file->move($destination, $filename);
+                // Upload ảnh mới
+                $uploadedFileUrl = Cloudinary::upload($request->file('image')->getRealPath(), [
+                    'folder' => 'products/variants',
+                    'public_id' => 'variant_' . $variant->id . '_' . time(),
+                    'transformation' => [
+                        'width' => 600,
+                        'height' => 600,
+                        'crop' => 'limit',
+                        'quality' => 'auto'
+                    ]
+                ])->getSecurePath();
 
                 ProductImage::create([
                     'product_id' => $product->id,
                     'product_variant_id' => $variant->id,
-                    'url' => rtrim(env('IMAGE_PRODUCT_PATH', '/images/products'), '/') . '/' . $filename,
+                    'url' => $uploadedFileUrl,
                     'alt_text' => $product->name . ' - ' . $variant->variant_name,
                     'is_primary' => false,
                 ]);
@@ -183,21 +191,35 @@ class ProductVariantController extends Controller
         ]);
 
         foreach ($validated['images'] as $image) {
-            $filename = 'product_' . $product->id . '_variant_' . $variant->id . '_' . time() . '_' . uniqid() . '.' . $image->getClientOriginalExtension();
-            $destination = public_path('images/products');
-            if (!file_exists($destination)) mkdir($destination, 0777, true);
-            $image->move($destination, $filename);
+            $uploadedFileUrl = Cloudinary::upload($image->getRealPath(), [
+                'folder' => 'products/variants',
+                'public_id' => 'variant_' . $variant->id . '_' . time() . '_' . uniqid(),
+                'transformation' => [
+                    'width' => 600,
+                    'height' => 600,
+                    'crop' => 'limit',
+                    'quality' => 'auto'
+                ]
+            ])->getSecurePath();
 
             ProductImage::create([
                 'product_id' => $product->id,
                 'product_variant_id' => $variant->id,
-                'url' => rtrim(env('IMAGE_PRODUCT_PATH', '/images/products'), '/') . '/' . $filename,
+                'url' => $uploadedFileUrl,
                 'alt_text' => $product->name . ' - ' . $variant->variant_name,
                 'is_primary' => false,
             ]);
         }
 
         return back()->with('success', 'Đã thêm ảnh cho biến thể.');
+    }
+
+    private function getPublicIdFromUrl($url)
+    {
+        if (preg_match('/\/v\d+\/(.+)\.\w+$/', $url, $matches)) {
+            return $matches[1];
+        }
+        return null;
     }
 
     private function containsUrlOrPhone($text)

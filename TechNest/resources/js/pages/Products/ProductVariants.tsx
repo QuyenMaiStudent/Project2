@@ -221,7 +221,7 @@ export default function ProductVariants({ product, variants }: Props) {
                     )}
 
                     {variants.map(variant => {
-                        const imageUrl = (variant as any).image_url || (variant as any).image?.url || ''; // ensure backend cung cấp
+                        const imageUrl = (variant as any).image_url || (variant as any).image?.url || ''; 
                         return (
                             <div key={variant.id} className="bg-white rounded-lg shadow p-4 flex flex-col">
                                 {editingId === variant.id ? (
@@ -242,13 +242,22 @@ export default function ProductVariants({ product, variants }: Props) {
                                             {editClientError && <div className="text-red-500 text-xs mt-1">{editClientError}</div>}
                                         </div>
                                         <div className="mb-3">
-                                            <label className="block text-xs text-gray-500 mb-1">Ảnh (đổi)</label>
+                                            <label className="block text-xs text-gray-500 mb-1">Ảnh hiện tại</label>
+                                            {imageUrl && (
+                                                <div className="mb-2">
+                                                    <img src={imageUrl} alt={variant.variant_name} className="w-20 h-20 object-cover rounded border" />
+                                                </div>
+                                            )}
+                                            <label className="block text-xs text-gray-500 mb-1">Thay đổi ảnh (tuỳ chọn)</label>
                                             <input
                                                 type="file"
                                                 accept="image/*"
                                                 onChange={e => setEditVariantImage(e.target.files ? e.target.files[0] : null)}
-                                                className="border rounded px-3 py-2 w-full"
+                                                className="border rounded px-3 py-2 w-full text-sm"
                                             />
+                                            {editVariantImage && (
+                                                <p className="text-xs text-blue-600 mt-1">Đã chọn: {editVariantImage.name}</p>
+                                            )}
                                         </div>
                                         <div className="mb-3">
                                             <label className="block text-xs text-gray-500 mb-1">Giá cộng thêm</label>
@@ -285,9 +294,12 @@ export default function ProductVariants({ product, variants }: Props) {
                                     <>
                                         <div className="h-40 bg-gray-50 rounded overflow-hidden mb-3 flex items-center justify-center">
                                             {imageUrl ? (
-                                                <img src={imageUrl} alt={variant.variant_name} className="object-contain h-full w-full" />
+                                                <img src={imageUrl} alt={variant.variant_name} className="object-cover h-full w-full" />
                                             ) : (
-                                                <div className="text-sm text-gray-400">Không có ảnh</div>
+                                                <div className="text-center text-gray-400">
+                                                    <div className="text-2xl mb-1">📷</div>
+                                                    <div className="text-xs">Chưa có ảnh</div>
+                                                </div>
                                             )}
                                         </div>
                                         <div className="flex-1">
