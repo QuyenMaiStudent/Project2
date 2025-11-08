@@ -1,6 +1,6 @@
 import { Head, Link, usePage } from '@inertiajs/react';
 import { type SharedData } from '@/types';
-import { useMemo, useState } from 'react';
+import { useMemo, useState, useEffect } from 'react';
 import CartIcon from '@/components/Cart/CartIcon';
 import PublicLayout from '@/layouts/public-layout';
 
@@ -23,13 +23,32 @@ interface Props {
     products: Product[];
     brands: Option[];
     categories: Option[];
+    filters?: { search?: string };
 }
 
-export default function ProductIndex({ products, brands, categories }: Props) {
+export default function ProductIndex({ products, brands, categories, filters }: Props) {
     const props = usePage<SharedData>().props;
     const { auth } = props;
     const cartCount: number = (props.cartCount ?? 0) as number;
     const isCustomer: boolean = (props.isCustomer ?? false) as boolean;
+
+    // Lấy search query từ props.filters (được Header gửi ?search=...)
+    const searchQuery = filters?.search ? String(filters.search).trim() : '';
+
+    const [showNoResult, setShowNoResult] = useState(false);
+
+    useEffect(() => {
+        // Nếu có searchQuery và kết quả filtered rỗng -> show popup
+        if (searchQuery && products.length === 0) {
+            setShowNoResult(true);
+            const timer = setTimeout(() => setShowNoResult(false), 3000);
+            return () => clearTimeout(timer);
+        }
+        // nếu không có searchQuery thì ẩn popup
+        if (!searchQuery) {
+            setShowNoResult(false);
+        }
+    }, [products, searchQuery]);
 
     // Khu vực lọc
     const [selectedBrands, setSelectedBrands] = useState<number[]>([]);
@@ -42,7 +61,6 @@ export default function ProductIndex({ products, brands, categories }: Props) {
     const [showMoreCategories, setShowMoreCategories] = useState(false);
     const [showMoreSellers, setShowMoreSellers] = useState(false);
 
-    // Sử dụng danh sách do máy chủ cung cấp (tất cả các thương hiệu/danh mục). Nếu trống, hãy chuyển sang danh sách được lấy từ danh sách gốc.
     const brandOptions = useMemo(() => {
         if (brands && brands.length) return brands;
         const map = new Map<number, string>();
@@ -73,9 +91,11 @@ export default function ProductIndex({ products, brands, categories }: Props) {
 
     const conditionOptions = ['New', 'Renewed', 'Used'];
 
-    // Client-side filtering (brand, category, price, seller, condition)
     const filteredProducts = useMemo(() => {
         return products.filter(p => {
+            // Lọc theo searchQuery (tên sản phẩm) nếu có
+            if (searchQuery && !p.name.toLowerCase().includes(searchQuery.toLowerCase())) return false;
+
             if (selectedBrands.length > 0 && (!p.brand || !selectedBrands.includes(p.brand.id))) {
                 return false;
             }
@@ -93,7 +113,7 @@ export default function ProductIndex({ products, brands, categories }: Props) {
             }
             return true;
         });
-    }, [products, selectedBrands, selectedCategories, minPrice, maxPrice, selectedSellers, selectedConditions]);
+    }, [products, searchQuery, selectedBrands, selectedCategories, minPrice, maxPrice, selectedSellers, selectedConditions]);
 
     const toggleBrand = (id: number) => {
         setSelectedBrands(prev => prev.includes(id) ? prev.filter(x => x !== id) : [...prev, id]);
@@ -111,15 +131,18 @@ export default function ProductIndex({ products, brands, categories }: Props) {
     return (
         <PublicLayout>
             <Head title="Sản phẩm" />
-            {/* Main content with left sticky sidebar like Amazon */}
+
+            {showNoResult && (
+                <div className="fixed top-20 left-1/2 -translate-x-1/2 bg-red-500 text-white px-6 py-3 rounded shadow-lg z-50">
+                    Không có sản phẩm trùng khớp
+                </div>
+            )}
+
             <div className="bg-[#f5f5f5] min-h-screen py-8">
                 <div className="w-full grid grid-cols-1 lg:grid-cols-5 gap-6">
-                    {/* LEFT Sidebar - full-bleed (will sit at left edge of page). 
-                        Adjust ml-6 -> ml-0 if you want it flush to viewport edge. */}
                     <aside className="lg:col-span-1 bg-white rounded-lg p-4 shadow-sm h-max sticky top-20 ml-0 lg:ml-6">
                         <h2 className="text-lg font-semibold mb-3">Bộ lọc</h2>
 
-                        {/* Categories (show 3 by default) */}
                         <div className="mb-4">
                             <h3 className="font-medium mb-2">Danh mục</h3>
                             <div className="max-h-48 overflow-auto text-sm">
@@ -143,7 +166,6 @@ export default function ProductIndex({ products, brands, categories }: Props) {
                             )}
                         </div>
 
-                        {/* Brands (show 3 by default) */}
                         <div className="mb-4">
                             <h3 className="font-medium mb-2">Thương hiệu</h3>
                             <div className="max-h-48 overflow-auto text-sm">
@@ -167,7 +189,6 @@ export default function ProductIndex({ products, brands, categories }: Props) {
                             )}
                         </div>
 
-                        {/* Price range */}
                         <div className="mb-4">
                             <h3 className="font-medium mb-2">Giá</h3>
                             <div className="flex gap-2">
@@ -188,7 +209,6 @@ export default function ProductIndex({ products, brands, categories }: Props) {
                             </div>
                         </div>
 
-                        {/* Sellers */}
                         <div className="mb-4">
                             <h3 className="font-medium mb-2">Người bán</h3>
                             <div className="max-h-40 overflow-auto text-sm">
@@ -206,7 +226,6 @@ export default function ProductIndex({ products, brands, categories }: Props) {
                             </div>
                         </div>
 
-                        {/* Clear filters */}
                         <div className="mt-4">
                             <button
                                 type="button"
@@ -225,12 +244,10 @@ export default function ProductIndex({ products, brands, categories }: Props) {
                         </div>
                     </aside>
 
-                    {/* Products area: keep products center-aligned in a max-width container */}
                     <div className="lg:col-span-4">
                         <div className="max-w-7xl mx-auto px-6">
                             <h1 className="text-3xl font-bold mb-6 text-[#0AC1EF] text-center lg:text-left">Danh sách sản phẩm</h1>
 
-                            {/* nhỏ hơn: nhiều cột hơn + gap nhỏ hơn */}
                             <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-4 xl:grid-cols-5 gap-4">
                                 {filteredProducts.length === 0 && (
                                     <div className="col-span-full text-center text-gray-500">Không có sản phẩm phù hợp.</div>
@@ -241,7 +258,6 @@ export default function ProductIndex({ products, brands, categories }: Props) {
                                         className="bg-white rounded-lg shadow hover:shadow-lg transition-shadow flex flex-col border border-gray-100 group overflow-hidden"
                                     >
                                         <Link href={`/products/${product.id}`}>
-                                            {/* cố định chiều cao ảnh để thẻ nhỏ hơn */}
                                             <div className="bg-gray-50 flex items-center justify-center rounded-t-lg overflow-hidden h-40">
                                                 <img
                                                     src={product.primary_image?.url || '/images/logo.png'}

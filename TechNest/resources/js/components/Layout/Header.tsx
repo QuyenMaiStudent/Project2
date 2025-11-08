@@ -1,5 +1,5 @@
 import React from 'react';
-import { Link, usePage } from '@inertiajs/react';
+import { Link, usePage, router } from '@inertiajs/react';
 import { login, register } from '@/routes';
 import { type SharedData } from '@/types';
 import CartIcon from '@/components/Cart/CartIcon';
@@ -15,11 +15,22 @@ export default function Header() {
                 <img src="/images/logo.png" alt="TechNest Logo" className="h-12 w-auto" />
             </div>
 
-            {/* Thanh tìm kiếm với icon kính lúp */}
+            {/* Thanh tìm kiếm với icon kính lúp và nút tìm */}
             <div className="flex flex-1 justify-center px-8">
-                <div className="relative w-full max-w-2xl">
+                <form
+                    onSubmit={e =>
+                    {
+                        e.preventDefault();
+                        const input = e.currentTarget.querySelector('input[name="search"]') as HTMLInputElement;
+                        if (input && input.value.trim() !== '') {
+                            // Dùng router.visit để gửi request Inertia
+                            router.visit('/products', { method: 'get', data: { search: input.value.trim() }, preserveState: true });
+                        }
+                    }}
+                    className="relative w-full max-w-2xl flex"
+                >
+                    {/* Icon kính lúp */}
                     <span className="absolute inset-y-0 left-0 flex items-center pl-3">
-                        {/* SVG icon kính lúp */}
                         <svg
                             xmlns="http://www.w3.org/2000/svg"
                             className="h-6 w-6 text-gray-400"
@@ -33,13 +44,20 @@ export default function Header() {
                     </span>
                     <input
                         type="text"
+                        name="search"
                         placeholder="Tìm kiếm"
-                        className="w-full rounded-lg border border-gray-300 px-10 py-3 text-lg focus:outline-none"
+                        className="flex-1 rounded-l-lg border border-gray-300 px-10 py-3 text-lg focus:outline-none"
                     />
-                </div>
+                    <button
+                        type="submit"
+                        className="bg-[#0999c2] text-white px-4 py-3 rounded-r-lg hover:bg-[#077a99]"
+                    >
+                        Tìm
+                    </button>
+                </form>
             </div>
 
-            {/* Navigation links and cart */}
+            {/* Navigation links và giỏ hàng */}
             <nav className="flex items-center gap-6">
                 <Link href="/products" className="text-lg font-semibold text-black hover:underline">
                     Sản phẩm
@@ -48,7 +66,7 @@ export default function Header() {
                     Hỗ trợ
                 </Link>
 
-                {/* Cart icon + count only for customer users */}
+                {/* Cart icon + count chỉ hiện cho khách hàng */}
                 <CartIcon />
 
                 {auth.user ? (
