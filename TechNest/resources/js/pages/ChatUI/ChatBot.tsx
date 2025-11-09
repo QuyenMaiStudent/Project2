@@ -21,10 +21,41 @@ function ChatBot() {
         setMessages([
             { 
                 role: 'assistant', 
-                content: 'Chào bạn! Tôi là trợ lý ảo của TechNest. Tôi có thể giúp bạn tìm hiểu về sản phẩm công nghệ, tư vấn mua sắm, hoặc giải đáp thắc mắc về đơn hàng và chính sách cửa hàng. Bạn cần hỗ trợ gì?' 
+                content: 'Chào bạn! Tôi là trợ lý ảo của TechNest. Tôi có thể giúp bạn:\n\n• Tìm kiếm sản phẩm công nghệ\n• Tư vấn mua sắm\n• Giải đáp thắc mắc về đơn hàng và chính sách\n\nVí dụ: "Tìm iPhone" hoặc "Laptop Dell giá rẻ"\n\nBạn cần hỗ trợ gì?' 
             }
         ]);
     }, []);
+
+    // Function to render message content with clickable links
+    const renderMessageContent = (content: string) => {
+        // Replace markdown-style links [text](url) with clickable links
+        const linkRegex = /\[([^\]]+)\]\(([^)]+)\)/g;
+        const parts = content.split(linkRegex);
+        
+        const result = [];
+        for (let i = 0; i < parts.length; i += 3) {
+            if (parts[i]) {
+                result.push(parts[i]);
+            }
+            if (parts[i + 1] && parts[i + 2]) {
+                result.push(
+                    <a 
+                        key={i} 
+                        href={parts[i + 2]} 
+                        className="text-blue-600 hover:text-blue-800 underline font-medium"
+                        onClick={(e) => {
+                            e.preventDefault();
+                            window.location.href = parts[i + 2];
+                        }}
+                    >
+                        {parts[i + 1]}
+                    </a>
+                );
+            }
+        }
+        
+        return result;
+    };
 
     async function send() {
         if (!input.trim()) return;
@@ -41,7 +72,6 @@ function ChatBot() {
                 body: JSON.stringify({
                     model,
                     message: [
-                        // Chỉ gửi tin nhắn cuối cùng từ người dùng
                         { role: 'user', content: userMsg.content }
                     ],
                 }),
@@ -59,12 +89,14 @@ function ChatBot() {
         }
     }
 
-    // Gợi ý nhanh cho người dùng
+    // Updated quick suggestions
     const quickSuggestions = [
-        "So sánh iPhone và Samsung",
-        "Tư vấn mua laptop cho sinh viên",
-        "Chính sách bảo hành",
-        "Cách đặt hàng"
+        "Tìm iPhone mới nhất",
+        "Laptop 16GB RAM",
+        "Điện thoại camera 64MP",
+        "Máy tính SSD 512GB",
+        "Tablet màn hình 10 inch",
+        "Chính sách bảo hành"
     ];
 
     return (
@@ -94,7 +126,7 @@ function ChatBot() {
                     <button onClick={() => { 
                         setMessages([{ 
                             role: 'assistant', 
-                            content: 'Chào bạn! Tôi là trợ lý ảo của TechNest. Tôi có thể giúp bạn tìm hiểu về sản phẩm công nghệ, tư vấn mua sắm, hoặc giải đáp thắc mắc về đơn hàng và chính sách cửa hàng. Bạn cần hỗ trợ gì?' 
+                            content: 'Chào bạn! Tôi là trợ lý ảo của TechNest. Tôi có thể giúp bạn:\n\n• Tìm kiếm sản phẩm công nghệ\n• Tư vấn mua sắm\n• Giải đáp thắc mắc về đơn hàng và chính sách\n\nVí dụ: "Tìm iPhone" hoặc "Laptop Dell giá rẻ"\n\nBạn cần hỗ trợ gì?' 
                         }]); 
                         setError(null); 
                     }} 
@@ -114,7 +146,9 @@ function ChatBot() {
                                 ? 'bg-[#0AC1EF] text-white' 
                                 : 'bg-gray-200 text-gray-800'
                         }`}>
-                            <div className="whitespace-pre-wrap">{m.content}</div>
+                            <div className="whitespace-pre-wrap">
+                                {m.role === 'assistant' ? renderMessageContent(m.content) : m.content}
+                            </div>
                         </div>
                     </div>
                 ))}
@@ -145,7 +179,7 @@ function ChatBot() {
                     onChange={e => setInput(e.target.value)}
                     onKeyDown={e => e.key === 'Enter' && !e.shiftKey && send()}
                     className="flex-1 border rounded-full px-4 py-2 focus:outline-none focus:ring-2 focus:ring-[#0AC1EF] focus:border-transparent"
-                    placeholder="Hỏi về sản phẩm công nghệ..."
+                    placeholder="Hỏi về sản phẩm hoặc 'Tìm iPhone'..."
                 />
                 <button 
                     onClick={send} 

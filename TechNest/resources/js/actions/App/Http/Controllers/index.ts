@@ -1,4 +1,5 @@
 import Chat from './Chat'
+import ProductSearchController from './ProductSearchController'
 import Auth from './Auth'
 import ProductIndexController from './ProductIndexController'
 import ProductDetailController from './ProductDetailController'
@@ -11,6 +12,7 @@ import Admin from './Admin'
 import LiveStreamController from './LiveStreamController'
 const Controllers = {
     Chat: Object.assign(Chat, Chat),
+ProductSearchController: Object.assign(ProductSearchController, ProductSearchController),
 Auth: Object.assign(Auth, Auth),
 ProductIndexController: Object.assign(ProductIndexController, ProductIndexController),
 ProductDetailController: Object.assign(ProductDetailController, ProductDetailController),

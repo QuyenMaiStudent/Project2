@@ -1,7 +1,7 @@
 import { queryParams, type RouteQueryOptions, type RouteDefinition, type RouteFormDefinition } from './../../../../../wayfinder'
 /**
 * @see \App\Http\Controllers\Chat\ChatBotController::chat
- * @see app/Http/Controllers/Chat/ChatBotController.php:10
+ * @see app/Http/Controllers/Chat/ChatBotController.php:11
  * @route '/api/chat/chatbot'
  */
 export const chat = (options?: RouteQueryOptions): RouteDefinition<'post'> => ({
@@ -16,7 +16,7 @@ chat.definition = {
 
 /**
 * @see \App\Http\Controllers\Chat\ChatBotController::chat
- * @see app/Http/Controllers/Chat/ChatBotController.php:10
+ * @see app/Http/Controllers/Chat/ChatBotController.php:11
  * @route '/api/chat/chatbot'
  */
 chat.url = (options?: RouteQueryOptions) => {
@@ -25,7 +25,7 @@ chat.url = (options?: RouteQueryOptions) => {
 
 /**
 * @see \App\Http\Controllers\Chat\ChatBotController::chat
- * @see app/Http/Controllers/Chat/ChatBotController.php:10
+ * @see app/Http/Controllers/Chat/ChatBotController.php:11
  * @route '/api/chat/chatbot'
  */
 chat.post = (options?: RouteQueryOptions): RouteDefinition<'post'> => ({
@@ -35,7 +35,7 @@ chat.post = (options?: RouteQueryOptions): RouteDefinition<'post'> => ({
 
     /**
 * @see \App\Http\Controllers\Chat\ChatBotController::chat
- * @see app/Http/Controllers/Chat/ChatBotController.php:10
+ * @see app/Http/Controllers/Chat/ChatBotController.php:11
  * @route '/api/chat/chatbot'
  */
     const chatForm = (options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
@@ -45,7 +45,7 @@ chat.post = (options?: RouteQueryOptions): RouteDefinition<'post'> => ({
 
             /**
 * @see \App\Http\Controllers\Chat\ChatBotController::chat
- * @see app/Http/Controllers/Chat/ChatBotController.php:10
+ * @see app/Http/Controllers/Chat/ChatBotController.php:11
  * @route '/api/chat/chatbot'
  */
         chatForm.post = (options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
