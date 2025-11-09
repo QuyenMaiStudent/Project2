@@ -18,6 +18,10 @@ Route::middleware(['auth', 'seller'])->group(function () {
     // View product list
     Route::get('/seller/products', [ProductController::class, 'index'])->name('seller.products.index');
 
+    // Edit product
+    Route::get('/seller/products/{product}/edit', [ProductController::class, 'edit'])->name('seller.products.edit');
+    Route::put('/seller/products/{product}', [ProductController::class, 'update'])->name('seller.products.update');
+
     // Upload nhiều ảnh
     Route::get('/seller/products/upload-images', [ProductImageController::class, 'showUploadImages'])->name('seller.products.show-upload-images');
     Route::post('/seller/products/{product}/upload-images', [ProductImageController::class, 'uploadImages'])->name('seller.products.upload-images');

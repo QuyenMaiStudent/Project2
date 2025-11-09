@@ -8,8 +8,8 @@ use App\Models\Product;
 use App\Models\ProductImage;
 use App\Models\Brand;
 use App\Models\WarrantyPolicy;
+use Cloudinary\Cloudinary;
 use Cloudinary\Configuration\Configuration;
-use CloudinaryLabs\CloudinaryLaravel\Facades\Cloudinary;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Validation\ValidationException;
@@ -65,7 +65,7 @@ class ProductController extends Controller
 
         try {
             // Manual set Cloudinary configuration
-            \Cloudinary\Configuration\Configuration::instance([
+            Configuration::instance([
                 'cloud' => [
                     'cloud_name' => 'dkjqdzofj',
                     'api_key' => '762956796349914',
@@ -134,7 +134,7 @@ class ProductController extends Controller
                     ]);
                     
                     // Sử dụng Cloudinary instance đúng cách
-                    $cloudinary = new \Cloudinary\Cloudinary();
+                    $cloudinary = new Cloudinary();
                     $result = $cloudinary->uploadApi()->upload($file->getRealPath(), [
                         'folder' => 'products',
                         'public_id' => 'product_' . $product->id . '_' . time(),
@@ -212,106 +212,252 @@ class ProductController extends Controller
     {
         $this->authorizeProduct($product);
 
-        $brands = Brand::all();
-        $warranties = WarrantyPolicy::all();
-        
-        return view('products.edit', compact('product', 'brands', 'warranties'));
+        try {
+            $brands = Brand::all();
+            $warranties = WarrantyPolicy::all();
+
+            // Load ảnh chính của sản phẩm
+            $product->load(['brand', 'warrantyPolicy', 'primaryImage']);
+
+            Log::info('Edit product page loaded', [
+                'product_id' => $product->id,
+                'brands_count' => $brands->count(),
+                'warranties_count' => $warranties->count(),
+                'user_id' => auth()->id()
+            ]);
+
+            return Inertia::render('Products/EditProduct', [
+                'product' => $product,
+                'brands' => $brands,
+                'warranties' => $warranties
+            ]);
+        } catch (\Exception $e) {
+            Log::error('Error loading edit product page', [
+                'error' => $e->getMessage(),
+                'product_id' => $product->id,
+            ]);
+
+            return back()->withErrors(['error' => 'Có lỗi xảy ra khi tải trang: ' . $e->getMessage()]);
+        }
     }
 
     public function update(Request $request, Product $product)
     {
         $this->authorizeProduct($product);
 
-        $validated = $request->validate([
-            'name' => 'required|string|max:255',
-            'description' => 'nullable|string',
-            'price' => 'required|numeric|min:0',
-            'stock' => 'required|integer|min:0',
-            'brand_id' => 'required|exists:brands,id',
-            'warranty_id' => 'nullable|exists:warranty_policies,id',
-            'is_active' => 'boolean',
-            'image' => 'nullable|image|mimes:jpeg,png,jpg,gif,webp|max:4096',
+        Log::info('Product update started', [
+            'product_id' => $product->id,
+            'user_id' => auth()->id(),
+            'request_data' => $request->all(), // Log toàn bộ để debug
         ]);
 
-        // server-side: disallow URLs and phone numbers in text inputs
-        $checkFields = [
-            'name' => $validated['name'] ?? '',
-            'description' => $validated['description'] ?? '',
-        ];
-        foreach ($checkFields as $field => $value) {
-            if ($this->containsUrlOrPhone((string)$value)) {
-                throw ValidationException::withMessages([$field => 'Trường này không được chứa đường link hoặc số điện thoại.']);
-            }
-        }
-
-        DB::beginTransaction();
-
         try {
-            // Manual set Cloudinary configuration
-            Configuration::instance([
-                'cloud' => [
-                    'cloud_name' => 'dkjqdzofj',
-                    'api_key' => '762956796349914',
-                    'api_secret' => 'JHTu010RMfNo4WJPQxs1j6UqQLg'
-                ],
-                'url' => [
-                    'secure' => true
-                ]
+            // Validate input - Sửa lại validation cho is_active
+            $validated = $request->validate([
+                'name' => 'required|string|max:255',
+                'description' => 'nullable|string',
+                'price' => 'required|numeric|min:0',
+                'stock' => 'required|integer|min:0',
+                'brand_id' => 'required|integer|exists:brands,id',
+                'warranty_id' => 'nullable|integer|exists:warranty_policies,id',
+                'is_active' => 'sometimes|boolean', // Đổi thành sometimes
+                'image' => 'nullable|image|mimes:jpeg,png,jpg,gif,webp|max:4096',
             ]);
 
-            $product->update($validated);
-
-            // nếu upload image -> thay ảnh chính
-            if ($request->hasFile('image')) {
-                // Xóa ảnh cũ trên Cloudinary
-                $oldImage = \App\Models\ProductImage::where('product_id', $product->id)
-                    ->where('is_primary', true)
-                    ->first();
-                
-                if ($oldImage) {
-                    // Extract public_id từ URL để xóa trên Cloudinary
-                    $publicId = $this->getPublicIdFromUrl($oldImage->url);
-                    if ($publicId) {
-                        try {
-                            $cloudinary = new \Cloudinary\Cloudinary();
-                            $cloudinary->uploadApi()->destroy($publicId);
-                        } catch (\Exception $e) {
-                            Log::warning('Failed to delete old image from Cloudinary', ['error' => $e->getMessage()]);
-                        }
-                    }
-                    $oldImage->delete();
-                }
-
-                // Upload ảnh mới
-                $cloudinary = new \Cloudinary\Cloudinary();
-                $result = $cloudinary->uploadApi()->upload($request->file('image')->getRealPath(), [
-                    'folder' => 'products',
-                    'public_id' => 'product_' . $product->id . '_' . time(),
-                    'transformation' => [
-                        'width' => 800,
-                        'height' => 600,
-                        'crop' => 'limit',
-                        'quality' => 'auto'
-                    ]
-                ]);
-
-                $uploadedFileUrl = $result['secure_url'];
-
-                \App\Models\ProductImage::create([
-                    'product_id' => $product->id,
-                    'product_variant_id' => null,
-                    'url' => $uploadedFileUrl,
-                    'alt_text' => $product->name . ' - Ảnh đại diện',
-                    'is_primary' => true,
-                ]);
+            // Đảm bảo is_active có giá trị
+            if (!isset($validated['is_active'])) {
+                $validated['is_active'] = false; // Mặc định false nếu không có
             }
 
-            DB::commit();
+            Log::info('Update validation passed', ['validated_data' => $validated]);
 
-            return redirect()->route('products.show', $product)->with('success', 'Sản phẩm đã được cập nhật!');
+            // Kiểm tra URL/Phone trong các trường text
+            $checkFields = [
+                'name' => $validated['name'] ?? '',
+                'description' => $validated['description'] ?? '',
+            ];
+            
+            foreach ($checkFields as $field => $value) {
+                if ($this->containsUrlOrPhone((string)$value)) {
+                    Log::warning('URL/Phone detected in field', ['field' => $field, 'value' => $value]);
+                    throw ValidationException::withMessages([
+                        $field => 'Trường này không được chứa đường link hoặc số điện thoại.'
+                    ]);
+                }
+            }
+
+            Log::info('Content validation passed');
+
+            DB::beginTransaction();
+
+            try {
+                // Chuẩn bị dữ liệu để update
+                $updateData = [
+                    'name' => $validated['name'],
+                    'description' => $validated['description'],
+                    'price' => (float) $validated['price'],
+                    'stock' => (int) $validated['stock'],
+                    'brand_id' => (int) $validated['brand_id'],
+                    'warranty_id' => $validated['warranty_id'] ? (int) $validated['warranty_id'] : null,
+                    'is_active' => (bool) $validated['is_active'],
+                ];
+
+                // Chỉ update những trường thay đổi
+                $hasChanges = false;
+                $changes = [];
+                
+                foreach ($updateData as $key => $newValue) {
+                    $oldValue = $product->$key;
+                    
+                    // So sánh giá trị (chú ý kiểu dữ liệu)
+                    if ($key === 'price') {
+                        $oldValue = (float) $oldValue;
+                        $newValue = (float) $newValue;
+                    } elseif (in_array($key, ['stock', 'brand_id', 'warranty_id'])) {
+                        $oldValue = (int) $oldValue;
+                        $newValue = $newValue ? (int) $newValue : null;
+                    } elseif ($key === 'is_active') {
+                        $oldValue = (bool) $oldValue;
+                        $newValue = (bool) $newValue;
+                    }
+                    
+                    if ($oldValue !== $newValue) {
+                        $hasChanges = true;
+                        $changes[$key] = ['old' => $oldValue, 'new' => $newValue];
+                    }
+                }
+
+                if ($hasChanges) {
+                    $product->update($updateData);
+                    Log::info('Product data updated', [
+                        'product_id' => $product->id,
+                        'changes' => $changes
+                    ]);
+                }
+
+                // Xử lý upload ảnh mới nếu có
+                if ($request->hasFile('image')) {
+                    Log::info('Starting image update');
+                    
+                    // Cấu hình Cloudinary
+                    Configuration::instance([
+                        'cloud' => [
+                            'cloud_name' => 'dkjqdzofj',
+                            'api_key' => '762956796349914',
+                            'api_secret' => 'JHTu010RMfNo4WJPQxs1j6UqQLg'
+                        ],
+                        'url' => [
+                            'secure' => true
+                        ]
+                    ]);
+                    
+                    // Xóa ảnh cũ trên Cloudinary và database
+                    $oldImage = ProductImage::where('product_id', $product->id)
+                        ->where('is_primary', true)
+                        ->first();
+                    
+                    if ($oldImage) {
+                        // Extract public_id từ URL để xóa trên Cloudinary
+                        $publicId = $this->getPublicIdFromUrl($oldImage->url);
+                        if ($publicId) {
+                            try {
+                                $cloudinary = new Cloudinary();
+                                $cloudinary->uploadApi()->destroy($publicId);
+                                Log::info('Old image deleted from Cloudinary', ['public_id' => $publicId]);
+                            } catch (\Exception $e) {
+                                Log::warning('Failed to delete old image from Cloudinary', [
+                                    'error' => $e->getMessage()
+                                ]);
+                            }
+                        }
+                        $oldImage->delete();
+                    }
+
+                    // Upload ảnh mới lên Cloudinary
+                    $file = $request->file('image');
+                    Log::info('Uploading new image', [
+                        'original_name' => $file->getClientOriginalName(),
+                        'size' => $file->getSize(),
+                        'mime_type' => $file->getMimeType()
+                    ]);
+                    
+                    $cloudinary = new Cloudinary();
+                    $result = $cloudinary->uploadApi()->upload($file->getRealPath(), [
+                        'folder' => 'products',
+                        'public_id' => 'product_' . $product->id . '_' . time(),
+                        'transformation' => [
+                            'width' => 800,
+                            'height' => 600,
+                            'crop' => 'limit',
+                            'quality' => 'auto'
+                        ]
+                    ]);
+
+                    $uploadedFileUrl = $result['secure_url'];
+
+                    // Lưu ảnh mới vào database
+                    ProductImage::create([
+                        'product_id' => $product->id,
+                        'product_variant_id' => null,
+                        'url' => $uploadedFileUrl,
+                        'alt_text' => $product->name . ' - Ảnh đại diện',
+                        'is_primary' => true,
+                    ]);
+
+                    Log::info('New image uploaded and saved', [
+                        'url' => $uploadedFileUrl,
+                        'public_id' => $result['public_id']
+                    ]);
+
+                    $hasChanges = true;
+                }
+
+                DB::commit();
+
+                if ($hasChanges) {
+                    Log::info('Product update completed successfully', [
+                        'product_id' => $product->id,
+                        'changes_made' => $hasChanges
+                    ]);
+                    
+                    return redirect()->route('seller.products.index')
+                        ->with('success', 'Sản phẩm đã được cập nhật thành công!');
+                } else {
+                    Log::info('No changes detected, redirecting without update', [
+                        'product_id' => $product->id
+                    ]);
+                    
+                    return redirect()->route('seller.products.index')
+                        ->with('info', 'Không có thay đổi nào được phát hiện.');
+                }
+                
+            } catch (\Exception $e) {
+                DB::rollback();
+                Log::error('Database transaction failed during update', [
+                    'error' => $e->getMessage(),
+                    'trace' => $e->getTraceAsString(),
+                    'product_id' => $product->id
+                ]);
+                throw $e;
+            }
+
+        } catch (ValidationException $e) {
+            Log::warning('Update validation failed', [
+                'errors' => $e->errors(),
+                'product_id' => $product->id
+            ]);
+            throw $e;
         } catch (\Exception $e) {
-            DB::rollback();
-            return back()->withInput()->with('error', 'Có lỗi xảy ra: ' . $e->getMessage());
+            Log::error('Product update failed', [
+                'error' => $e->getMessage(),
+                'trace' => $e->getTraceAsString(),
+                'product_id' => $product->id,
+                'user_id' => auth()->id()
+            ]);
+            
+            return back()
+                ->withErrors(['error' => 'Có lỗi xảy ra khi cập nhật sản phẩm: ' . $e->getMessage()])
+                ->withInput();
         }
     }
 
@@ -365,22 +511,20 @@ class ProductController extends Controller
     }
 
     /**
-     * Simple heuristics to detect URLs or phone numbers inside text.
-     * Returns true if forbidden content found.
+     * Kiểm tra URL hoặc số điện thoại trong text
      */
     private function containsUrlOrPhone(string $text): bool
     {
         $t = trim($text);
         if ($t === '') return false;
 
-        // Detect explicit URLs: http(s)://... or www.... or hostname.tld (require a dot + TLD)
+        // Phát hiện URL: http(s)://... hoặc www.... hoặc domain.tld
         if (preg_match('/\b(https?:\/\/|www\.)[^\s]+/i', $t) ||
             preg_match('/\b[a-z0-9\-]+\.[a-z]{2,63}(\b|\/)/i', $t)) {
             return true;
         }
 
-        // Detect a contiguous digit sequence of length >= 7 (phone-like).
-        // Use lookarounds to avoid matching digits that are part of alphanumeric tokens.
+        // Phát hiện số điện thoại (chuỗi số >= 7 chữ số liên tiếp)
         if (preg_match('/(?<!\d)\d{7,}(?!\d)/', $t)) {
             return true;
         }
