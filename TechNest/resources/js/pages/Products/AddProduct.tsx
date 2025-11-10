@@ -144,7 +144,7 @@ export default function AddProduct({ brands = [], warranties = [] }: Props) {
             <div className="max-w-4xl mx-auto p-6">
                 <div className="bg-white rounded-lg shadow-md">
                     <div className="p-6 border-b border-gray-200">
-                        <h1 className="text-2xl font-semibold text-gray-800">Add New Product</h1>
+                        <h1 className="text-2xl font-semibold text-gray-800">Thêm sản phẩm mới</h1>
                     </div>
                     
                     <div className="p-6">
@@ -167,7 +167,7 @@ export default function AddProduct({ brands = [], warranties = [] }: Props) {
                                 {/* Product Name */}
                                 <div className="md:col-span-2">
                                     <label htmlFor="name" className="block text-sm font-medium text-gray-700 mb-2">
-                                        Product Name *
+                                        Tên sản phẩm *
                                     </label>
                                     <input
                                         type="text"
@@ -188,7 +188,7 @@ export default function AddProduct({ brands = [], warranties = [] }: Props) {
                                 {/* Description */}
                                 <div className="md:col-span-2">
                                     <label htmlFor="description" className="block text-sm font-medium text-gray-700 mb-2">
-                                        Description
+                                        Mô tả
                                     </label>
                                     <textarea
                                         id="description"
@@ -208,7 +208,7 @@ export default function AddProduct({ brands = [], warranties = [] }: Props) {
                                 {/* Price */}
                                 <div>
                                     <label htmlFor="price" className="block text-sm font-medium text-gray-700 mb-2">
-                                        Price (VNĐ) *
+                                        Giá (VNĐ) *
                                     </label>
                                     <input
                                         type="number"
@@ -230,7 +230,7 @@ export default function AddProduct({ brands = [], warranties = [] }: Props) {
                                 {/* Stock */}
                                 <div>
                                     <label htmlFor="stock" className="block text-sm font-medium text-gray-700 mb-2">
-                                        Stock *
+                                        Số lượng *
                                     </label>
                                     <input
                                         type="number"
@@ -251,7 +251,7 @@ export default function AddProduct({ brands = [], warranties = [] }: Props) {
                                 {/* Brand */}
                                 <div>
                                     <label htmlFor="brand_id" className="block text-sm font-medium text-gray-700 mb-2">
-                                        Brand *
+                                        Thương hiệu *
                                     </label>
                                     <select
                                         id="brand_id"
@@ -262,7 +262,7 @@ export default function AddProduct({ brands = [], warranties = [] }: Props) {
                                         }`}
                                         required
                                     >
-                                        <option value="">-- Select Brand --</option>
+                                        <option value="">-- Chọn thương hiệu --</option>
                                         {safebrands.map((brand) => (
                                             <option key={brand.id} value={brand.id}>
                                                 {brand.name}
@@ -279,7 +279,7 @@ export default function AddProduct({ brands = [], warranties = [] }: Props) {
                                 {/* Warranty */}
                                 <div>
                                     <label htmlFor="warranty_id" className="block text-sm font-medium text-gray-700 mb-2">
-                                        Warranty Policy
+                                        Chính sách bảo hành
                                     </label>
                                     <select
                                         id="warranty_id"
@@ -289,7 +289,7 @@ export default function AddProduct({ brands = [], warranties = [] }: Props) {
                                             errors.warranty_id ? 'border-red-300' : 'border-gray-300'
                                         }`}
                                     >
-                                        <option value="">-- No Warranty --</option>
+                                        <option value="">-- Không bảo hành --</option>
                                         {safeWarranties.map((warranty) => (
                                             <option key={warranty.id} value={warranty.id}>
                                                 {warranty.title}
@@ -306,7 +306,7 @@ export default function AddProduct({ brands = [], warranties = [] }: Props) {
                                 {/* Image */}
                                 <div className="md:col-span-2">
                                     <label htmlFor="image" className="block text-sm font-medium text-gray-700 mb-2">
-                                        Product Image *
+                                        Hình ảnh sản phẩm *
                                     </label>
                                     <input
                                         type="file"
@@ -319,13 +319,13 @@ export default function AddProduct({ brands = [], warranties = [] }: Props) {
                                         required
                                     />
                                     <p className="text-sm text-gray-500 mt-1">
-                                        Select an image (JPEG, PNG, JPG, GIF, WebP - Max 4MB)
+                                        Chọn hình ảnh (JPEG, PNG, JPG, GIF, WebP - Max 4MB)
                                     </p>
                                     
                                     {/* Image Preview */}
                                     {imagePreview && (
                                         <div className="mt-3">
-                                            <p className="text-sm font-medium text-gray-700 mb-2">Preview:</p>
+                                            <p className="text-sm font-medium text-gray-700 mb-2">Xem trước:</p>
                                             <img 
                                                 src={imagePreview} 
                                                 alt="Preview" 
@@ -351,7 +351,7 @@ export default function AddProduct({ brands = [], warranties = [] }: Props) {
                                             className="mr-2 h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
                                         />
                                         <span className="text-sm font-medium text-gray-700">
-                                            Active Product
+                                            Sản phẩm hoạt động
                                         </span>
                                     </label>
                                 </div>
@@ -363,7 +363,7 @@ export default function AddProduct({ brands = [], warranties = [] }: Props) {
                                     href="/seller/dashboard"
                                     className="px-4 py-2 border border-gray-300 rounded-md text-gray-700 hover:bg-gray-50 transition-colors"
                                 >
-                                    Cancel
+                                    Hủy
                                 </Link>
                                 <button
                                     type="submit"

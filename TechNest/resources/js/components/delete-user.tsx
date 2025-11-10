@@ -13,22 +13,21 @@ export default function DeleteUser() {
 
     return (
         <div className="space-y-6">
-            <HeadingSmall title="Delete account" description="Delete your account and all of its resources" />
+            <HeadingSmall title="Xoá tài khoản" description="Xoá tài khoản và tất cả dữ liệu của bạn" />
             <div className="space-y-4 rounded-lg border border-red-100 bg-red-50 p-4 dark:border-red-200/10 dark:bg-red-700/10">
                 <div className="relative space-y-0.5 text-red-600 dark:text-red-100">
-                    <p className="font-medium">Warning</p>
-                    <p className="text-sm">Please proceed with caution, this cannot be undone.</p>
+                    <p className="font-medium">Cảnh báo</p>
+                    <p className="text-sm">Xin lưu ý, không thể hoàn lại thao tác sau.</p>
                 </div>
 
                 <Dialog>
                     <DialogTrigger asChild>
-                        <Button variant="destructive" data-test="delete-user-button">Delete account</Button>
+                        <Button variant="destructive" data-test="delete-user-button">Xoá tài khoản</Button>
                     </DialogTrigger>
                     <DialogContent>
-                        <DialogTitle>Are you sure you want to delete your account?</DialogTitle>
+                        <DialogTitle>Bạn có chắc muốn xoá tài khoản?</DialogTitle>
                         <DialogDescription>
-                            Once your account is deleted, all of its resources and data will also be permanently deleted. Please enter your password
-                            to confirm you would like to permanently delete your account.
+                            Khi xoá tài khoản, tất cả dữ liệu cá nhân và thông tin liên quan sẽ bị xoá vĩnh viễn. Vui lòng nhập mật khẩu để xác nhận hành động này.
                         </DialogDescription>
 
                         <Form
@@ -44,7 +43,7 @@ export default function DeleteUser() {
                                 <>
                                     <div className="grid gap-2">
                                         <Label htmlFor="password" className="sr-only">
-                                            Password
+                                            Mật khẩu
                                         </Label>
 
                                         <Input
@@ -62,7 +61,7 @@ export default function DeleteUser() {
                                     <DialogFooter className="gap-2">
                                         <DialogClose asChild>
                                             <Button variant="secondary" onClick={() => resetAndClearErrors()}>
-                                                Cancel
+                                                Hủy
                                             </Button>
                                         </DialogClose>
 
