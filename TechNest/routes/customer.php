@@ -16,6 +16,7 @@ Route::middleware(['auth', 'customer'])->group(function () {
     Route::post('/cart/add', [CartController::class, 'add'])->name('cart.add');
     Route::post('/cart/update/{id}', [CartController::class, 'update'])->name('cart.update');
     Route::post('/cart/delete/{id}', [CartController::class, 'destroy'])->name('cart.delete');
+    Route::post('/cart/clear', [CartController::class, 'clearAll'])->name('cart.clear');
 
     Route::get('/shipping-addresses', [ShippingAddressController::class, 'index'])->name('shipping_addresses.index');
     Route::post('/shipping-addresses', [ShippingAddressController::class, 'store'])->name('shipping_addresses.store');

@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\Cart;
 use App\Models\CartItem;
 use App\Models\Product;
+use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Inertia\Inertia;
@@ -152,23 +153,49 @@ class CartController extends Controller
     // Xóa tất cả sản phẩm khỏi giỏ
     public function clearAll(Request $request)
     {
-        // Xử lý giống các endpoint khác (Inertia / AJAX)
         $isInertia = $request->header('X-Inertia') !== null;
         $expectsJson = $request->wantsJson() || $request->expectsJson();
-        $api = $isInertia || $expectsJson;
 
-        $cart = Cart::firstWhere('user_id', Auth::id());
+        $userId = Auth::id();
+        if (!$userId) {
+            if ($expectsJson) {
+                return response()->json(['success' => false, 'message' => 'Unauthorized'], 401);
+            }
+            return redirect()->route('login');
+        }
+
+        $cart = Cart::where('user_id', $userId)->first();
         if (!$cart) {
-            if ($api) {
+            if ($isInertia) {
+                return redirect()->route('cart.index')->with('success', 'Giỏ hàng đã rỗng');
+            }
+            if ($expectsJson) {
                 return response()->json(['success' => true, 'cartCount' => 0], 200);
             }
             return redirect()->route('cart.index')->with('success', 'Giỏ hàng đã rỗng');
         }
 
-        // Xóa tất cả items
-        $cart->items()->delete();
+        try {
+            $itemModel = $cart->items()->getModel();
+            $uses = class_uses($itemModel);
+            if (in_array(SoftDeletes::class, $uses ?: [])) {
+                $cart->items()->forceDelete();
+            } else {
+                $cart->items()->delete();
+            }
+        } catch (\Exception $e) {
+            if ($expectsJson) {
+                return response()->json(['success' => false, 'message' => 'Không thể xóa: ' . $e->getMessage()], 500);
+            }
+            return back()->withErrors(['msg' => 'Không thể xóa giỏ hàng: ' . $e->getMessage()]);
+        }
 
-        if ($api) {
+        // Trả redirect với flash cho Inertia, JSON chỉ cho AJAX/JSON requests
+        if ($isInertia) {
+            return redirect()->route('cart.index')->with('success', 'Đã xóa tất cả sản phẩm khỏi giỏ');
+        }
+
+        if ($expectsJson) {
             return response()->json(['success' => true, 'cartCount' => 0], 200);
         }
 
