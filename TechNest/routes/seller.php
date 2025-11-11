@@ -40,6 +40,9 @@ Route::middleware(['auth', 'seller'])->group(function () {
     Route::match(['put', 'post'], '/seller/products/{product}/variants/{variant}', [ProductVariantController::class, 'update'])->name('seller.products.variants.update');
     Route::delete('/seller/products/{product}/variants/{variant}', [ProductVariantController::class, 'destroy'])->name('seller.products.variants.destroy');
 
+    // Toggle product visibility
+    Route::post('/seller/products/{product}/toggle-visibility', [ProductController::class, 'toggleVisibility'])->name('seller.products.toggle-visibility');
+
     // Xem trước
     Route::get('seller/products/{product}/preview', [ProductController::class, 'preview'])->name('seller.products.preview');
     //Duyệt

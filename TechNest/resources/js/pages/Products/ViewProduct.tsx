@@ -1,7 +1,8 @@
-import { Head, Link } from '@inertiajs/react';
+import { Head, Link, router } from '@inertiajs/react';
 import AppLayout from '@/layouts/app-layout';
 import { type BreadcrumbItem } from '@/types';
-import { Package, Eye, Edit, Trash2 } from 'lucide-react';
+import { Package, Eye, Edit, Trash2, EyeOff } from 'lucide-react';
+import { useState } from 'react';
 
 const breadcrumbs: BreadcrumbItem[] = [
     {
@@ -20,6 +21,7 @@ interface Product {
     price: string;
     stock: number;
     is_active: boolean;
+    status: string; // draft, approved, rejected
     brand: {
         name: string;
     };
@@ -64,6 +66,46 @@ function Pagination({ links }: { links: any[] }) {
 }
 
 export default function ViewProduct({ products }: Props) {
+    const [localProducts, setLocalProducts] = useState(products.data);
+    const [loadingToggle, setLoadingToggle] = useState<number | null>(null);
+
+    const handleToggleVisibility = async (productId: number) => {
+        setLoadingToggle(productId);
+        
+        try {
+            const response = await fetch(`/seller/products/${productId}/toggle-visibility`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') || '',
+                },
+            });
+
+            const data = await response.json();
+
+            if (data.success) {
+                // Cập nhật state local
+                setLocalProducts(prev => 
+                    prev.map(product => 
+                        product.id === productId 
+                            ? { ...product, is_active: data.is_active }
+                            : product
+                    )
+                );
+                
+                // Hiển thị thông báo thành công
+                alert(data.message);
+            } else {
+                alert(data.message || 'Có lỗi xảy ra');
+            }
+        } catch (error) {
+            console.error('Error toggling visibility:', error);
+            alert('Có lỗi xảy ra khi thay đổi trạng thái sản phẩm');
+        } finally {
+            setLoadingToggle(null);
+        }
+    };
+
     return (
         <AppLayout breadcrumbs={breadcrumbs}>
             <Head title="View Products" />
@@ -79,7 +121,7 @@ export default function ViewProduct({ products }: Props) {
                     </Link>
                 </div>
 
-                {products.data.length === 0 ? (
+                {localProducts.length === 0 ? (
                     <div className="text-center py-12">
                         <Package className="h-16 w-16 text-gray-400 mx-auto mb-4" />
                         <h3 className="text-lg font-medium text-gray-900 mb-2">No products yet</h3>
@@ -93,7 +135,7 @@ export default function ViewProduct({ products }: Props) {
                     </div>
                 ) : (
                     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 xl:grid-cols-3 gap-6">
-                        {products.data.map((product) => (
+                        {localProducts.map((product) => (
                             <div key={product.id} className="bg-white rounded-lg shadow-md overflow-hidden hover:shadow-lg transition-shadow">
                                 <div className="relative">
                                     <div className="aspect-w-16 aspect-h-9">
@@ -116,14 +158,46 @@ export default function ViewProduct({ products }: Props) {
                                         )}
                                     </div>
                                     
-                                    {/* Status badge */}
-                                    <div className="absolute top-2 right-2">
+                                    {/* Status badges - Updated positioning */}
+                                    <div className="absolute top-2 right-2 flex flex-col gap-1 items-end">
+                                        {/* Visibility toggle button for approved products */}
+                                        {product.status === 'approved' && (
+                                            <button
+                                                onClick={() => handleToggleVisibility(product.id)}
+                                                disabled={loadingToggle === product.id}
+                                                className={`p-1.5 rounded-full transition-all duration-200 ${
+                                                    product.is_active
+                                                        ? 'bg-green-500 hover:bg-green-600 text-white shadow-md'
+                                                        : 'bg-gray-500 hover:bg-gray-600 text-white shadow-md'
+                                                } ${loadingToggle === product.id ? 'opacity-50 cursor-not-allowed' : 'cursor-pointer'}`}
+                                                title={product.is_active ? 'Ẩn sản phẩm' : 'Hiện sản phẩm'}
+                                            >
+                                                {loadingToggle === product.id ? (
+                                                    <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
+                                                ) : product.is_active ? (
+                                                    <Eye className="h-4 w-4" />
+                                                ) : (
+                                                    <EyeOff className="h-4 w-4" />
+                                                )}
+                                            </button>
+                                        )}
+
+                                        {/* Status badge */}
                                         <span className={`px-2 py-1 text-xs font-medium rounded-full ${
-                                            product.is_active 
-                                                ? 'bg-green-100 text-green-800 shadow-sm' 
+                                            product.status === 'approved'
+                                                ? product.is_active 
+                                                    ? 'bg-green-100 text-green-800 shadow-sm' 
+                                                    : 'bg-yellow-100 text-yellow-800 shadow-sm'
+                                                : product.status === 'draft'
+                                                ? 'bg-gray-100 text-gray-800 shadow-sm'
                                                 : 'bg-red-100 text-red-800 shadow-sm'
                                         }`}>
-                                            {product.is_active ? 'Đang bán' : 'Tạm dừng'}
+                                            {product.status === 'approved'
+                                                ? product.is_active ? 'Đang bán' : 'Đã ẩn'
+                                                : product.status === 'draft'
+                                                ? 'Bản nháp'
+                                                : 'Bị từ chối'
+                                            }
                                         </span>
                                     </div>
                                 </div>
@@ -153,7 +227,7 @@ export default function ViewProduct({ products }: Props) {
                                         </span>
                                     </div>
                                     
-                                    {/* Action buttons - improved spacing */}
+                                    {/* Action buttons */}
                                     <div className="space-y-2">
                                         <div className="flex gap-2">
                                             <Link
@@ -196,7 +270,7 @@ export default function ViewProduct({ products }: Props) {
                 )}
 
                 {/* Pagination */}
-                {products.data.length > 0 && (
+                {localProducts.length > 0 && (
                     <div className="mt-8 flex justify-center">
                         <Pagination links={products.links} />
                     </div>

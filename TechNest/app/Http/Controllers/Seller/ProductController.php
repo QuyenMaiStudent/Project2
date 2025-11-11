@@ -22,6 +22,7 @@ class ProductController extends Controller
         // Chỉ xem sản phẩm do seller hiện tại tạo
         $products = Product::with(['brand', 'primaryImage', 'images'])
             ->where('created_by', auth()->id())
+            ->select(['id', 'name', 'price', 'stock', 'is_active', 'status', 'brand_id', 'created_by']) // Thêm status vào select
             ->orderByDesc('id')
             ->paginate(12);
 
@@ -116,7 +117,7 @@ class ProductController extends Controller
                     'warranty_id' => $validated['warranty_id'] ?? null,
                     'is_active' => $validated['is_active'] ?? true,
                     'created_by' => auth()->id(),
-                    'status' => 'approved',
+                    'status' => 'draft',
                 ]);
 
                 Log::info('Product created', ['product_id' => $product->id]);
@@ -496,6 +497,7 @@ class ProductController extends Controller
     {
         $this->authorizeProduct($product);
 
+        // Kiểm tra điều kiện bắt buộc
         if (
             $product->images()->count() === 0 ||
             $product->specs()->count() === 0 ||
@@ -504,8 +506,20 @@ class ProductController extends Controller
             return back()->with('error', 'Sản phẩm phải có ít nhất 1 ảnh, 1 thông số kỹ thuật và 1 biến thể trước khi gửi duyệt.');
         }
 
-        // Seller action: mark approved immediately
+        // Kiểm tra trạng thái hiện tại
+        if ($product->status === 'approved') {
+            return back()->with('info', 'Sản phẩm đã được đăng trước đó.');
+        }
+
+        // Cập nhật status thành approved
         $product->update(['status' => 'approved']);
+
+        Log::info('Product submitted for approved', [
+            'product_id' => $product->id,
+            'user_id' => auth()->id(),
+            'old_status' => 'draft',
+            'new_status' => 'approved'
+        ]);
 
         return back()->with('success', 'Sản phẩm đã được đăng/duyệt thành công.');
     }
@@ -548,6 +562,45 @@ class ProductController extends Controller
     {
         if ($product->created_by !== auth()->id()) {
             abort(403, 'Bạn không có quyền thao tác với sản phẩm này');
+        }
+    }
+
+    public function toggleVisibility(Product $product)
+    {
+        $this->authorizeProduct($product);
+
+        // Chỉ cho phép toggle với sản phẩm đã approved
+        if ($product->status !== 'approved') {
+            return response()->json([
+                'success' => false,
+                'message' => 'Chỉ có thể ẩn/hiện sản phẩm đã được đăng.'
+            ], 400);
+        }
+
+        try {
+            $product->update(['is_active' => !$product->is_active]);
+
+            Log::info('Product visibility toggled', [
+                'product_id' => $product->id,
+                'new_is_active' => $product->is_active,
+                'user_id' => auth()->id()
+            ]);
+
+            return response()->json([
+                'success' => true,
+                'is_active' => $product->is_active,
+                'message' => $product->is_active ? 'Sản phẩm đã được hiển thị.' : 'Sản phẩm đã được ẩn.' 
+            ]);
+        } catch (\Exception $e) {
+            Log::error('Failed to toggle product visibility', [
+                'product_id' => $product->id,
+                'error' => $e->getMessage()
+            ]);
+            
+            return response()->json([
+                'success' => false,
+                'message' => 'Có lỗi xảy ra: ' . $e->getMessage()
+            ], 500);
         }
     }
 }
