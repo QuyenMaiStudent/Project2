@@ -65,6 +65,7 @@ Route::get('/comments/{productId}', [CommentController::class, 'index'])->name('
 Route::middleware('auth')->group(function () {
     Route::post('/comments/{productId}', [CommentController::class, 'store'])->name('comments.store');
     Route::post('/comments/{id}/like', [CommentController::class, 'like'])->name('comments.like');
+    Route::get('/comments/{id}/check-like', [CommentController::class, 'checkLike'])->name('comments.check-like');
     Route::post('/comments/{id}/report', [CommentController::class, 'report'])->name('comments.report');
     // admin actions
     Route::post('/comments/{id}/pin', [CommentController::class, 'pin'])->name('comments.pin')->middleware('can:admin');
@@ -80,65 +81,7 @@ Route::middleware('auth')->group(function () {
     Route::post('/chat/start', [ChatController::class, 'startConversation'])->name('chat.start');
 });
 
-Route::get('/test-zego', function() {
-    return response()->json([
-        'appID' => config('zego.app_id'),
-        'serverSecret' => config('zego.server_secret'),
-        'env_app_id' => env('ZEGO_APP_ID'),
-        'env_server_secret' => env('ZEGO_SERVER_SECRET'),
-    ]);
-});
 
-// Test Cloudinary configuration and upload
-Route::get('/test-cloudinary', function () {
-    try {
-        $config = config('services.cloudinary');
-        
-        Log::info('Testing Cloudinary connection', [
-            'config' => [
-                'cloud_name' => $config['cloud_name'] ?? 'NOT_SET',
-                'api_key' => $config['api_key'] ? 'SET' : 'NOT_SET',
-                'api_secret' => $config['api_secret'] ? 'SET' : 'NOT_SET',
-            ]
-        ]);
-
-        // Sử dụng file ảnh có sẵn thay vì tạo mới
-        $testImagePath = public_path('favicon.ico'); // Hoặc bất kỳ file ảnh nào có sẵn
-        
-        // Hoặc tạo file text đơn giản
-        if (!file_exists($testImagePath)) {
-            $testImagePath = storage_path('app/test.txt');
-            file_put_contents($testImagePath, 'Test content for Cloudinary');
-        }
-
-        $result = \CloudinaryLabs\CloudinaryLaravel\Facades\Cloudinary::upload($testImagePath, [
-            'folder' => 'test',
-            'public_id' => 'test_' . time(),
-            'resource_type' => 'auto' // Tự động detect loại file
-        ]);
-        
-        return response()->json([
-            'success' => true,
-            'url' => $result->getSecurePath(),
-            'public_id' => $result->getPublicId(),
-            'config' => [
-                'cloud_name' => $config['cloud_name'] ?? 'NOT_SET',
-                'api_key' => $config['api_key'] ? 'SET' : 'NOT_SET',
-            ]
-        ]);
-    } catch (\Exception $e) {
-        Log::error('Cloudinary test failed', [
-            'error' => $e->getMessage(),
-            'trace' => $e->getTraceAsString()
-        ]);
-        
-        return response()->json([
-            'success' => false,
-            'error' => $e->getMessage(),
-            'config' => config('services.cloudinary')
-        ]);
-    }
-});
 
 require __DIR__.'/settings.php';
 require __DIR__.'/auth.php';

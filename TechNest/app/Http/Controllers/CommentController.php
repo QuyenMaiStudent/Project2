@@ -18,7 +18,6 @@ class CommentController extends Controller
 
         $product = Product::findOrFail($productId);
 
-        // hotfix: avoid referencing comment_likes until migration exists
         $query = Comment::where('product_id', $productId)
             ->whereNull('parent_id')
             ->where(function($q){
@@ -30,12 +29,28 @@ class CommentController extends Controller
         $total = $query->count();
         $comments = $query->skip($offset)->take($limit)->get(['id','user_id','content','created_at','replies_count','likes_count']);
 
-        // load relations manually (user + replies) if needed
-        $comments->load('user:id,name');
+        // Load user và replies với replies' user
+        $comments->load([
+            'user:id,name',
+            'replies' => function($q) {
+                $q->where('status', 'published')
+                  ->orderBy('created_at', 'asc')
+                  ->with('user:id,name');
+            }
+        ]);
 
-        // Add user_name for easier frontend handling
-        $comments->each(function($comment) {
+        // Add user_name và is_product_seller for easier frontend handling
+        $comments->each(function($comment) use ($product) {
             $comment->user_name = $comment->user->name ?? 'Người dùng ẩn';
+            $comment->is_product_seller = $comment->user_id === $product->created_by;
+            
+            // Add user_name và is_product_seller for replies too
+            if ($comment->replies) {
+                $comment->replies->each(function($reply) use ($product) {
+                    $reply->user_name = $reply->user->name ?? 'Người dùng ẩn';
+                    $reply->is_product_seller = $reply->user_id === $product->created_by;
+                });
+            }
         });
 
         return response()->json([
@@ -112,5 +127,66 @@ class CommentController extends Controller
         }
     }
 
-    // ... phần còn lại giữ nguyên ...
+    // POST /comments/{commentId}/like
+    public function like(Request $request, $commentId)
+    {
+        if (!Auth::check()) {
+            return response()->json(['message' => "Chưa đăng nhập"], 401);
+        }
+
+        try {
+            $comment = Comment::findOrFail($commentId);
+
+            // Check if already liked
+            $existingLike = $comment->likedUsers()->where('user_id', Auth::id())->exists();
+
+            if ($existingLike) {
+                // Unlike
+                $comment->likedUsers()->detach(Auth::id());
+                $comment->decrement('likes_count');
+
+                return response()->json([
+                    'message' => 'Đã bỏ thích',
+                    'liked' => false,
+                    'likes_count' => $comment->likes_count
+                ]);
+            } else {
+                // Like - Sửa lỗi: phải là attach, không phải detach
+                $comment->likedUsers()->attach(Auth::id());
+                $comment->increment('likes_count');
+
+                return response()->json([
+                    'message' => 'Đã thích',
+                    'liked' => true,
+                    'likes_count' => $comment->likes_count
+                ]);
+            }
+        } catch (\Exception $e) {
+            Log::error('Like comment failed', [
+                'error' => $e->getMessage(),
+                'comment_id' => $commentId,
+            ]);
+            return response()->json(['message' => 'Có lỗi xảy ra'], 500);
+        }
+    }
+
+    // GET /comments/{commentId}/check-likes
+    public function checkLike(Request $request, $commentId)
+    {
+        if (!Auth::check()) {
+            return response()->json(['liked' => false, 'likes_count' => 0]);
+        }
+
+        try {
+            $comment = Comment::findOrFail($commentId);
+            $liked = $comment->likedUsers()->where('user_id', Auth::id())->exists();
+
+            return response()->json([
+                'liked' => $liked,
+                'likes_count' => $comment->likes_count
+            ]);
+        } catch (\Exception $e) {
+            return response()->json(['liked' => false, 'likes_count' => 0]);
+        }
+    }
 }
