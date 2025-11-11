@@ -88,8 +88,12 @@ export default function AddProduct({ brands = [], warranties = [] }: Props) {
                 setImagePreview(e.target?.result as string);
             };
             reader.readAsDataURL(file);
+
+            setClientErrors(prev => { const c = {...prev}; delete c.image; return c;});
         } else {
             setImagePreview(null);
+
+            setClientErrors(prev => ({ ...prev, image: 'Vui lòng chọn ảnh sản phẩm.' }));
         }
     };
 
@@ -114,7 +118,10 @@ export default function AddProduct({ brands = [], warranties = [] }: Props) {
         }
 
         if (!data.image) {
-            alert('Vui lòng chọn ảnh sản phẩm!');
+            setClientErrors(prev => ({ ...prev, image: 'Vui lòng chọn ảnh sản phẩm.' }));
+
+            const el = document.getElementById('image');
+            if (el) el.scrollIntoView({ behavior: 'smooth', block: 'center' });
             return;
         }
 
@@ -314,7 +321,7 @@ export default function AddProduct({ brands = [], warranties = [] }: Props) {
                                         accept="image/*"
                                         onChange={handleImageChange}
                                         className={`w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 ${
-                                            errors.image ? 'border-red-300' : 'border-gray-300'
+                                            errors.image || clientErrors.image ? 'border-red-300' : 'border-gray-300'
                                         }`}
                                         required
                                     />
@@ -338,6 +345,9 @@ export default function AddProduct({ brands = [], warranties = [] }: Props) {
                                         <p className="text-red-600 text-sm mt-1">
                                             {Array.isArray(errors.image) ? errors.image[0] : errors.image}
                                         </p>
+                                    )}
+                                    {clientErrors.image && (
+                                        <p className='text-red-600 text-sm mt-1'>{clientErrors.image}</p>
                                     )}
                                 </div>
 

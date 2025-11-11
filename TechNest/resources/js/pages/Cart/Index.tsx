@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Head, router, Link } from '@inertiajs/react';
+import { Head, router, Link, usePage } from '@inertiajs/react';
 import AppLayout from '@/layouts/app-layout';
 
 interface Product {
@@ -30,8 +30,13 @@ interface CartProps {
 }
 
 export default function Index({ cart }: CartProps) {
+  const { props } = usePage();
+  const flash = (props as any).flash || {};
+  const errors = (props as any).errors || {};
+
   const [showClearModal, setShowClearModal] = useState(false);
   const [processingClear, setProcessingClear] = useState(false);
+  const [localError, setLocalError] = useState<string | null>(null);
 
   const handleUpdate = (itemId: number, quantity: number) => {
     router.post(`/cart/update/${itemId}`, { quantity });
@@ -50,18 +55,22 @@ export default function Index({ cart }: CartProps) {
 
   const handleClearConfirmed = () => {
     setProcessingClear(true);
+    setLocalError(null);
     router.post('/cart/clear', {}, {
       onSuccess: () => {
         setProcessingClear(false);
         setShowClearModal(false);
-        router.reload();
+        // Inertia sẽ follow redirect và cập nhật props (bao gồm flash)
       },
       onError: () => {
         setProcessingClear(false);
-        alert('Xóa thất bại, thử lại.');
+        setLocalError('Xóa thất bại, thử lại.');
       }
     });
   };
+
+  // Lấy first validation error (nếu có)
+  const firstError = Object.keys(errors).length ? (errors[Object.keys(errors)[0]] as any)[0] : null;
 
   return (
     <AppLayout
@@ -72,8 +81,33 @@ export default function Index({ cart }: CartProps) {
     >
       <Head title="Giỏ hàng" />
 
-      {/* tăng chiều ngang: lớn hơn container + cho phép cuộn ngang nếu cần */}
       <div className="max-w-6xl mx-auto p-6"> 
+        {/* Flash success */}
+        {flash.success ? (
+          <div className="mb-4 p-3 rounded bg-green-50 border border-green-200 text-green-800">
+            {flash.success}
+          </div>
+        ) : null}
+
+        {/* Flash error or local error */}
+        {flash.error ? (
+          <div className="mb-4 p-3 rounded bg-red-50 border border-red-200 text-red-800">
+            {flash.error}
+          </div>
+        ) : null}
+
+        {firstError ? (
+          <div className="mb-4 p-3 rounded bg-red-50 border border-red-200 text-red-800">
+            {firstError}
+          </div>
+        ) : null}
+
+        {localError ? (
+          <div className="mb-4 p-3 rounded bg-red-50 border border-red-200 text-red-800">
+            {localError}
+          </div>
+        ) : null}
+
         <h1 className="text-2xl font-bold mb-6">Giỏ hàng của bạn</h1>
 
         <div className="flex items-center justify-between mb-4 gap-2">
@@ -98,11 +132,26 @@ export default function Index({ cart }: CartProps) {
         </div>
 
         {cart.items.length === 0 ? (
-          <div className="text-gray-500 text-center py-12">Giỏ hàng trống.</div>
+          <div className="text-gray-500 text-center py-12">
+            <div className="text-lg font-medium mb-2">Giỏ hàng trống.</div>
+            <div className="text-sm mb-4">Bạn chưa có sản phẩm nào trong giỏ.</div>
+            <div>
+              <Link
+                href="/products"
+                className="inline-block bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700"
+              >
+                Tiếp tục mua sắm
+              </Link>
+              <Link
+                href="/"
+                className="ml-3 inline-block border px-4 py-2 rounded hover:bg-gray-100"
+              >
+                Về trang chủ
+              </Link>
+            </div>
+          </div>
         ) : (
-          // wrapper cho scroll ngang trên màn hình nhỏ
           <div className="overflow-x-auto">
-            {/* đảm bảo bảng có chiều ngang tối thiểu để rộng ra */}
             <table className="min-w-[1000px] w-full border rounded">
               <thead>
                 <tr className="bg-gray-100">

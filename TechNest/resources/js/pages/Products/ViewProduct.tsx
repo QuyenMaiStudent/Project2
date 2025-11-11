@@ -2,7 +2,7 @@ import { Head, Link, router } from '@inertiajs/react';
 import AppLayout from '@/layouts/app-layout';
 import { type BreadcrumbItem } from '@/types';
 import { Package, Eye, Edit, Trash2, EyeOff } from 'lucide-react';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 
 const breadcrumbs: BreadcrumbItem[] = [
     {
@@ -68,6 +68,14 @@ function Pagination({ links }: { links: any[] }) {
 export default function ViewProduct({ products }: Props) {
     const [localProducts, setLocalProducts] = useState(products.data);
     const [loadingToggle, setLoadingToggle] = useState<number | null>(null);
+    const [notice, setNotice] = useState<{ type: 'success' | 'error' | 'info'; message: string } | null>(null);
+
+    // auto-dismiss notice after 4s
+    useEffect(() => {
+        if (!notice) return;
+        const t = setTimeout(() => setNotice(null), 4000);
+        return () => clearTimeout(t);
+    }, [notice]);
 
     const handleToggleVisibility = async (productId: number) => {
         setLoadingToggle(productId);
@@ -93,14 +101,14 @@ export default function ViewProduct({ products }: Props) {
                     )
                 );
                 
-                // Hiển thị thông báo thành công
-                alert(data.message);
+                // Hiển thị thông báo bằng giao diện
+                setNotice({ type: 'success', message: data.message || 'Cập nhật trạng thái thành công.' });
             } else {
-                alert(data.message || 'Có lỗi xảy ra');
+                setNotice({ type: 'error', message: data.message || 'Có lỗi xảy ra' });
             }
         } catch (error) {
             console.error('Error toggling visibility:', error);
-            alert('Có lỗi xảy ra khi thay đổi trạng thái sản phẩm');
+            setNotice({ type: 'error', message: 'Có lỗi xảy ra khi thay đổi trạng thái sản phẩm' });
         } finally {
             setLoadingToggle(null);
         }
@@ -120,6 +128,20 @@ export default function ViewProduct({ products }: Props) {
                         <span>Add Product</span>
                     </Link>
                 </div>
+
+                {/* Inline notification (thay alert) */}
+                {notice && (
+                    <div className={`mb-4 rounded p-3 text-sm ${
+                        notice.type === 'success' ? 'bg-green-50 border border-green-200 text-green-800' :
+                        notice.type === 'error' ? 'bg-red-50 border border-red-200 text-red-800' :
+                        'bg-blue-50 border border-blue-200 text-blue-800'
+                    }`}>
+                        <div className="flex justify-between items-start">
+                            <div>{notice.message}</div>
+                            <button onClick={() => setNotice(null)} className="ml-4 text-gray-500 hover:text-gray-700">✕</button>
+                        </div>
+                    </div>
+                )}
 
                 {localProducts.length === 0 ? (
                     <div className="text-center py-12">

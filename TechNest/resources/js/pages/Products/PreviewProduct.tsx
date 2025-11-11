@@ -29,6 +29,10 @@ export default function PreviewProduct({ product }: any) {
         }
     };
 
+    // UI notification + confirmation modal (thay alert/confirm)
+    const [notice, setNotice] = useState<{ type: 'error' | 'info' | 'success'; message: string } | null>(null);
+    const [confirmOpen, setConfirmOpen] = useState(false);
+
     const handleSubmit = () => {
         // Kiểm tra điều kiện trước khi submit
         const hasSpecs = product.specs && product.specs.length > 0;
@@ -36,13 +40,36 @@ export default function PreviewProduct({ product }: any) {
         const hasImages = product.images && product.images.length > 0;
 
         if (!hasSpecs || !hasVariants || !hasImages) {
-            alert('Sản phẩm phải có ít nhất 1 ảnh, 1 thông số kỹ thuật và 1 biến thể trước khi đăng!');
+            setNotice({
+                type: 'error',
+                message: 'Sản phẩm phải có ít nhất 1 ảnh, 1 thông số kỹ thuật và 1 biến thể trước khi đăng!'
+            });
             return;
         }
 
-        if (confirm('Bạn có chắc muốn đăng sản phẩm này? Sau khi đăng, khách hàng sẽ có thể xem và mua sản phẩm này.')) {
-            router.post(`/seller/products/${product.id}/submit`);
-        }
+        // Mở modal xác nhận
+        setConfirmOpen(true);
+    };
+
+    const confirmSubmit = () => {
+        setConfirmOpen(false);
+        // gọi API submit, hiển thị trạng thái qua notice
+        // pass an explicit empty payload as second arg, options as third arg
+        router.post(
+            `/seller/products/${product.id}/submit`,
+            {}, // empty payload so TS matches overload expecting FormDataConvertible
+            {
+                onStart: () => {
+                    setNotice({ type: 'info', message: 'Đang gửi yêu cầu...' });
+                },
+                onError: () => {
+                    setNotice({ type: 'error', message: 'Có lỗi khi gửi yêu cầu. Vui lòng thử lại.' });
+                },
+                onSuccess: () => {
+                    setNotice({ type: 'success', message: 'Sản phẩm đã được gửi/đăng thành công.' });
+                }
+            }
+        );
     };
 
     // Thêm state loading cho ảnh
@@ -127,6 +154,15 @@ export default function PreviewProduct({ product }: any) {
                 </div>
                 {/* Thông tin bên phải */}
                 <div className="md:w-1/2 flex flex-col gap-6">
+                    {/* Notification (thông báo giao diện thay vì alert) */}
+                    {notice && (
+                        <div className={`rounded p-3 text-sm mb-2 ${notice.type === 'error' ? 'bg-red-50 border border-red-200 text-red-800' : notice.type === 'success' ? 'bg-green-50 border border-green-200 text-green-800' : 'bg-blue-50 border border-blue-200 text-blue-800'}`}>
+                            <div className="flex justify-between items-start">
+                                <div>{notice.message}</div>
+                                <button onClick={() => setNotice(null)} className="ml-4 text-gray-500 hover:text-gray-700">✕</button>
+                            </div>
+                        </div>
+                    )}
                     <div>
                         <h1 className="text-3xl font-bold mb-2">{product.name}</h1>
                         <div className="mb-2 text-gray-600">{product.brand?.name}</div>
@@ -271,7 +307,21 @@ export default function PreviewProduct({ product }: any) {
                         </div>
                     </div>
                 </div>
-            </div>
-        </AppLayout>
-    );
-}
+
+                {/* Confirmation Modal */}
+                {confirmOpen && (
+                    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40">
+                        <div className="bg-white rounded-lg p-6 w-full max-w-md mx-4">
+                            <h3 className="text-lg font-semibold mb-3">Xác nhận đăng sản phẩm</h3>
+                            <p className="text-sm text-gray-700 mb-4">Bạn có chắc muốn đăng sản phẩm này? Sau khi đăng, khách hàng sẽ có thể xem và mua sản phẩm này.</p>
+                            <div className="flex justify-end gap-3">
+                                <button onClick={() => setConfirmOpen(false)} className="px-4 py-2 rounded border hover:bg-gray-50">Hủy</button>
+                                <button onClick={confirmSubmit} className="px-4 py-2 rounded bg-blue-600 text-white hover:bg-blue-700">Xác nhận</button>
+                            </div>
+                        </div>
+                    </div>
+                )}
+             </div>
+         </AppLayout>
+     );
+ }
