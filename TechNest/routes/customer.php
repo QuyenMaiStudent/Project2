@@ -6,6 +6,7 @@ use App\Http\Controllers\Customer\OrderController;
 use App\Http\Controllers\Customer\ShippingAddressController;
 use App\Http\Controllers\Customer\CheckoutController;
 use App\Http\Controllers\Customer\TransactionController;
+use App\Http\Controllers\Subscription\PackageController;
 use Illuminate\Support\Facades\Route;
 
 Route::middleware(['auth', 'customer'])->group(function () {
@@ -37,4 +38,10 @@ Route::middleware(['auth', 'customer'])->group(function () {
     //Transaction routes
     Route::get('/transactions', [TransactionController::class, 'index'])->name('customer.transactions.index');
     Route::get('transactions/{transaction}', [TransactionController::class, 'show'])->name('customer.transactions.show');
+    Route::get('/transactions/{transaction}/invoice', [TransactionController::class, 'invoice'])->name('customer.transactions.invoice');
+
+    Route::get('/packages', [PackageController::class, 'index'])->name('packages.index');
+    Route::post('/packages/{package}/subscribe', [PackageController::class, 'subscribe'])->name('packages.subscribe');
+    Route::post('/packages/subscriptions/{subscription}/cancel', [PackageController::class, 'cancel'])->name('packages.cancel');
+    Route::post('/packages/subscriptions/{subscription}/toggle-auto-renew', [PackageController::class, 'toggleAutoRenew'])->name('packages.toggleAutoRenew');
 });

@@ -31,8 +31,16 @@ export default function Show({ transaction }: any) {
             <pre className="bg-gray-100 p-3 rounded text-sm overflow-auto">{JSON.stringify(transaction.raw ?? transaction, null, 2)}</pre>
           </div>
 
-          <div className="mt-4">
+          <div className="mt-4 flex gap-4">
             <Link href="/transactions" className="text-blue-600">« Quay lại danh sách giao dịch</Link>
+            <a
+              href={`/transactions/${transaction.id}/invoice`}
+              className="text-blue-600"
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              Tải hóa đơn (PDF)
+            </a>
           </div>
         </div>
       </div>

@@ -9,6 +9,7 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Log;
 use Inertia\Inertia;
 use Illuminate\Support\Carbon;
+use Barryvdh\DomPDF\Facade\Pdf;
 
 class TransactionController extends Controller
 {
@@ -78,5 +79,43 @@ class TransactionController extends Controller
         ]);
     }
 
-    
+    public function invoice(Transaction $transaction)
+    {
+        $transaction->load(['payment.order', 'payment']);
+        $order = $transaction->payment?->order;
+
+        if (!$order || $order->user_id !== Auth::id()) {
+            abort(403, 'Unauthorized access to transaction.');
+        }
+
+        $user = Auth::user();
+
+        $data =  [
+            'transaction' => [
+                'id' => $transaction->id,
+                'transaction_code' => $transaction->transaction_code,
+                'gateway' => $transaction->gateway,
+                'status' => $transaction->status,
+                'amount' => $transaction->amount,
+                'processed_at' => $transaction->processed_at ? Carbon::parse($transaction->processed_at)->format('d/m/Y H:i') : null,
+            ],
+            'order' => [
+                'id' => $order->id,
+                'total_amount' => $order->total_amount,
+                'status' => $order->status,
+                'placed_at' => $order->placed_at?->format('d/m/Y H:i'),
+            ],
+            'customer' => [
+                'name' => $user?->name,
+                'email' => $user?->email,
+            ],
+            'generated_at' => Carbon::now()->format('d/m/Y H:i'),
+        ];
+
+        $pdf = Pdf::loadView('pdf.transaction-invoice', $data)->setPaper('a4');
+
+        $fillname = 'invoice-' . ($transaction->transaction_code ?? $transaction->id) . '.pdf';
+
+        return $pdf->download($fillname);
+    }
 }
