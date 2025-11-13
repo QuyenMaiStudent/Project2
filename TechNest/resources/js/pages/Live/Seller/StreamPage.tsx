@@ -20,6 +20,9 @@ export default function StreamPage({ liveStream, zegoConfig }: Props) {
     const [localError, setLocalError] = useState<string | null>(null);
     const [zegoInstance, setZegoInstance] = useState<any>(null);
 
+    const [showEndConfirm, setShowEndConfirm] = useState(false);
+    const [ending, setEnding] = useState(false);
+
     const breadcrumbs: BreadcrumbItem[] = [
         {
             title: 'Seller Dashboard',
@@ -84,18 +87,29 @@ export default function StreamPage({ liveStream, zegoConfig }: Props) {
     }, [isInitialized, liveStream.room_id, auth.user, error]);
 
     const handleEndStream = () => {
-        if (confirm('Bạn có chắc chắn muốn kết thúc live stream?')) {
-            // Cleanup Zego instance before ending stream
-            if (zegoInstance) {
-                try {
-                    zegoInstance.destroy();
-                } catch (err) {
-                    console.error('Error destroying Zego instance:', err);
-                }
-            }
-            post(`/seller/live/${liveStream.id}/end`);
-        }
+        setShowEndConfirm(true);
     };
+
+    const confirmEndStream = () => {
+        setEnding(true);
+        if (zegoInstance) {
+            try {
+                zegoInstance.destroy();
+            } catch (err) {
+                console.error("Error destroying Zego instance", err);
+            }
+        }
+        post(`/seller/live/${liveStream.id}/end`, {
+            onFinish: () => {
+                setEnding(false);
+                setShowEndConfirm(false);
+            },
+        });
+    };
+
+    const cancelEndStream = () => {
+        setShowEndConfirm(false);
+    }
 
     const formatDate = (dateString: string) => {
         return new Date(dateString).toLocaleString('vi-VN');
@@ -203,6 +217,22 @@ export default function StreamPage({ liveStream, zegoConfig }: Props) {
                     </div>
                 </div>
             </div>
+
+            {showEndConfirm && (
+                <div className='fixed inset-0 z-50 flex items-center justify-center'>
+                    <div className='absolute inset-0 bg-black opacity-40' onClick={cancelEndStream}></div>
+                    <div className='relative bg-white rounded-lg shadow-xl max-w-lg w-full p-6 z-10'>
+                        <h3 className='text-lg font-semibold mb-2'>Kết thúc Live</h3>
+                        <p className='text-sm text-gray-600 mb-4'>Bạn có chắc muốn kết thúc buổi live này? Hành động này sẽ dừng phát trực tiếp và thông báo cho người xem.</p>
+                        <div className='flex justify-end gap-3'>
+                            <Button onClick={cancelEndStream} disabled={ending} className='bg-gray-100 text-gray-700'>Hủy</Button>
+                            <Button onClick={confirmEndStream} variant='destructive' disabled={ending} className='bg-red-600 hover:bg-red-700'>
+                                {ending ? 'Đang xử lý...' : 'Kết thúc Live'}
+                            </Button>
+                        </div>
+                    </div>
+                </div>
+            )}
         </AppLayout>
     );
 }

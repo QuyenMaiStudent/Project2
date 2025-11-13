@@ -19,6 +19,10 @@ export default function LiveViewer({ liveStream, zegoConfig }: Props) {
     const [zegoInstance, setZegoInstance] = useState<any>(null);
     const [localError, setLocalError] = useState<string | null>(null);
 
+    //UI notifications state for ended stream
+    const [streamEnded, setStreamEnded] = useState(false);
+    const [redirectTimerId, setRedirectTimerId] = useState<number | null>(null);
+
     useEffect(() => {
         console.log('LiveViewer useEffect:', {
             isInitialized,
@@ -68,6 +72,10 @@ export default function LiveViewer({ liveStream, zegoConfig }: Props) {
                     console.error('Error destroying Zego instance:', err);
                 }
             }
+            // Clear any redirect timers
+            if (redirectTimerId) {
+                clearTimeout(redirectTimerId);
+            }
         };
     }, [isInitialized, liveStream.room_id, auth?.user, error]);
 
@@ -81,8 +89,12 @@ export default function LiveViewer({ liveStream, zegoConfig }: Props) {
                     if (zegoInstance && typeof zegoInstance.destroy === 'function') {
                         try { zegoInstance.destroy(); } catch (e) { /* ignore */  }
                     }
-                    alert('Buổi live đã kết thúc. Bạn sẽ được chuyển về trang Live Streams.');
-                    window.location.href = '/live';
+                    setStreamEnded(true);
+
+                    const id = window.setTimeout(() => {
+                        window.location.href = '/live';
+                    }, 3500);
+                    setRedirectTimerId(id as unknown as number);
                 }
             } catch (err) {
                 console.warn('Failed to check live status', err);
@@ -97,12 +109,42 @@ export default function LiveViewer({ liveStream, zegoConfig }: Props) {
         };
     }, [liveStream.id, zegoInstance]);
 
+    const handleDismissNotification = () => {
+        setStreamEnded(false);
+        if (redirectTimerId) {
+            clearTimeout(redirectTimerId);
+            setRedirectTimerId(null);
+        }
+    };
+
+    const handleGoNow = () => {
+        if (redirectTimerId) {
+            clearTimeout(redirectTimerId);
+        }
+        window.location.href = '/live';
+    };
+
     const formatDate = (dateString: string) => {
         return new Date(dateString).toLocaleString('vi-VN');
     };
 
     return (
         <PublicLayout>
+            {streamEnded && (
+                <div className='fixed top-4 left-1/2 transform -translate-x-1/2 z-50 w-full max-w-xl px-4'>
+                    <div className='bg-yellow-50 border border-yellow-200 text-yellow-900 px-4 py-3 rounded-lg shadow-md flex items-center justify-between'>
+                        <div>
+                            <strong className='block'>Buổi live đã kết thúc</strong>
+                            <span className='text-sm'>Bạn sẽ được chuyển về trang Live Streams trong vài giây.</span>
+                        </div>
+                        <div className='flex items-center gap-2'>
+                            <button onClick={handleDismissNotification} className='px-3 py-1 text-sm bg-white rounded border'>Đóng</button>
+                            <button onClick={handleGoNow} className='px-3 py-1 text-sm bg-red-600 text-white rounded'>Quay về</button>
+                        </div>   
+                    </div>
+
+                </div>
+            )}
             <Head title={`Live: ${liveStream.title}`} />
             
             <div className="max-w-7xl mx-auto p-6">
