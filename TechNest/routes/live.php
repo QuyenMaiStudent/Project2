@@ -9,6 +9,10 @@ use Illuminate\Support\Facades\Route;
 Route::get('/live', [LiveStreamController::class, 'index'])->name('live.index');
 Route::get('/live/{liveStream}', [ViewerController::class, 'show'])->name('live.view');
 
+// API helpers for frontend
+Route::get('/api/live/active-count', [LiveStreamController::class, 'activeCount']);
+Route::get('/api/live/{liveStream}/status', [ViewerController::class, 'status']);
+
 // Seller routes
 Route::middleware(['auth', 'seller'])->group(function () {
     Route::get('/seller/live', [SellerLiveController::class, 'dashboard'])->name('seller.live.dashboard');

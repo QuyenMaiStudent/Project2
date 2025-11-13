@@ -46,4 +46,12 @@ class ViewerController extends Controller
 
         return response()->json(['success' => true]);
     }
+
+    public function status(LiveStream $liveStream)
+    {
+        return response()->json([
+            'id' => $liveStream->id,
+            'status' => $liveStream->status,
+        ]);
+    }
 }

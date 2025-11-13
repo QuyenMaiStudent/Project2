@@ -34,4 +34,11 @@ class LiveStreamController extends Controller
             'liveStreams' => $liveStreams,
         ]);
     }
+
+    // New: return active live count as JSON
+    public function activeCount()
+    {
+        $count = LiveStream::where('status', 'live')->count();
+        return response()->json(['count' => $count]);
+    }
 }

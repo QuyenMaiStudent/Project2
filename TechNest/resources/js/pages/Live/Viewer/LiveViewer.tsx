@@ -5,6 +5,7 @@ import { type LiveStream, type ZegoConfig } from '@/types/live';
 import {useZego} from '@/hooks/useZego';
 import { usePage } from '@inertiajs/react';
 import { Users, Clock, User } from 'lucide-react';
+import axios from 'axios';
 
 interface Props {
     liveStream: LiveStream;
@@ -69,6 +70,32 @@ export default function LiveViewer({ liveStream, zegoConfig }: Props) {
             }
         };
     }, [isInitialized, liveStream.room_id, auth?.user, error]);
+
+    useEffect(() => {
+        let mounted = true;
+        const checkStatus = async () => {
+            try {
+                const res = await axios.get(`/api/live/${liveStream.id}/status`);
+                if (!mounted) return;
+                if (res.data?.status && res.data.status !== 'live') {
+                    if (zegoInstance && typeof zegoInstance.destroy === 'function') {
+                        try { zegoInstance.destroy(); } catch (e) { /* ignore */  }
+                    }
+                    alert('Buổi live đã kết thúc. Bạn sẽ được chuyển về trang Live Streams.');
+                    window.location.href = '/live';
+                }
+            } catch (err) {
+                console.warn('Failed to check live status', err);
+            }
+        };
+
+        checkStatus();
+        const id = setInterval(checkStatus, 5000);
+        return () => {
+            mounted = false;
+            clearInterval(id);
+        };
+    }, [liveStream.id, zegoInstance]);
 
     const formatDate = (dateString: string) => {
         return new Date(dateString).toLocaleString('vi-VN');

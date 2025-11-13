@@ -25,6 +25,8 @@ export default function Header() {
     const [showResults, setShowResults] = useState(false);
     const searchRef = useRef<HTMLDivElement>(null);
 
+    const [activeLiveCount, setActiveLiveCount] = useState<number>(0);
+
     // Debounce search
     useEffect(() => {
         const timer = setTimeout(() => {
@@ -38,6 +40,26 @@ export default function Header() {
 
         return () => clearTimeout(timer);
     }, [searchQuery]);
+
+    useEffect(() => {
+        let mounted = true;
+        const fetchCount = async () => {
+            try {
+                const res = await axios.get('/api/live/active-count');
+                if (mounted && res.data?.count != null) {
+                    setActiveLiveCount(res.data.count);
+                }
+            } catch (err) {
+                console.warn('Failed to fetch active live count:', err);
+            }
+        };
+        fetchCount();
+        const id = setInterval(fetchCount, 30000);
+        return () => {
+            mounted = false;
+            clearInterval(id);
+        };
+    }, []);
 
     // Click outside to close results
     useEffect(() => {
@@ -164,6 +186,15 @@ export default function Header() {
                 </Link>
                 <Link href="/support" className="text-lg font-semibold text-black hover:underline">
                     Hỗ trợ
+                </Link>
+
+                <Link href="/live" className='text-lg font-semibold text-black hover:underline relative'>
+                    Live
+                    {activeLiveCount > 0 && (
+                        <span className='ml-2 inline-flex items-center justify-center px-2 py-1 text-xs font-bold leading-none text-white bg-red-600 rounded-full absolute top-2 right-4'>
+                            {activeLiveCount}
+                        </span>
+                    )}
                 </Link>
 
                 {/* Cart icon + count only for customer users */}
