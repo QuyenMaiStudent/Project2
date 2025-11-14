@@ -128,7 +128,7 @@ export default function Edit() {
   const isSelected = (type:string, id:number) => form.data.conditions.some((c:any)=>c.condition_type===type && c.target_id===id);
 
   const breadcrumbs = [
-    { title: 'Bảng điều khiển quản trị', href: '/admin/dashboard' },
+    { title: 'Trang quản trị', href: '/admin/dashboard' },
     { title: 'Khuyến mãi', href: '/admin/promotions' },
     { title: promotion?.code ?? 'Chỉnh sửa', href: `/admin/promotions/${promotion?.id}/edit` },
   ];

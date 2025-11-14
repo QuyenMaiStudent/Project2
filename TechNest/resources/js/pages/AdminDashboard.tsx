@@ -15,7 +15,7 @@ export default function AdminDashboard(props: any) {
     return (
         <AppLayout
             breadcrumbs={[
-                { title: 'Bảng điều khiển quản trị', href: '/admin/dashboard' }
+                { title: 'Trang quản trị', href: '/admin/dashboard' }
             ]}
         >
             <Head title="Bảng điều khiển quản trị" />

@@ -15,7 +15,7 @@ import { edit } from '@/routes/password';
 
 const breadcrumbs: BreadcrumbItem[] = [
     {
-        title: 'Password settings',
+        title: 'Cài đặt mật khẩu',
         href: edit().url,
     },
 ];
@@ -26,12 +26,11 @@ export default function Password() {
 
     return (
         <AppLayout breadcrumbs={breadcrumbs}>
-            <Head title="Password settings" />
+            <Head title="Cài đặt mật khẩu" />
 
             <SettingsLayout>
                 <div className="space-y-6">
-                    <HeadingSmall title="Update password" description="Ensure your account is using a long, random password to stay secure" />
-
+                    <HeadingSmall title="Cập nhật mật khẩu" description="Đảm bảo tài khoản của bạn sử dụng mật khẩu dài, ngẫu nhiên để giữ an toàn" />
                     <Form
                         {...PasswordController.update.form()}
                         options={{
@@ -53,7 +52,7 @@ export default function Password() {
                         {({ errors, processing, recentlySuccessful }) => (
                             <>
                                 <div className="grid gap-2">
-                                    <Label htmlFor="current_password">Current password</Label>
+                                    <Label htmlFor="current_password">Mật khẩu hiện tại</Label>
 
                                     <Input
                                         id="current_password"
@@ -69,7 +68,7 @@ export default function Password() {
                                 </div>
 
                                 <div className="grid gap-2">
-                                    <Label htmlFor="password">New password</Label>
+                                    <Label htmlFor="password">Mật khẩu mới</Label>
 
                                     <Input
                                         id="password"
@@ -85,7 +84,7 @@ export default function Password() {
                                 </div>
 
                                 <div className="grid gap-2">
-                                    <Label htmlFor="password_confirmation">Confirm password</Label>
+                                    <Label htmlFor="password_confirmation">Xác nhận mật khẩu mới</Label>
 
                                     <Input
                                         id="password_confirmation"
@@ -100,7 +99,7 @@ export default function Password() {
                                 </div>
 
                                 <div className="flex items-center gap-4">
-                                    <Button disabled={processing} data-test="update-password-button">Save password</Button>
+                                    <Button disabled={processing} data-test="update-password-button">Lưu mật khẩu</Button>
 
                                     <Transition
                                         show={recentlySuccessful}
@@ -109,7 +108,7 @@ export default function Password() {
                                         leave="transition ease-in-out"
                                         leaveTo="opacity-0"
                                     >
-                                        <p className="text-sm text-neutral-600">Saved</p>
+                                        <p className="text-sm text-neutral-600">Đã lưu</p>
                                     </Transition>
                                 </div>
                             </>

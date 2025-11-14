@@ -104,7 +104,7 @@ export default function Edit() {
 
   const flash = page.flash ?? {};
   const breadcrumbs = [
-    { title: 'Seller Dashboard', href: '/seller/dashboard' },
+    { title: 'Giao diện người bán', href: '/seller/dashboard' },
     { title: 'Khuyến mãi', href: '/seller/promotions' },
     { title: promotion?.code ?? 'Chỉnh sửa', href: `/seller/promotions/${promotion?.id}/edit` },
   ];

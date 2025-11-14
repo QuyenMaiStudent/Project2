@@ -26,7 +26,7 @@ export default function Login({ status, canResetPassword }: LoginProps) {
                     <>
                         <div className="grid gap-6">
                             <div className="grid gap-2">
-                                <Label htmlFor="email">Email address</Label>
+                                <Label htmlFor="email">Địa chỉ Email</Label>
                                 <Input
                                     id="email"
                                     type="email"
@@ -42,10 +42,10 @@ export default function Login({ status, canResetPassword }: LoginProps) {
 
                             <div className="grid gap-2">
                                 <div className="flex items-center">
-                                    <Label htmlFor="password">Password</Label>
+                                    <Label htmlFor="password">Mật khẩu</Label>
                                     {canResetPassword && (
                                         <TextLink href={request()} className="ml-auto text-sm" tabIndex={5}>
-                                            Forgot password?
+                                            Quên mật khẩu?
                                         </TextLink>
                                     )}
                                 </div>
@@ -63,19 +63,19 @@ export default function Login({ status, canResetPassword }: LoginProps) {
 
                             <div className="flex items-center space-x-3">
                                 <Checkbox id="remember" name="remember" tabIndex={3} />
-                                <Label htmlFor="remember">Remember me</Label>
+                                <Label htmlFor="remember">Ghi nhớ đăng nhập</Label>
                             </div>
 
                             <Button type="submit" className="mt-4 w-full" tabIndex={4} disabled={processing} data-test="login-button">
                                 {processing && <LoaderCircle className="h-4 w-4 animate-spin" />}
-                                Log in
+                                Đăng nhập
                             </Button>
                         </div>
 
                         <div className="text-center text-sm text-muted-foreground">
-                            Don't have an account?{' '}
+                            Bạn chưa có tài khoản?{' '}
                             <TextLink href={register()} tabIndex={5}>
-                                Sign up
+                                Đăng ký
                             </TextLink>
                         </div>
 

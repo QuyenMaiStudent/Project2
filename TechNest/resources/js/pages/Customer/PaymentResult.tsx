@@ -80,7 +80,7 @@ export default function PaymentResult({ provider, status, message, order }: Paym
     return (
         <AppLayout
             breadcrumbs={[
-                { title: 'Trang chủ', href: '/' },
+                { title: 'Giao diện người dùng', href: '/' },
                 { title: 'Kết quả thanh toán', href: '#' },
             ]}
         >

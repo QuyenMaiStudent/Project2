@@ -166,11 +166,11 @@ export default function LiveViewer({ liveStream, zegoConfig }: Props) {
                             <div className="flex items-center gap-6 text-sm text-gray-500">
                                 <div className="flex items-center gap-1">
                                     <User className="h-4 w-4" />
-                                    <span>Seller: {liveStream.seller_name}</span>
+                                    <span>Người bán: {liveStream.seller_name}</span>
                                 </div>
                                 <div className="flex items-center gap-1">
                                     <Users className="h-4 w-4" />
-                                    <span>{liveStream.viewer_count} viewers</span>
+                                    <span>{liveStream.viewer_count} người xem</span>
                                 </div>
                                 <div className="flex items-center gap-1">
                                     <Clock className="h-4 w-4" />

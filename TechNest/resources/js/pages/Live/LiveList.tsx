@@ -46,7 +46,7 @@ export default function LiveList({ liveStreams }: Props) {
                                     </div>
                                     <div className="absolute bottom-3 right-3">
                                         <span className="px-2 py-1 bg-black bg-opacity-70 text-white text-xs rounded">
-                                            {stream.viewer_count} viewers
+                                            {stream.viewer_count} người xem
                                         </span>
                                     </div>
                                 </div>

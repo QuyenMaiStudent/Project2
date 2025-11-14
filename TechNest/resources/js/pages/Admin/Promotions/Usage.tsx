@@ -9,7 +9,7 @@ export default function Usage() {
   const total = page.total_used ?? 0;
 
   const breadcrumbs = [
-    { title: 'Bảng điều khiển quản trị', href: '/admin/dashboard' },
+    { title: 'Trang quản trị', href: '/admin/dashboard' },
     { title: 'Khuyến mãi', href: '/admin/promotions' },
     { title: 'Thống kê', href: `/admin/promotions/${promotion.id}/usage` },
   ];

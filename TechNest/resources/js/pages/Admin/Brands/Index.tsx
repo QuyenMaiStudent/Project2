@@ -59,7 +59,7 @@ function Index() {
                                                 />
                                             ) : (
                                                 <div className="h-12 w-32 bg-gray-100 text-gray-500 flex items-center justify-center text-xs">
-                                                    No logo
+                                                    Không có Logo
                                                 </div>
                                             )}
                                         </td>

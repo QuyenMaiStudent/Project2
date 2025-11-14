@@ -146,7 +146,7 @@ function Edit() {
                                         onChange={() => { setUseUrl(false); setLogoUrl(''); }}
                                         className="hidden"
                                     />
-                                    Upload file
+                                    Tải ảnh lên
                                 </label>
                                 <label className={`px-3 py-1 rounded border cursor-pointer ${useUrl ? 'bg-gray-100' : ''}`}>
                                     <input
@@ -184,10 +184,10 @@ function Edit() {
                                     {preview ? (
                                         <img src={preview} alt="Logo preview" className="max-h-full object-contain" />
                                     ) : (
-                                        <span className="text-xs text-gray-500">Preview</span>
+                                        <span className="text-xs text-gray-500">Xem trước</span>
                                     )}
                                 </div>
-                                <p className="text-xs text-gray-500 mt-1">Upload file hoặc nhập URL. Không nhập cả hai — nếu có file sẽ ưu tiên file.</p>
+                                <p className="text-xs text-gray-500 mt-1">Tải ảnh lên hoặc nhập URL. Không nhập cả hai — nếu có file sẽ ưu tiên file.</p>
                             </div>
                         </div>
 

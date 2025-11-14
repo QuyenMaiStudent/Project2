@@ -57,7 +57,7 @@ export default function OrdersIndex({ orders }: { orders: Order[] }) {
     return (
         <AppLayout
             breadcrumbs={[
-                { title: 'Trang chủ', href: '/' },
+                { title: 'Giao diện người dùng', href: '/' },
                 { title: 'Đơn hàng của tôi', href: '/orders' },
             ]}
         >

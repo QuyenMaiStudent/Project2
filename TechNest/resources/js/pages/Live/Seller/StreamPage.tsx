@@ -25,7 +25,7 @@ export default function StreamPage({ liveStream, zegoConfig }: Props) {
 
     const breadcrumbs: BreadcrumbItem[] = [
         {
-            title: 'Seller Dashboard',
+            title: 'Giao diện người bán',
             href: '/seller/dashboard',
         },
         {
@@ -138,7 +138,7 @@ export default function StreamPage({ liveStream, zegoConfig }: Props) {
                             <div className="flex items-center gap-6 text-sm text-gray-500">
                                 <div className="flex items-center gap-1">
                                     <Users className="h-4 w-4" />
-                                    <span>{liveStream.viewer_count} viewers</span>
+                                    <span>{liveStream.viewer_count} người xem</span>
                                 </div>
                                 <div className="flex items-center gap-1">
                                     <Clock className="h-4 w-4" />
@@ -201,15 +201,15 @@ export default function StreamPage({ liveStream, zegoConfig }: Props) {
                     <h3 className="text-lg font-semibold mb-4">Thông tin Stream</h3>
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm">
                         <div>
-                            <span className="font-medium text-gray-700">Room ID:</span>
+                            <span className="font-medium text-gray-700">ID phòng:</span>
                             <span className="ml-2 font-mono text-gray-600">{liveStream.room_id}</span>
                         </div>
                         <div>
-                            <span className="font-medium text-gray-700">Status:</span>
+                            <span className="font-medium text-gray-700">Trạng thái:</span>
                             <span className="ml-2 text-red-600 font-medium">{liveStream.status}</span>
                         </div>
                         <div>
-                            <span className="font-medium text-gray-700">Share Link:</span>
+                            <span className="font-medium text-gray-700">Chia sẻ Link:</span>
                             <span className="ml-2 text-blue-600 break-all">
                                 {window.location.origin}/live/{liveStream.id}
                             </span>

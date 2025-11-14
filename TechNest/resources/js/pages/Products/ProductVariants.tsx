@@ -145,8 +145,8 @@ export default function ProductVariants({ product, variants }: Props) {
     return (
         <AppLayout
             breadcrumbs={[
-                { title: 'Seller Dashboard', href: '/seller/dashboard' },
-                { title: 'View Products', href: '/seller/products' },
+                { title: 'Trang sản phẩm', href: '/seller/dashboard' },
+                { title: 'Xem sản phẩm', href: '/seller/products' },
                 { title: product.name, href: `/seller/products/${product.id}/variants` },
             ]}
         >

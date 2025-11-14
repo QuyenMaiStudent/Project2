@@ -132,7 +132,7 @@ export default function ManageProducts() {
           </select>
           <div className="flex gap-2">
             <button type="submit" className="btn btn-primary px-4">Lọc</button>
-            <a href="/admin/products" className="btn px-4">Reset</a>
+            <a href="/admin/products" className="btn px-4">Đặt lại</a>
           </div>
         </form>
       </header>

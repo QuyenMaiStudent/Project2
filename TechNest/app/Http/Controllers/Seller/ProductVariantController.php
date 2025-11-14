@@ -107,6 +107,7 @@ class ProductVariantController extends Controller
                     'is_primary' => false,
                 ]);
             }
+            $this->recalculateProductStock($product);
 
             DB::commit();
             return back()->with('success', 'Đã thêm biến thể sản phẩm.');
@@ -201,6 +202,7 @@ class ProductVariantController extends Controller
                     'is_primary' => false,
                 ]);
             }
+            $this->recalculateProductStock($product);
 
             DB::commit();
             return back()->with('success', 'Đã cập nhật biến thể sản phẩm.');
@@ -252,6 +254,8 @@ class ProductVariantController extends Controller
             }
 
             $variant->delete();
+
+            $this->recalculateProductStock($product);
 
             return back()->with('success', 'Đã xóa biến thể sản phẩm.');
         } catch (\Exception $e) {
@@ -357,5 +361,17 @@ class ProductVariantController extends Controller
         }
 
         return false;
+    }
+
+    public function recalculateProductStock(Product $product)
+    {
+        try {
+            $total = ProductVariant::where('product_id', $product->id)->sum('stock');
+            $product->stock = (int) $total;
+            $product->save();
+            Log::info('Product stock recalculated', ['product_id' => $product->id, 'stock' => $product->stock]);
+        } catch (\Exception $e) {
+            Log::warning('Failed to recalculate product stock', ['product_id' => $product->id, 'error' => $e->getMessage()]);
+        }
     }
 }

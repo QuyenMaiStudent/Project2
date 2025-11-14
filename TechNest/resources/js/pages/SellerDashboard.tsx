@@ -6,7 +6,7 @@ import { Package } from 'lucide-react';
 
 const breadcrumbs: BreadcrumbItem[] = [
     {
-        title: 'Seller Dashboard',
+        title: 'Giao diện người bán',
         href: '/seller/dashboard',
     },
 ];

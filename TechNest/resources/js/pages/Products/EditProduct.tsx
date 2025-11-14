@@ -5,15 +5,15 @@ import { type BreadcrumbItem } from '@/types';
 
 const breadcrumbs: BreadcrumbItem[] = [
     {
-        title: 'Seller Dashboard',
+        title: 'Giao diện người bán',
         href: '/seller/dashboard',
     },
     {
-        title: 'Products',
+        title: 'Danh sách sản phẩm',
         href: '/seller/products',
     },
     {
-        title: 'Edit Product',
+        title: 'Chỉnh sửa sản phẩm',
         href: '#',
     },
 ];
@@ -28,14 +28,20 @@ interface Warranty {
     title: string;
 }
 
+interface Category {
+    id: number;
+    name: string;
+}
+
 interface Product {
     id: number;
     name: string;
     description: string;
     price: number;
-    stock: number;
+    // stock removed
     brand_id: number;
     warranty_id: number | null;
+    category_id: number | null;
     is_active: boolean;
     primary_image?: {
         url: string;
@@ -47,17 +53,19 @@ interface Props {
     product: Product;
     brands: Brand[];
     warranties: Warranty[];
+    categories: Category[]; // added
 }
 
-export default function EditProduct({ product, brands = [], warranties = [] }: Props) {
+export default function EditProduct({ product, brands = [], warranties = [], categories = [] }: Props) {
     const [clientErrors, setClientErrors] = useState<Record<string, string>>({});
     const [imagePreview, setImagePreview] = useState<string | null>(
         product.primary_image?.url || null
     );
 
-    // Đảm bảo brands và warranties là mảng
+    // Đảm bảo brands, warranties, categories là mảng
     const safeBrands = Array.isArray(brands) ? brands : [];
     const safeWarranties = Array.isArray(warranties) ? warranties : [];
+    const safeCategories = Array.isArray(categories) ? categories : [];
 
     // Hàm kiểm tra URL hoặc số điện thoại - giống AddProduct
     const containsUrlOrPhone = (text?: string) => {
@@ -94,14 +102,15 @@ export default function EditProduct({ product, brands = [], warranties = [] }: P
         }
     };
 
-    // Sửa lại khởi tạo useForm - ép kiểu đúng ngay từ đầu:
+    // useForm: thay stock bằng category_id
     const { data, setData, put, processing, errors } = useForm({
         name: String(product.name || ''),
         description: String(product.description || ''),
         price: String(product.price || ''), // Giữ dạng string cho input number
-        stock: String(product.stock || ''), // Giữ dạng string cho input number  
+        // stock removed
         brand_id: String(product.brand_id || ''), // Giữ dạng string cho select
         warranty_id: product.warranty_id ? String(product.warranty_id) : '', 
+        category_id: product.category_id ? String(product.category_id) : '', // <-- added
         is_active: Boolean(product.is_active),
         image: null as File | null,
     });
@@ -144,21 +153,22 @@ export default function EditProduct({ product, brands = [], warranties = [] }: P
 
         // Chuyển đổi và validate số
         const price = parseFloat(data.price);
-        const stock = parseInt(data.stock);
         const brandId = parseInt(data.brand_id);
+        const categoryId = data.category_id ? parseInt(data.category_id) : NaN;
 
         if (isNaN(price) || price <= 0) {
             setClientErrors(prev => ({ ...prev, price: 'Giá sản phẩm phải là số và lớn hơn 0.' }));
             return;
         }
 
-        if (isNaN(stock) || stock < 0) {
-            setClientErrors(prev => ({ ...prev, stock: 'Số lượng phải là số và không được âm.' }));
+        if (isNaN(brandId) || !data.brand_id) {
+            setClientErrors(prev => ({ ...prev, brand_id: 'Vui lòng chọn thương hiệu.' }));
             return;
         }
 
-        if (isNaN(brandId) || !data.brand_id) {
-            setClientErrors(prev => ({ ...prev, brand_id: 'Vui lòng chọn thương hiệu.' }));
+        // category is required instead of stock
+        if (isNaN(categoryId) || !data.category_id) {
+            setClientErrors(prev => ({ ...prev, category_id: 'Vui lòng chọn danh mục.' }));
             return;
         }
 
@@ -171,12 +181,15 @@ export default function EditProduct({ product, brands = [], warranties = [] }: P
         formData.append('name', data.name.trim());
         formData.append('description', data.description || '');
         formData.append('price', String(price)); // Đảm bảo là string number
-        formData.append('stock', String(stock)); // Đảm bảo là string number
+        // stock removed
         formData.append('brand_id', String(brandId)); // Đảm bảo là string number
         
         if (data.warranty_id && data.warranty_id !== '') {
             formData.append('warranty_id', String(data.warranty_id));
         }
+
+        // append category_id
+        formData.append('category_id', String(categoryId));
         
         formData.append('is_active', data.is_active ? '1' : '0'); // Convert boolean to string
         
@@ -220,15 +233,15 @@ export default function EditProduct({ product, brands = [], warranties = [] }: P
         });
     };
 
-    // Hàm kiểm tra có thay đổi gì không
+    // Hàm kiểm tra có thay đổi gì không (loại bỏ stock, thêm category_id)
     const checkForChanges = () => {
         return (
             data.name !== String(product.name || '') ||
             data.description !== String(product.description || '') ||
             data.price !== String(product.price || '') ||
-            data.stock !== String(product.stock || '') ||
             data.brand_id !== String(product.brand_id || '') ||
             data.warranty_id !== (product.warranty_id ? String(product.warranty_id) : '') ||
+            data.category_id !== (product.category_id ? String(product.category_id) : '') ||
             data.is_active !== Boolean(product.is_active) ||
             data.image !== null
         );
@@ -242,13 +255,13 @@ export default function EditProduct({ product, brands = [], warranties = [] }: P
 
     return (
         <AppLayout breadcrumbs={breadcrumbs}>
-            <Head title={`Edit Product - ${product.name}`} />
+            <Head title={`Chỉnh sửa - ${product.name}`} />
             
             <div className="max-w-4xl mx-auto p-6">
                 <div className="bg-white rounded-lg shadow-md">
                     <div className="p-6 border-b border-gray-200">
-                        <h1 className="text-2xl font-semibold text-gray-800">Edit Product</h1>
-                        <p className="text-gray-600 mt-1">Update your product information</p>
+                        <h1 className="text-2xl font-semibold text-gray-800">Chỉnh sửa sản phẩm</h1>
+                        <p className="text-gray-600 mt-1">Cập nhật thông tin sản phẩm của bạn</p>
                         
                         {/* Hiển thị trạng thái thay đổi */}
                         {checkForChanges() && (
@@ -279,7 +292,7 @@ export default function EditProduct({ product, brands = [], warranties = [] }: P
                             {/* Product Name */}
                             <div className="md:col-span-2">
                                 <label htmlFor="name" className="block text-sm font-medium text-gray-700 mb-2">
-                                    Product Name *
+                                    Tên sản phẩm *
                                 </label>
                                 <input
                                     type="text"
@@ -304,7 +317,7 @@ export default function EditProduct({ product, brands = [], warranties = [] }: P
                             {/* Description */}
                             <div className="md:col-span-2">
                                 <label htmlFor="description" className="block text-sm font-medium text-gray-700 mb-2">
-                                    Description
+                                    Mô tả sản phẩm
                                 </label>
                                 <textarea
                                     id="description"
@@ -329,7 +342,7 @@ export default function EditProduct({ product, brands = [], warranties = [] }: P
                             {/* Price */}
                             <div>
                                 <label htmlFor="price" className="block text-sm font-medium text-gray-700 mb-2">
-                                    Price (VND) *
+                                    Giá (VND) *
                                 </label>
                                 <input
                                     type="number"
@@ -350,25 +363,30 @@ export default function EditProduct({ product, brands = [], warranties = [] }: P
                                 )}
                             </div>
 
-                            {/* Stock */}
+                            {/* Category (thay stock) */}
                             <div>
-                                <label htmlFor="stock" className="block text-sm font-medium text-gray-700 mb-2">
-                                    Stock Quantity *
+                                <label htmlFor="category_id" className="block text-sm font-medium text-gray-700 mb-2">
+                                    Danh mục *
                                 </label>
-                                <input
-                                    type="number"
-                                    id="stock"
-                                    value={data.stock}
-                                    onChange={(e) => setData('stock', e.target.value)} // Giữ string
-                                    min="0"
+                                <select
+                                    id="category_id"
+                                    value={data.category_id}
+                                    onChange={(e) => setData('category_id', e.target.value)} // Giữ string
                                     className={`w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 ${
-                                        errors.stock || clientErrors.stock ? 'border-red-300' : 'border-gray-300'
+                                        errors.category_id || clientErrors.category_id ? 'border-red-300' : 'border-gray-300'
                                     }`}
                                     required
-                                />
-                                {(errors.stock || clientErrors.stock) && (
+                                >
+                                    <option value="">-- Chọn danh mục --</option>
+                                    {safeCategories.map((cat) => (
+                                        <option key={cat.id} value={cat.id}>
+                                            {cat.name}
+                                        </option>
+                                    ))}
+                                </select>
+                                {(errors.category_id || clientErrors.category_id) && (
                                     <p className="text-red-600 text-sm mt-1">
-                                        {errors.stock || clientErrors.stock}
+                                        {errors.category_id || clientErrors.category_id}
                                     </p>
                                 )}
                             </div>
@@ -376,7 +394,7 @@ export default function EditProduct({ product, brands = [], warranties = [] }: P
                             {/* Brand */}
                             <div>
                                 <label htmlFor="brand_id" className="block text-sm font-medium text-gray-700 mb-2">
-                                    Brand *
+                                    Thương hiệu *
                                 </label>
                                 <select
                                     id="brand_id"
@@ -387,7 +405,7 @@ export default function EditProduct({ product, brands = [], warranties = [] }: P
                                     }`}
                                     required
                                 >
-                                    <option value="">-- Select Brand --</option>
+                                    <option value="">-- Chọn thương hiệu --</option>
                                     {safeBrands.map((brand) => (
                                         <option key={brand.id} value={brand.id}>
                                             {brand.name}
@@ -404,7 +422,7 @@ export default function EditProduct({ product, brands = [], warranties = [] }: P
                             {/* Warranty */}
                             <div>
                                 <label htmlFor="warranty_id" className="block text-sm font-medium text-gray-700 mb-2">
-                                    Warranty Policy
+                                    Chính sách bảo hành
                                 </label>
                                 <select
                                     id="warranty_id"
@@ -414,7 +432,7 @@ export default function EditProduct({ product, brands = [], warranties = [] }: P
                                         errors.warranty_id ? 'border-red-300' : 'border-gray-300'
                                     }`}
                                 >
-                                    <option value="">-- No Warranty --</option>
+                                    <option value="">-- Không có bảo hành --</option>
                                     {safeWarranties.map((warranty) => (
                                         <option key={warranty.id} value={warranty.id}>
                                             {warranty.title}
@@ -431,13 +449,13 @@ export default function EditProduct({ product, brands = [], warranties = [] }: P
                             {/* Product Image */}
                             <div className="md:col-span-2">
                                 <label htmlFor="image" className="block text-sm font-medium text-gray-700 mb-2">
-                                    Product Image
+                                    Ảnh sản phẩm
                                 </label>
                                 
                                 {/* Current Image Preview */}
                                 {imagePreview && (
                                     <div className="mb-3">
-                                        <p className="text-sm text-gray-600 mb-2">Current Image:</p>
+                                        <p className="text-sm text-gray-600 mb-2">Ảnh hiện tại:</p>
                                         <img 
                                             src={imagePreview} 
                                             alt="Current product image" 
@@ -456,7 +474,7 @@ export default function EditProduct({ product, brands = [], warranties = [] }: P
                                     }`}
                                 />
                                 <p className="text-sm text-gray-500 mt-1">
-                                    Leave empty to keep current image (JPEG, PNG, JPG, GIF, WebP - Max 4MB)
+                                    Để trống để giữ ảnh hiện tại (JPEG, PNG, JPG, GIF, WebP - Tối đa 4MB)
                                 </p>
                                 
                                 {errors.image && (
@@ -475,7 +493,7 @@ export default function EditProduct({ product, brands = [], warranties = [] }: P
                                         onChange={(e) => setData('is_active', e.target.checked)}
                                         className="rounded border-gray-300 text-blue-600 shadow-sm focus:border-blue-300 focus:ring focus:ring-blue-200 focus:ring-opacity-50"
                                     />
-                                    <span className="ml-2 text-sm text-gray-700">Active Product</span>
+                                    <span className="ml-2 text-sm text-gray-700">Kích hoạt sản phẩm</span>
                                 </label>
                             </div>
 
@@ -486,14 +504,14 @@ export default function EditProduct({ product, brands = [], warranties = [] }: P
                                     disabled={processing || Object.keys(clientErrors).length > 0}
                                     className="px-6 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 disabled:opacity-50 disabled:cursor-not-allowed"
                                 >
-                                    {processing ? 'Updating...' : 'Update Product'}
+                                    {processing ? 'Đang cập nhật...' : 'Cập nhật sản phẩm'}
                                 </button>
                                 
                                 <a
                                     href="/seller/products"
                                     className="px-6 py-2 bg-gray-300 text-gray-700 rounded-md hover:bg-gray-400 focus:outline-none focus:ring-2 focus:ring-gray-500 text-center"
                                 >
-                                    Cancel
+                                    Hủy
                                 </a>
                             </div>
                         </form>

@@ -2,14 +2,15 @@ import { Head, useForm, Link } from '@inertiajs/react';
 import { FormEvent, ChangeEvent, useState } from 'react';
 import AppLayout from '@/layouts/app-layout';
 import { type BreadcrumbItem } from '@/types';
+import categories from '@/routes/admin/categories';
 
 const breadcrumbs: BreadcrumbItem[] = [
     {
-        title: 'Seller Dashboard',
+        title: 'Giao diện người bán',
         href: '/seller/dashboard',
     },
     {
-        title: 'Add Product',
+        title: 'Thêm sản phẩm',
         href: '/seller/products/create',
     },
 ];
@@ -24,17 +25,24 @@ interface Warranty {
     title: string;
 }
 
+interface Category {
+    id: number;
+    name: string;
+}
+
 interface Props {
     brands?: Brand[]; // Thêm ? để optional
     warranties?: Warranty[]; // Thêm ? để optional
+    categories?: Category[]; // <-- added
 }
 
-export default function AddProduct({ brands = [], warranties = [] }: Props) {
+export default function AddProduct({ brands = [], warranties = [], categories = [] }: Props) {
     const [clientErrors, setClientErrors] = useState<Record<string,string>>({});
 
-    // Đảm bảo brands và warranties là mảng
+    // Đảm bảo brands và warranties và categories là mảng
     const safebrands = Array.isArray(brands) ? brands : [];
     const safeWarranties = Array.isArray(warranties) ? warranties : [];
+    const safeCategories = Array.isArray(categories) ? categories : []; // <-- added
 
     const containsUrlOrPhone = (text?: string) => {
         const t = (text ?? '').trim();
@@ -67,8 +75,9 @@ export default function AddProduct({ brands = [], warranties = [] }: Props) {
         name: '',
         description: '',
         price: '',
-        stock: '',
+        // stock removed — managed by variants
         brand_id: '',
+        category_id: '', // <-- added
         warranty_id: '',
         is_active: true,
         image: null as File | null,
@@ -146,12 +155,12 @@ export default function AddProduct({ brands = [], warranties = [] }: Props) {
 
     return (
         <AppLayout breadcrumbs={breadcrumbs}>
-            <Head title="Add Product" />
+            <Head title="Thêm sản phẩm" />
             
             <div className="max-w-4xl mx-auto p-6">
                 <div className="bg-white rounded-lg shadow-md">
                     <div className="p-6 border-b border-gray-200">
-                        <h1 className="text-2xl font-semibold text-gray-800">Add New Product</h1>
+                        <h1 className="text-2xl font-semibold text-gray-800">Thêm sản phẩm mới</h1>
                     </div>
                     
                     <div className="p-6">
@@ -174,7 +183,7 @@ export default function AddProduct({ brands = [], warranties = [] }: Props) {
                                 {/* Product Name */}
                                 <div className="md:col-span-2">
                                     <label htmlFor="name" className="block text-sm font-medium text-gray-700 mb-2">
-                                        Product Name *
+                                        Tên sản phẩm *
                                     </label>
                                     <input
                                         type="text"
@@ -195,7 +204,7 @@ export default function AddProduct({ brands = [], warranties = [] }: Props) {
                                 {/* Description */}
                                 <div className="md:col-span-2">
                                     <label htmlFor="description" className="block text-sm font-medium text-gray-700 mb-2">
-                                        Description
+                                        Mô tả sản phẩm
                                     </label>
                                     <textarea
                                         id="description"
@@ -215,7 +224,7 @@ export default function AddProduct({ brands = [], warranties = [] }: Props) {
                                 {/* Price */}
                                 <div>
                                     <label htmlFor="price" className="block text-sm font-medium text-gray-700 mb-2">
-                                        Price (VNĐ) *
+                                        Giá (VNĐ) *
                                     </label>
                                     <input
                                         type="number"
@@ -234,31 +243,10 @@ export default function AddProduct({ brands = [], warranties = [] }: Props) {
                                     )}
                                 </div>
 
-                                {/* Stock */}
-                                <div>
-                                    <label htmlFor="stock" className="block text-sm font-medium text-gray-700 mb-2">
-                                        Stock *
-                                    </label>
-                                    <input
-                                        type="number"
-                                        id="stock"
-                                        min="0"
-                                        value={data.stock}
-                                        onChange={(e) => setData('stock', e.target.value)}
-                                        className={`w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 ${
-                                            errors.stock ? 'border-red-300' : 'border-gray-300'
-                                        }`}
-                                        required
-                                    />
-                                    {errors.stock && (
-                                        <p className="text-red-600 text-sm mt-1">{errors.stock}</p>
-                                    )}
-                                </div>
-
                                 {/* Brand */}
                                 <div>
                                     <label htmlFor="brand_id" className="block text-sm font-medium text-gray-700 mb-2">
-                                        Brand *
+                                        Thương hiệu *
                                     </label>
                                     <select
                                         id="brand_id"
@@ -269,7 +257,7 @@ export default function AddProduct({ brands = [], warranties = [] }: Props) {
                                         }`}
                                         required
                                     >
-                                        <option value="">-- Select Brand --</option>
+                                        <option value="">-- Chọn thương hiệu --</option>
                                         {safebrands.map((brand) => (
                                             <option key={brand.id} value={brand.id}>
                                                 {brand.name}
@@ -283,10 +271,38 @@ export default function AddProduct({ brands = [], warranties = [] }: Props) {
                                     )}
                                 </div>
 
+                                {/* Category (new, replaces stock field) */}
+                                <div>
+                                    <label htmlFor="category_id" className="block text-sm font-medium text-gray-700 mb-2">
+                                        Danh mục *
+                                    </label>
+                                    <select
+                                        id="category_id"
+                                        value={data.category_id}
+                                        onChange={(e) => setData('category_id', e.target.value)}
+                                        className={`w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 ${
+                                            errors.category_id ? 'border-red-300' : 'border-gray-300'
+                                        }`}
+                                        required
+                                    >
+                                        <option value="">-- Chọn danh mục --</option>
+                                        {safeCategories.map((cat) => (
+                                            <option key={cat.id} value={cat.id}>
+                                                {cat.name}
+                                            </option>
+                                        ))}
+                                    </select>
+                                    {errors.category_id && (
+                                        <p className="text-red-600 text-sm mt-1">
+                                            {typeof errors.category_id === 'string' ? errors.category_id : (Array.isArray(errors.category_id) ? errors.category_id[0] : String(errors.category_id))}
+                                        </p>
+                                    )}
+                                </div>
+
                                 {/* Warranty */}
                                 <div>
                                     <label htmlFor="warranty_id" className="block text-sm font-medium text-gray-700 mb-2">
-                                        Warranty Policy
+                                        Chính sách bảo hành
                                     </label>
                                     <select
                                         id="warranty_id"
@@ -296,7 +312,7 @@ export default function AddProduct({ brands = [], warranties = [] }: Props) {
                                             errors.warranty_id ? 'border-red-300' : 'border-gray-300'
                                         }`}
                                     >
-                                        <option value="">-- No Warranty --</option>
+                                        <option value="">-- Không có bảo hành --</option>
                                         {safeWarranties.map((warranty) => (
                                             <option key={warranty.id} value={warranty.id}>
                                                 {warranty.title}
@@ -313,7 +329,7 @@ export default function AddProduct({ brands = [], warranties = [] }: Props) {
                                 {/* Image */}
                                 <div className="md:col-span-2">
                                     <label htmlFor="image" className="block text-sm font-medium text-gray-700 mb-2">
-                                        Product Image *
+                                        Ảnh sản phẩm *
                                     </label>
                                     <input
                                         type="file"
@@ -326,13 +342,13 @@ export default function AddProduct({ brands = [], warranties = [] }: Props) {
                                         required
                                     />
                                     <p className="text-sm text-gray-500 mt-1">
-                                        Select an image (JPEG, PNG, JPG, GIF, WebP - Max 4MB)
+                                        Chọn ảnh (JPEG, PNG, JPG, GIF, WebP - Tối đa 4MB)
                                     </p>
                                     
                                     {/* Image Preview */}
                                     {imagePreview && (
                                         <div className="mt-3">
-                                            <p className="text-sm font-medium text-gray-700 mb-2">Preview:</p>
+                                            <p className="text-sm font-medium text-gray-700 mb-2">Xem trước:</p>
                                             <img 
                                                 src={imagePreview} 
                                                 alt="Preview" 
@@ -361,7 +377,7 @@ export default function AddProduct({ brands = [], warranties = [] }: Props) {
                                             className="mr-2 h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
                                         />
                                         <span className="text-sm font-medium text-gray-700">
-                                            Active Product
+                                            Kích hoạt sản phẩm
                                         </span>
                                     </label>
                                 </div>
@@ -373,7 +389,7 @@ export default function AddProduct({ brands = [], warranties = [] }: Props) {
                                     href="/seller/dashboard"
                                     className="px-4 py-2 border border-gray-300 rounded-md text-gray-700 hover:bg-gray-50 transition-colors"
                                 >
-                                    Cancel
+                                    Hủy
                                 </Link>
                                 <button
                                     type="submit"

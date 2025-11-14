@@ -7,6 +7,7 @@ use Illuminate\Http\Request;
 use App\Models\Product;
 use App\Models\ProductImage;
 use App\Models\Brand;
+use App\Models\Category;
 use App\Models\WarrantyPolicy;
 use Cloudinary\Cloudinary;
 use Cloudinary\Configuration\Configuration;
@@ -36,16 +37,19 @@ class ProductController extends Controller
         try {
             $brands = Brand::all();
             $warranties = WarrantyPolicy::all();
+            $categories = Category::all(); // <-- added
 
             Log::info('Create product page loaded', [
                 'brands_count' => $brands->count(),
                 'warranties_count' => $warranties->count(),
+                'categories_count' => $categories->count(), // <-- added
                 'user_id' => auth()->id()
             ]);
 
             return Inertia::render('Products/AddProduct', [
                 'brands' => $brands,
-                'warranties' => $warranties
+                'warranties' => $warranties,
+                'categories' => $categories, // <-- added
             ]);
         } catch (\Exception $e) {
             Log::error('Error loading create product page', [
@@ -81,8 +85,9 @@ class ProductController extends Controller
                 'name' => 'required|string|max:255',
                 'description' => 'nullable|string',
                 'price' => 'required|numeric|min:0',
-                'stock' => 'required|integer|min:0',
+                // 'stock' removed — stock will be computed from variants
                 'brand_id' => 'required|exists:brands,id',
+                'category_id' => 'required|exists:categories,id', // <-- added
                 'warranty_id' => 'nullable|exists:warranty_policies,id',
                 'is_active' => 'boolean',
                 'image' => 'required|image|mimes:jpeg,png,jpg,gif,webp|max:4096',
@@ -112,8 +117,10 @@ class ProductController extends Controller
                     'name' => $validated['name'],
                     'description' => $validated['description'] ?? null,
                     'price' => $validated['price'],
-                    'stock' => $validated['stock'],
+                    // stock default to 0; will be updated when variants are added
+                    'stock' => 0, // <-- changed
                     'brand_id' => $validated['brand_id'],
+                    'category_id' => $validated['category_id'], // <-- changed
                     'warranty_id' => $validated['warranty_id'] ?? null,
                     'is_active' => $validated['is_active'] ?? true,
                     'created_by' => auth()->id(),
@@ -253,13 +260,14 @@ class ProductController extends Controller
         ]);
 
         try {
-            // Validate input - Sửa lại validation cho is_active
+            // Validate input - removed stock from product update (stock computed from variants)
             $validated = $request->validate([
                 'name' => 'required|string|max:255',
                 'description' => 'nullable|string',
                 'price' => 'required|numeric|min:0',
-                'stock' => 'required|integer|min:0',
+                // 'stock' removed
                 'brand_id' => 'required|integer|exists:brands,id',
+                'category_id' => 'nullable|integer|exists:categories,id', // <-- optional update
                 'warranty_id' => 'nullable|integer|exists:warranty_policies,id',
                 'is_active' => 'sometimes|boolean', // Đổi thành sometimes
                 'image' => 'nullable|image|mimes:jpeg,png,jpg,gif,webp|max:4096',
@@ -292,16 +300,20 @@ class ProductController extends Controller
             DB::beginTransaction();
 
             try {
-                // Chuẩn bị dữ liệu để update
+                // Chuẩn bị dữ liệu để update (stock removed)
                 $updateData = [
                     'name' => $validated['name'],
                     'description' => $validated['description'],
                     'price' => (float) $validated['price'],
-                    'stock' => (int) $validated['stock'],
                     'brand_id' => (int) $validated['brand_id'],
                     'warranty_id' => $validated['warranty_id'] ? (int) $validated['warranty_id'] : null,
                     'is_active' => (bool) $validated['is_active'],
                 ];
+
+                // optionally update category if provided
+                if (array_key_exists('category_id', $validated)) {
+                    $updateData['category_id'] = $validated['category_id'] ? (int) $validated['category_id'] : null;
+                }
 
                 // Chỉ update những trường thay đổi
                 $hasChanges = false;

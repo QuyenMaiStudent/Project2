@@ -27,7 +27,7 @@ export default function Index() {
   const filters = page.filters ?? {};
   const flash = page.flash ?? {};
   const breadcrumbs = [
-    { title: 'Seller Dashboard', href: '/seller/dashboard' },
+    { title: 'Giao diện người bán', href: '/seller/dashboard' },
     { title: 'Khuyến mãi', href: '/seller/promotions' },
   ];
 

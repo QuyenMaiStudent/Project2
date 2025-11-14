@@ -10,7 +10,7 @@ export default function Create() {
   const [endError, setEndError] = useState<string>('');
   const flash = page.flash ?? {};
   const breadcrumbs = [
-    { title: 'Seller Dashboard', href: '/seller/dashboard' },
+    { title: 'Giao diện người bán', href: '/seller/dashboard' },
     { title: 'Khuyến mãi', href: '/seller/promotions' },
     { title: 'Tạo khuyến mãi', href: '/seller/promotions/create' },
   ];

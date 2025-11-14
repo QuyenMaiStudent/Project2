@@ -118,7 +118,7 @@ export default function LocationsTree() {
   if (loading) {
     return (
       <AppLayout breadcrumbs={[
-        { title: 'Bảng điều khiển quản trị', href: '/admin/dashboard' },
+        { title: 'Trang quản trị', href: '/admin/dashboard' },
         { title: 'Quản lý địa điểm', href: '/admin/locations' }
       ]}>
         <Head title="Quản lý địa điểm" />

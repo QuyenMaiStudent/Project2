@@ -75,7 +75,7 @@ export default function Index({ cart }: CartProps) {
   return (
     <AppLayout
       breadcrumbs={[
-        { title: 'Trang chủ', href: '/' },
+        { title: 'Giao diện người dùng', href: '/' },
         { title: 'Giỏ hàng', href: '/cart' }
       ]}
     >

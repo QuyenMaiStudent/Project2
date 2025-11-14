@@ -10,7 +10,7 @@ export default function Create() {
   const categories = page.categories ?? [];
 
   const breadcrumbs = [
-    { title: 'Bảng điều khiển quản trị', href: '/admin/dashboard' },
+    { title: 'Trang quản trị', href: '/admin/dashboard' },
     { title: 'Khuyến mãi', href: '/admin/promotions' },
     { title: 'Tạo khuyến mãi', href: '/admin/promotions/create' },
   ];

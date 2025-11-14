@@ -12,7 +12,7 @@ export default function Show({ transaction }: any) {
 
   return (
     <AppLayout breadcrumbs={[
-      { title: 'Trang chủ', href: '/' },
+      { title: 'Giao diện người dùng', href: '/' },
       { title: 'Giao dịch', href: '/transactions' },
       { title: `#${transaction?.id ?? ''}`, href: `/transactions/${transaction?.id ?? ''}` }
     ]}>

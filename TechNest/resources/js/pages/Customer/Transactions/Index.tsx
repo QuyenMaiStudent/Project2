@@ -26,7 +26,7 @@ export default function Index({ transactions }: any) {
   };
 
   return (
-    <AppLayout breadcrumbs={[{ title: 'Trang chủ', href: '/' }, { title: 'Giao dịch', href: '/transactions' }]}>
+    <AppLayout breadcrumbs={[{ title: 'Giao diện người dùng', href: '/' }, { title: 'Giao dịch', href: '/transactions' }]}>
       <Head title="Giao dịch của tôi" />
       
       <div className="max-w-7xl mx-auto p-6">

@@ -13,7 +13,7 @@ export default function OrderShow({ order }: any) {
     return (
         <AppLayout
             breadcrumbs={[
-                { title: 'Trang chủ', href: '/' },
+                { title: 'Giao diện người dùng', href: '/' },
                 { title: 'Đơn hàng', href: '/orders' },
                 { title: `Đơn hàng #${order.id}`, href: '#' },
             ]}

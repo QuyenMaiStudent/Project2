@@ -27,8 +27,8 @@ export default function Register() {
     };
 
     return (
-        <AuthLayout title="Create an account" description="Enter your details below to create your account">
-            <Head title="Register" />
+        <AuthLayout title="Tạo một tài khoản mới" description="Nhập thông tin của bạn bên dưới để tạo tài khoản">
+            <Head title="Đăng ký" />
             <Form
                 {...RegisteredUserController.store.form()}
                 resetOnSuccess={['password', 'password_confirmation']}
@@ -40,7 +40,7 @@ export default function Register() {
                     <>
                         <div className="grid gap-6">
                             <div className="grid gap-2">
-                                <Label htmlFor="name">Name</Label>
+                                <Label htmlFor="name">Tên</Label>
                                 <Input
                                     id="name"
                                     type="text"
@@ -55,7 +55,7 @@ export default function Register() {
                             </div>
 
                             <div className="grid gap-2">
-                                <Label htmlFor="email">Email address</Label>
+                                <Label htmlFor="email">Địa chỉ Email</Label>
                                 <Input
                                     id="email"
                                     type="email"
@@ -69,7 +69,7 @@ export default function Register() {
                             </div>
 
                             <div className="grid gap-2">
-                                <Label htmlFor="password">Password</Label>
+                                <Label htmlFor="password">Mật khẩu</Label>
                                 <Input
                                     id="password"
                                     type="password"
@@ -83,7 +83,7 @@ export default function Register() {
                             </div>
 
                             <div className="grid gap-2">
-                                <Label htmlFor="password_confirmation">Confirm password</Label>
+                                <Label htmlFor="password_confirmation">Xác nhận mật khẩu</Label>
                                 <Input
                                     id="password_confirmation"
                                     type="password"
@@ -115,14 +115,14 @@ export default function Register() {
 
                             <Button type="submit" className="mt-2 w-full" tabIndex={6} data-test="register-user-button">
                                 {processing && <LoaderCircle className="h-4 w-4 animate-spin" />}
-                                Create account
+                                Tạo tài khoản
                             </Button>
                         </div>
 
                         <div className="text-center text-sm text-muted-foreground">
-                            Already have an account?{' '}
+                            Bạn đã có tài khoản?{' '}
                             <TextLink href={login()} tabIndex={7}>
-                                Log in
+                                Đăng nhập
                             </TextLink>
                         </div>
                     </>

@@ -6,11 +6,11 @@ import { useState, useEffect } from 'react';
 
 const breadcrumbs: BreadcrumbItem[] = [
     {
-        title: 'Seller Dashboard',
+        title: 'Giao diện người bán',
         href: '/seller/dashboard',
     },
     {
-        title: 'View Products',
+        title: 'Xem sản phẩm',
         href: '/seller/products',
     },
 ];
@@ -116,16 +116,16 @@ export default function ViewProduct({ products }: Props) {
 
     return (
         <AppLayout breadcrumbs={breadcrumbs}>
-            <Head title="View Products" />
+            <Head title="Xem sản phẩm" />
             <div className="max-w-7xl mx-auto p-6">
                 <div className="flex justify-between items-center mb-6">
-                    <h1 className="text-2xl font-semibold text-gray-800">My Products</h1>
+                    <h1 className="text-2xl font-semibold text-gray-800">Sản phẩm của tôi</h1>
                     <Link
                         href="/seller/products/create"
                         className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors flex items-center space-x-2"
                     >
                         <Package className="h-4 w-4" />
-                        <span>Add Product</span>
+                        <span>Thêm sản phẩm</span>
                     </Link>
                 </div>
 
@@ -146,13 +146,13 @@ export default function ViewProduct({ products }: Props) {
                 {localProducts.length === 0 ? (
                     <div className="text-center py-12">
                         <Package className="h-16 w-16 text-gray-400 mx-auto mb-4" />
-                        <h3 className="text-lg font-medium text-gray-900 mb-2">No products yet</h3>
-                        <p className="text-gray-500 mb-4">Start by adding your first product</p>
+                        <h3 className="text-lg font-medium text-gray-900 mb-2">Chưa có sản phẩm nào</h3>
+                        <p className="text-gray-500 mb-4">Bắt đầu bằng cách thêm sản phẩm đầu tiên của bạn</p>
                         <Link
                             href="/seller/products/create"
                             className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors"
                         >
-                            Add First Product
+                            Thêm sản phẩm đầu tiên
                         </Link>
                     </div>
                 ) : (

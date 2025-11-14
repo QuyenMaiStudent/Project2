@@ -108,7 +108,7 @@ export default function Index({ addresses, provinces, districts, wards }: Props)
     return (
         <AppLayout
             breadcrumbs={[
-                { title: 'Customer Dashboard', href: '/customer/dashboard' },
+                { title: 'Giao diện người dùng', href: '/customer/dashboard' },
                 { title: 'Địa chỉ giao hàng', href: '/shipping-addresses' }
             ]}
         >

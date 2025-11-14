@@ -6,7 +6,7 @@ export default function CustomerDashboard() {
     return (
         <AppLayout
             breadcrumbs={[
-                { title: 'Dashboard', href: '/customer/dashboard' } // Sửa breadcrumb
+                { title: 'Giao diện người dùng', href: '/customer/dashboard' } // Sửa breadcrumb
             ]}
         >
             <Head title="Customer Dashboard" />

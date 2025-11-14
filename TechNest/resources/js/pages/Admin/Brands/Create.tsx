@@ -84,7 +84,7 @@ function Create() {
                                         onChange={() => setUseUrl(false)}
                                         className="hidden"
                                     />
-                                    Upload file
+                                    Tải ảnh lên
                                 </label>
                                 <label className={`px-3 py-1 rounded border cursor-pointer ${useUrl ? 'bg-gray-100' : ''}`}>
                                     <input
@@ -124,10 +124,10 @@ function Create() {
                                         // eslint-disable-next-line @next/next/no-img-element
                                         <img src={preview} alt="Logo preview" className="max-h-full object-contain" />
                                     ) : (
-                                        <span className="text-xs text-gray-500">Preview</span>
+                                        <span className="text-xs text-gray-500">Xem trước</span>
                                     )}
                                 </div>
-                                <p className="text-xs text-gray-500 mt-1">Bạn có thể upload file hoặc dán URL. Nếu dùng URL, backend cần chấp nhận logo_url (hoặc tự download nếu muốn lưu vào storage).</p>
+                                <p className="text-xs text-gray-500 mt-1">Bạn có thể upload file hoặc dán URL. Nếu dùng URL, server cần chấp nhận logo_url (hoặc tự download nếu muốn lưu vào storage).</p>
                             </div>
                         </div>
 

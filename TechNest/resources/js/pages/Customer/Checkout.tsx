@@ -161,7 +161,7 @@ export default function Checkout({
   return (
     <AppLayout
       breadcrumbs={[
-        { title: 'Trang chủ', href: '/' },
+        { title: 'Giao diện người dùng', href: '/' },
         { title: 'Thanh toán', href: '/checkout' }
       ]}
     >

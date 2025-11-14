@@ -8,7 +8,7 @@ export default function UsageStats() {
   const usages = page.usages ?? [];
   const flash = page.flash ?? {};
   const breadcrumbs = [
-    { title: 'Seller Dashboard', href: '/seller/dashboard' },
+    { title: 'Giao diện người bán', href: '/seller/dashboard' },
     { title: 'Khuyến mãi', href: '/seller/promotions' },
     { title: `Thống kê: ${promotion?.code}`, href: `/seller/promotions/${promotion?.id}/usage` },
   ];
