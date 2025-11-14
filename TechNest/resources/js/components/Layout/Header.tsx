@@ -211,7 +211,7 @@ export default function Header() {
                         }
                         className="inline-block rounded-sm border border-white px-6 py-2 text-base leading-normal text-white hover:bg-[#0999c2]"
                     >
-                        Dashboard
+                        Giao diện
                     </Link>
                 ) : (
                     <>
@@ -219,13 +219,13 @@ export default function Header() {
                             href={login()}
                             className="inline-block rounded-sm border border-white px-6 py-2 text-base leading-normal text-white hover:bg-[#0999c2]"
                         >
-                            Log in
+                            Đăng nhập
                         </Link>
                         <Link
                             href={register()}
                             className="inline-block rounded-sm border border-white px-6 py-2 text-base leading-normal text-white hover:bg-[#0999c2]"
                         >
-                            Register
+                            Đăng ký
                         </Link>
                     </>
                 )}

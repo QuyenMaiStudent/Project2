@@ -49,7 +49,7 @@ export default function Register() {
                                     tabIndex={1}
                                     autoComplete="name"
                                     name="name"
-                                    placeholder="Full name"
+                                    placeholder="Tên đầy đủ của bạn"
                                 />
                                 <InputError message={errors.name} className="mt-2" />
                             </div>
@@ -63,7 +63,7 @@ export default function Register() {
                                     tabIndex={2}
                                     autoComplete="email"
                                     name="email"
-                                    placeholder="email@example.com"
+                                    placeholder="Email của bạn"
                                 />
                                 <InputError message={emailError || errors.email} />
                             </div>
@@ -77,7 +77,7 @@ export default function Register() {
                                     tabIndex={3}
                                     autoComplete="new-password"
                                     name="password"
-                                    placeholder="Password"
+                                    placeholder="Mật khẩu của bạn"
                                 />
                                 <InputError message={errors.password} />
                             </div>
@@ -91,7 +91,7 @@ export default function Register() {
                                     tabIndex={4}
                                     autoComplete="new-password"
                                     name="password_confirmation"
-                                    placeholder="Confirm password"
+                                    placeholder="Xác nhận mật khẩu"
                                 />
                                 <InputError message={errors.password_confirmation} />
                             </div>

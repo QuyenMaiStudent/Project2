@@ -50,7 +50,7 @@ export default function ForgotPassword({ status }: { status?: string }) {
                                     name="email"
                                     autoComplete="off"
                                     autoFocus
-                                    placeholder="nhapemail@gmail.com"
+                                    placeholder="Nhập email của bạn"
                                 />
                                 <InputError message={errors.email} />
                             </div>
