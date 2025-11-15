@@ -4,7 +4,9 @@ import { type SharedData } from '@/types';
 import CartIcon from '@/components/Cart/CartIcon';
 import PublicLayout from '@/layouts/public-layout';
 import CommentsSection from '@/components/comments/CommentsSection';
+import ReviewsList from '@/components/reviews/ReviewsList';
 import { MessageCircle } from 'lucide-react';
+import ReviewForm from '@/components/reviews/ReviewForm';
 
 interface Image { url: string; alt_text?: string; is_primary?: boolean; }
 interface Variant { id: number; variant_name: string; price: number; stock: number; image_url?: string | null; }
@@ -37,6 +39,49 @@ export default function ProductDetail({ product }: Props) {
     const [mainImg, setMainImg] = useState<string>(initialMain);
     const [quantity, setQuantity] = useState(1);
     const [toast, setToast] = useState<{ type: 'success' | 'error'; message: string } | null>(null);
+    const [canReview, setCanReview] = useState<{ eligible: boolean; message?: string } | null>(null);
+    const [showReviewForm, setShowReviewForm] = useState(false);
+
+    // nếu URL có ?openReview=1 thì đặt flag để tự động mở form khi eligibility xác nhận
+    const [openReviewRequested, setOpenReviewRequested] = useState(false);
+
+    React.useEffect(() => {
+        try {
+            const params = new URLSearchParams(window.location.search);
+            if (params.get('openReview') === '1') {
+                setOpenReviewRequested(true);
+            }
+        } catch (e) {
+            // ignore
+        }
+    }, []);
+
+    // Khi eligibility được kiểm tra và user đã yêu cầu mở form, xử lý:
+    React.useEffect(() => {
+        if (!openReviewRequested) return;
+
+        // nếu chưa login, chuyển tới login
+        if (!auth.user) {
+            router.visit('/login');
+            return;
+        }
+
+        if (canReview && canReview.eligible) {
+            setShowReviewForm(true);
+            // xóa param để tránh mở lại khi reload
+            try {
+                const url = new URL(window.location.href);
+                url.searchParams.delete('openReview');
+                window.history.replaceState({}, '', url.toString());
+            } catch (e) { /* ignore */ }
+            setOpenReviewRequested(false);
+        } else if (canReview && !canReview.eligible) {
+            // cuộn tới phần comments để hiển thị thông báo eligibility
+            const el = document.querySelector('[data-comments-section]');
+            if (el) el.scrollIntoView({ behavior: 'smooth' });
+            setOpenReviewRequested(false);
+        }
+    }, [openReviewRequested, canReview, auth.user]);
 
     const price = selectedVariant ? selectedVariant.price : product.price;
     const maxStock = selectedVariant ? selectedVariant.stock : product.stock;
@@ -52,6 +97,30 @@ export default function ProductDetail({ product }: Props) {
         // Nếu không có thì fallback về ảnh đầu tiên của sản phẩm (hoặc ảnh mặc định)
         setMainImg(product.images && product.images.length > 0 ? product.images[0].url : '/images/logo.png');
     }, [selectedVariant, product.images]);
+
+    // Kiểm tra eligibility khi user đã login
+    React.useEffect(() => {
+        if (!auth.user) {
+            setCanReview(null);
+            return;
+        }
+        let mounted = true;
+        (async () => {
+            try {
+                const res = await fetch(`/customer/reviews/can-review/${product.id}`, {
+                    credentials: 'include',
+                    headers: { 'Accept': 'application/json' },
+                });
+                const json = await res.json();
+                if (!mounted) return;
+                setCanReview({ eligible: !!json.eligible, message: json.message });
+            } catch (e) {
+                // ignore
+                setCanReview({ eligible: false, message: 'Không thể kiểm tra quyền đánh giá.' });
+            }
+        })();
+        return () => { mounted = false; };
+    }, [auth.user, product.id]);
 
     // Hàm hiển thị toast
     const showToast = (type: 'success' | 'error', message: string, ms = 3000) => {
@@ -330,7 +399,42 @@ export default function ProductDetail({ product }: Props) {
 
             {/* COMMENTS */}
             <div className='max-w-6xl mx-auto mt-6'>
-                <CommentsSection productId={product.id} />
+                <div data-comments-section>
+                 {/* Reviews summary & list (hiển thị ngôi sao vàng) */}
+                 <ReviewsList productId={product.id} />
+
+                 {/* Nếu được phép đánh giá thì show button/form ở trên comments */}
+                 {auth.user && canReview && canReview.eligible && (
+                     <div className="mb-4">
+                         {!showReviewForm ? (
+                             <button
+                                 onClick={() => setShowReviewForm(true)}
+                                 className="px-4 py-2 bg-green-600 text-white rounded font-medium"
+                             >
+                                 Viết đánh giá cho sản phẩm này
+                             </button>
+                         ) : (
+                             <div className="mt-3">
+                                 <ReviewForm
+                                     productId={product.id}
+                                     onSaved={() => {
+                                         setShowReviewForm(false);
+                                         // ReviewsList sẽ lắng nghe event 'review:added' và append review
+                                     }}
+                                     onCancel={() => setShowReviewForm(false)}
+                                 />
+                             </div>
+                         )}
+                     </div>
+                 )}
+
+                 {/* Nếu không đủ điều kiện, có thể hiển thị message ngắn */}
+                 {auth.user && canReview && !canReview.eligible && (
+                     <div className="mb-4 text-sm text-gray-500">{canReview.message}</div>
+                 )}
+
+                 <CommentsSection productId={product.id} />
+                </div>
             </div>
         </PublicLayout>
     );

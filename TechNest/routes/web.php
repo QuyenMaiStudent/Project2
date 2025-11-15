@@ -9,6 +9,8 @@ use App\Http\Controllers\ProductDetailController;
 use App\Http\Controllers\ProductIndexController;
 use App\Http\Controllers\Seller\ProductController;
 use App\Http\Controllers\CommentController;
+use App\Http\Controllers\Customer\CustomerController;
+use App\Http\Controllers\Customer\CustomerReviewController;
 use Cloudinary\Cloudinary;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Route;
@@ -23,6 +25,7 @@ Route::get('/auth/google/callback', [GoogleController::class, 'handleGoogleCallb
 
 // Public product routes
 Route::get('/products', ProductIndexController::class)->name('products.index');
+Route::get('/products/{product}/reviews', [CustomerReviewController::class, 'index'])->name('products.reviews.index');
 Route::get('/products/{id}', ProductDetailController::class)->name('products.detail');
 
 Route::get('/chat/chatbot', function () {

@@ -90,6 +90,18 @@ export default function OrderShow({ order }: any) {
                                     )}
                                     <p className="text-sm text-gray-600">Số lượng: {item.quantity}</p>
                                 </div>
+
+                                {/* Nút đánh giá */}
+                                {order.status === 'delivered' && (
+                                    <div className='mt-2'>
+                                        <Link
+                                            href={`/products/${item.product.id}?openReview=1`}
+                                            className="inline-block px-3 py-1 bg-green-600 text-white rounded text-sm"
+                                        >
+                                            Viết đánh giá
+                                        </Link>
+                                    </div>
+                                )}
                                 <div className="text-right">
                                     <p className="font-medium">{formatCurrency(item.price)}</p>
                                     <p className="text-sm text-gray-600">
