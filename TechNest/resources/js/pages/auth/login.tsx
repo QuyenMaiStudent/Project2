@@ -19,42 +19,41 @@ export default function Login({ status, canResetPassword }: LoginProps) {
         <AuthLayout title="Đăng nhập tài khoản" description="">
             <Head title="Đăng nhập" />
 
-            {/* Banner full màn hình */}
             <section
                 className="absolute top-0 left-0 w-full h-screen bg-cover bg-center flex items-center justify-center"
                 style={{ backgroundImage: "url('/images/banner_bg.jpg')" }}
             >
-                <div className="w-full max-w-md rounded-2xl border-2 border-[#0AC1EF] bg-white p-10 shadow-xl mx-6">
-                    <h2 className="mb-2 text-center text-3xl font-bold text-[#1b1b18]">
-                        Chào mừng bạn trở lại
-                    </h2>
-                    <p className="mb-8 text-center text-gray-600">
-                        Đăng nhập để tiếp tục mua sắm cùng TechNest
-                    </p>
+                <div className="w-full max-w-md rounded-2xl border-2 border-[#0AC1EF] bg-white p-8 shadow-xl mx-6 flex flex-col items-center">
+                    
+                    {/* Logo */}
+                    <img src="/images/logo.png" alt="Logo TechNest" className="mb-4 h-24 w-auto" />
+
+                    {/* Tiêu đề trang trí */}
+                    <h1 className="mb-4 text-3xl font-extrabold text-[#0AC1EF] text-center tracking-wide">
+                        Đăng nhập tài khoản của bạn
+                    </h1>
 
                     <Form
                         {...AuthenticatedSessionController.store.form()}
                         resetOnSuccess={['password']}
-                        className="flex flex-col gap-6"
+                        className="flex flex-col gap-4 w-full"
                     >
                         {({ processing, errors }) => (
                             <>
-                                {/* Email */}
                                 <div className="flex flex-col gap-2">
-                                    <Label htmlFor="email">Email</Label>
+                                    <Label htmlFor="email">Địa chỉ email</Label>
                                     <Input
                                         id="email"
                                         name="email"
                                         type="email"
                                         required
-                                        placeholder="email@example.com"
+                                        placeholder="email@gmail.com"
                                         autoComplete="email"
                                         className="border-[#0AC1EF]"
                                     />
                                     <InputError message={errors.email} />
                                 </div>
 
-                                {/* Password */}
                                 <div className="flex flex-col gap-2">
                                     <div className="flex items-center justify-between">
                                         <Label htmlFor="password">Mật khẩu</Label>
@@ -72,20 +71,18 @@ export default function Login({ status, canResetPassword }: LoginProps) {
                                         name="password"
                                         type="password"
                                         required
-                                        placeholder="••••••••"
+                                        placeholder="Nhập mật khẩu"
                                         autoComplete="current-password"
                                         className="border-[#0AC1EF]"
                                     />
                                     <InputError message={errors.password} />
                                 </div>
 
-                                {/* Remember me */}
                                 <div className="flex items-center gap-2">
                                     <Checkbox id="remember" name="remember" />
                                     <Label htmlFor="remember">Ghi nhớ đăng nhập</Label>
                                 </div>
 
-                                {/* Nút đăng nhập chính */}
                                 <Button
                                     type="submit"
                                     disabled={processing}
@@ -97,19 +94,17 @@ export default function Login({ status, canResetPassword }: LoginProps) {
                                     Đăng nhập
                                 </Button>
 
-                                {/* Đăng nhập bằng Google */}
-                                <div className="flex justify-center">
+                                <div className="flex justify-center mt-3">
                                     <a
                                         href="/auth/google"
                                         className="flex items-center gap-2 w-full justify-center rounded-lg border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-700 shadow hover:bg-gray-100"
                                     >
                                         <img src="/images/google-icon.svg" alt="Google" className="h-5 w-5" />
-                                        Đăng nhập với Google
+                                        Đăng nhập bằng Google
                                     </a>
                                 </div>
 
-                                {/* Link đăng ký */}
-                                <div className="mt-1 text-center text-sm">
+                                <div className="mt-2 text-center text-sm">
                                     Bạn chưa có tài khoản?{' '}
                                     <TextLink
                                         href="/register"
@@ -123,7 +118,7 @@ export default function Login({ status, canResetPassword }: LoginProps) {
                     </Form>
 
                     {status && (
-                        <div className="mt-5 text-center text-sm font-medium text-green-600">
+                        <div className="mt-4 text-center text-sm font-medium text-green-600">
                             {status}
                         </div>
                     )}
