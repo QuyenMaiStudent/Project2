@@ -13,6 +13,9 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Log;
 use RuntimeException;
+use App\Models\Package;
+use App\Models\PackagePayment;
+use Illuminate\Support\Str;
 
 class PaypalGateway implements PaymentGateway
 {
@@ -116,11 +119,104 @@ class PaypalGateway implements PaymentGateway
         return $approve['href'];
     }
 
+    /**
+     * Create PayPal order for a Package.
+     */
+    public function createPackagePayment(Package $package, PackagePayment $payment): string
+    {
+        $vndAmount = (float) $package->price;
+        $usdAmount = $this->convertVndToUsd($vndAmount);
+
+        $token = $this->getAccessToken();
+        $reference = 'pkg_' . $payment->id;
+
+        $returnUrl = $payment->return_url . (str_contains($payment->return_url, '?') ? '&' : '?') . http_build_query([
+            'status' => 'success',
+            'package_payment' => $payment->id,
+        ]);
+
+        $cancelUrl = $payment->return_url . (str_contains($payment->return_url, '?') ? '&' : '?') . http_build_query([
+            'status' => 'cancel',
+            'package_payment' => $payment->id,
+        ]);
+
+        $payload = [
+            'intent' => 'CAPTURE',
+            'purchase_units' => [[
+                'reference_id' => $reference,
+                'amount' => [
+                    'currency_code' => 'USD',
+                    'value' => $usdAmount,
+                    'breakdown' => [
+                        'item_total' => [
+                            'currency_code' => 'USD',
+                            'value' => $usdAmount,
+                        ]
+                    ]
+                ],
+                'description' => "Package #{$package->id} from TechNest",
+                'items' => [[
+                    'name' => $package->name,
+                    'unit_amount' => ['currency_code' => 'USD', 'value' => $usdAmount],
+                    'quantity' => '1',
+                ]],
+            ]],
+            'application_context' => [
+                'brand_name'  => config('app.name', 'TechNest'),
+                'landing_page' => 'NO_PREFERENCE',
+                'user_action' => 'PAY_NOW',
+                'return_url'  => $returnUrl,
+                'cancel_url'  => $cancelUrl,
+            ],
+        ];
+
+        Log::info('PayPal create package payment request', [
+            'payment_id' => $payment->id,
+            'package_id' => $package->id,
+            'vnd_amount' => $vndAmount,
+            'usd_amount' => $usdAmount,
+            'payload' => $payload
+        ]);
+
+        $res = Http::withToken($token)
+            ->acceptJson()
+            ->asJson()
+            ->post($this->base . '/v2/checkout/orders', $payload);
+
+        if (!$res->successful()) {
+            Log::error('PayPal create package order failed', [
+                'status' => $res->status(),
+                'body' => $res->body(),
+                'payment_id' => $payment->id
+            ]);
+            throw new RuntimeException('PayPal create order failed: ' . $res->body());
+        }
+
+        $data = $res->json();
+        $approve = collect($data['links'] ?? [])->first(fn($l) => ($l['rel'] ?? '') === 'approve');
+
+        if (!$approve || empty($approve['href'])) {
+            Log::error('PayPal approve URL not found (package)', ['response' => $data]);
+            throw new RuntimeException('PayPal approve URL not found.');
+        }
+
+        $payment->update([
+            'reference' => $reference,
+            'external_id' => $data['id'] ?? null,
+            'metadata' => array_merge($payment->metadata ?? [], [
+                'paypal_order_id' => $data['id'] ?? null,
+            ]),
+        ]);
+
+        return $approve['href'];
+    }
+
     public function handleReturn(array $payload): array
     {
         $status  = $payload['status'] ?? 'success';
         $orderId = $payload['order_id'] ?? null;
         $token   = $payload['token'] ?? null;
+        $packagePaymentId = $payload['package_payment'] ?? null;
 
         Log::info('PayPal return handler called', [
             'payload' => $payload,
@@ -130,6 +226,15 @@ class PaypalGateway implements PaymentGateway
         ]);
 
         if ($status === 'cancel') {
+            if ($packagePaymentId) {
+                return [
+                    'status' => 'canceled',
+                    'transaction_id' => null,
+                    'message' => 'User canceled payment',
+                    'package_payment_id' => (int) $packagePaymentId,
+                ];
+            }
+
             Log::info('PayPal payment canceled by user', ['order_id' => $orderId]);
             return [
                 'status' => 'canceled',
@@ -170,6 +275,7 @@ class PaypalGateway implements PaymentGateway
                     'status' => 'failed',
                     'transaction_id' => null,
                     'message' => 'Capture failed: ' . $res->body(),
+                    'package_payment_id' => $packagePaymentId ? (int) $packagePaymentId : null,
                 ];
             }
 
@@ -185,15 +291,22 @@ class PaypalGateway implements PaymentGateway
                     'status' => 'failed',
                     'transaction_id' => $pp['id'] ?? null,
                     'message' => 'Capture not completed: ' . ($pp['status'] ?? 'unknown'),
+                    'package_payment_id' => $packagePaymentId ? (int) $packagePaymentId : null,
                 ];
             }
 
-            // FIX 3: Lấy capture ID chính xác hơn
-            $captureId = null;
-            if (isset($pp['purchase_units'][0]['payments']['captures'][0]['id'])) {
-                $captureId = $pp['purchase_units'][0]['payments']['captures'][0]['id'];
-            } else {
-                $captureId = $pp['id'] ?? null;
+            $captureId = isset($pp['purchase_units'][0]['payments']['captures'][0]['id'])
+                ? $pp['purchase_units'][0]['payments']['captures'][0]['id']
+                : ($pp['id'] ?? null);
+
+            if ($packagePaymentId) {
+                return [
+                    'status' => 'succeeded',
+                    'transaction_id' => $captureId,
+                    'message' => 'Payment captured successfully',
+                    'package_payment_id' => (int) $packagePaymentId,
+                    'raw' => $pp,
+                ];
             }
 
             $this->completePayment($orderId, $captureId, $pp);
@@ -210,11 +323,12 @@ class PaypalGateway implements PaymentGateway
                 'trace' => $e->getTraceAsString(),
                 'order_id' => $orderId
             ]);
-            
+
             return [
                 'status' => 'failed',
                 'transaction_id' => null,
                 'message' => 'Exception: ' . $e->getMessage(),
+                'package_payment_id' => $packagePaymentId ? (int) $packagePaymentId : null,
             ];
         }
     }

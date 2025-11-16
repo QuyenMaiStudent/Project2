@@ -8,6 +8,8 @@ use App\Models\Payment;
 use App\Models\ProductVariant;
 use App\Models\Promotion;
 use App\Models\Transaction;
+use App\Models\Package;
+use App\Models\PackagePayment;
 use App\Payments\Contracts\PaymentGateway;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
@@ -104,10 +106,88 @@ class StripeGateway implements PaymentGateway
         return $session->url;
     }
 
+    /**
+     * Create Stripe Checkout session for a Package
+     */
+    public function createPackagePayment(Package $package, PackagePayment $payment): string
+    {
+        $rate = $this->fetchVndToUsdRate();
+        $currency = strtolower(config('services.stripe.currency', 'usd'));
+
+        if ($currency === 'vnd') {
+            $unitAmount = max(1, (int) round((float)$package->price));
+        } else {
+            $unitUsd = round((float)$package->price * $rate, 2);
+            $unitAmount = max(50, (int) round($unitUsd * 100));
+        }
+
+        $lineItems = [
+            [
+                'price_data' => [
+                    'currency'     => $currency,
+                    'product_data' => ['name' => $package->name],
+                    'unit_amount'  => $unitAmount,
+                ],
+                'quantity' => 1,
+            ],
+        ];
+
+        $successUrl = $payment->return_url . (str_contains($payment->return_url, '?') ? '&' : '?') . http_build_query([
+            'status' => 'success',
+            'session_id' => '{CHECKOUT_SESSION_ID}',
+        ]);
+
+        $cancelUrl = $payment->return_url . (str_contains($payment->return_url, '?') ? '&' : '?') . http_build_query([
+            'status' => 'cancel',
+        ]);
+
+        $session = $this->stripe->checkout->sessions->create([
+            'mode'       => 'payment',
+            'success_url' => $successUrl,
+            'cancel_url'  => $cancelUrl,
+            'payment_method_types' => ['card'],
+            'line_items' => $lineItems,
+            'metadata' => [
+                'package_id' => (string) $package->id,
+                'user_id' => (string) ($payment->user_id ?? ''),
+                'rate' => (string) $rate,
+                'package_payment_id' => (string) $payment->id,
+            ],
+            'automatic_tax' => ['enabled' => false],
+            'billing_address_collection' => 'auto',
+            'locale' => 'vi',
+        ]);
+
+        $payment->update([
+            'reference' => $session->id,
+            'external_id' => $session->id,
+            'metadata' => array_merge($payment->metadata ?? [], [
+                'session_id' => $session->id,
+            ]),
+        ]);
+
+        Log::info('Stripe package session created', ['session_id' => $session->id, 'package_id' => $package->id, 'url' => $session->url]);
+
+        return $session->url;
+    }
+
     public function handleReturn(array $payload): array
     {
         $status = $payload['status'] ?? 'cancel';
-        
+
+        if (isset($payload['package_payment'])) {
+            $normalizedStatus = $status === 'success'
+                ? 'succeeded'
+                : ($status === 'cancel' ? 'canceled' : 'failed');
+
+            return [
+                'status' => $normalizedStatus,
+                'transaction_id' => $payload['session_id'] ?? null,
+                'message' => $normalizedStatus === 'succeeded' ? 'Checkout completed' : null,
+                'package_payment_id' => (int) $payload['package_payment'],
+            ];
+        }
+
         if ($status === 'success') {
             $sessionId = $payload['session_id'] ?? null;
             $orderId = $payload['order_id'] ?? null;
@@ -255,6 +335,16 @@ class StripeGateway implements PaymentGateway
         $orderId   = $session['metadata']['order_id'] ?? null;
         $pi        = $session['payment_intent'] ?? null;
         $eventId   = $payload['id'] ?? null;
+        $packagePaymentId = $session['metadata']['package_payment_id'] ?? null;
+
+        if ($packagePaymentId) {
+            return [
+                'status' => 'succeeded',
+                'transaction_id' => $pi ?? $sessionId,
+                'message' => 'Package payment completed via webhook',
+                'package_payment_id' => (int) $packagePaymentId,
+            ];
+        }
 
         if (!$sessionId || !$orderId) {
             return ['status' => 'failed', 'transaction_id' => null, 'message' => 'Missing session/order metadata'];

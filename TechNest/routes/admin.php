@@ -7,6 +7,8 @@ use App\Http\Controllers\Admin\ManageUserController;
 use App\Http\Controllers\Admin\AdminPromotionController;
 use App\Http\Controllers\Admin\BrandController;
 use App\Http\Controllers\Admin\ManageLocationController;
+use App\Http\Controllers\Subscription\PackageController as AdminPackageController;
+use App\Http\Controllers\Subscription\RenewalController;
 use Illuminate\Support\Facades\Route;
 
 Route::middleware(['auth', 'admin'])->group(function () {
@@ -77,6 +79,16 @@ Route::middleware(['auth', 'admin'])->group(function () {
         Route::post('/wards', [ManageLocationController::class, 'storeWard']);
         Route::put('/wards/{ward}', [ManageLocationController::class, 'updateWard']);
         Route::delete('/wards/{ward}', [ManageLocationController::class, 'destroyWard']);
+    });
+
+    Route::prefix('/admin/packages')->name('admin.packages.')->group(function () {
+        Route::get('/', [AdminPackageController::class, 'adminIndex'])->name('index');
+        Route::post('/', [AdminPackageController::class, 'store'])->name('store');
+        Route::get('/{package}', [AdminPackageController::class, 'show'])->name('show');
+        Route::put('/{package}', [AdminPackageController::class, 'update'])->name('update');
+        Route::delete('/{package}', [AdminPackageController::class, 'destroy'])->name('destroy');
+        Route::post('/{package}/toggle', [AdminPackageController::class, 'toggleStatus'])->name('toggle');
+        Route::post('/renewals/run', [RenewalController::class, 'run'])->name('renewals.run');
     });
 });
 ?>

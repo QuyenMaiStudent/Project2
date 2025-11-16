@@ -2,9 +2,10 @@ import Chat from './Chat'
 import ProductSearchController from './ProductSearchController'
 import Auth from './Auth'
 import ProductIndexController from './ProductIndexController'
+import Customer from './Customer'
 import ProductDetailController from './ProductDetailController'
 import Payments from './Payments'
-import Customer from './Customer'
+import Subscription from './Subscription'
 import CommentController from './CommentController'
 import Settings from './Settings'
 import Seller from './Seller'
@@ -15,9 +16,10 @@ const Controllers = {
 ProductSearchController: Object.assign(ProductSearchController, ProductSearchController),
 Auth: Object.assign(Auth, Auth),
 ProductIndexController: Object.assign(ProductIndexController, ProductIndexController),
+Customer: Object.assign(Customer, Customer),
 ProductDetailController: Object.assign(ProductDetailController, ProductDetailController),
 Payments: Object.assign(Payments, Payments),
-Customer: Object.assign(Customer, Customer),
+Subscription: Object.assign(Subscription, Subscription),
 CommentController: Object.assign(CommentController, CommentController),
 Settings: Object.assign(Settings, Settings),
 Seller: Object.assign(Seller, Seller),

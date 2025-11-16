@@ -12,6 +12,9 @@ use App\Models\Transaction;
 use App\Payments\Contracts\PaymentGateway;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
+use App\Models\Package;
+use App\Models\PackagePayment;
+use Illuminate\Support\Str;
 
 class VnpayGateway implements PaymentGateway
 {
@@ -77,6 +80,47 @@ class VnpayGateway implements PaymentGateway
         return $url;
     }
 
+    /**
+     * Create payment URL for a package
+     */
+    public function createPackagePayment(Package $package, PackagePayment $payment): string
+    {
+        $amountVnd = $this->toVndInt((float) $package->price, 'VND');
+        $vnpAmount = $amountVnd * 100;
+        $txnRef = 'PKG-' . $payment->id;
+
+        $params = [
+            'vnp_Version'   => '2.1.0',
+            'vnp_Command'   => 'pay',
+            'vnp_TmnCode'   => $this->tmnCode,
+            'vnp_Amount'    => $vnpAmount,
+            'vnp_CurrCode'  => 'VND',
+            'vnp_TxnRef'    => $txnRef,
+            'vnp_OrderInfo' => 'Thanh toan package #' . $package->id,
+            'vnp_OrderType' => 'other',
+            'vnp_Locale'    => 'vn',
+            'vnp_ReturnUrl' => $payment->return_url,
+            'vnp_IpAddr'    => request()?->ip() ?? '127.0.0.1',
+            'vnp_CreateDate' => now()->format('YmdHis'),
+        ];
+
+        $url = $this->signedUrl($params);
+
+        $payment->update([
+            'reference' => $txnRef,
+            'external_id' => $txnRef,
+        ]);
+
+        Log::info('VNPay package payment created', [
+            'payment_id' => $payment->id,
+            'package_id' => $package->id,
+            'vnp_amount' => $vnpAmount,
+            'url' => $url
+        ]);
+
+        return $url;
+    }
+
     public function handleReturn(array $payload): array
     {
         Log::info('VNPay return handler called', ['payload' => $payload]);
@@ -89,6 +133,21 @@ class VnpayGateway implements PaymentGateway
         $code = $payload['vnp_ResponseCode'] ?? null;
         $transNo = (string) ($payload['vnp_TransactionNo'] ?? '');
         $orderId = (string) ($payload['vnp_TxnRef'] ?? '');
+
+        if ($packagePaymentId = $this->resolvePackagePaymentId($orderId)) {
+            $status = $code === '00'
+                ? 'succeeded'
+                : ($code === '24' ? 'canceled' : 'failed');
+
+            return [
+                'status' => $status,
+                'transaction_id' => $transNo ?: null,
+                'message' => $status === 'succeeded'
+                    ? 'Payment completed successfully'
+                    : 'VNPay response code: ' . $code,
+                'package_payment_id' => $packagePaymentId,
+            ];
+        }
 
         if ($code === '00') {
             // FIX 3: Xử lý thành công ngay tại return handler
@@ -134,6 +193,19 @@ class VnpayGateway implements PaymentGateway
         $orderId = (string) ($payload['vnp_TxnRef'] ?? '');
         $resp    = (string) ($payload['vnp_ResponseCode'] ?? '');
         $transNo = (string) ($payload['vnp_TransactionNo'] ?? '');
+
+        if ($packagePaymentId = $this->resolvePackagePaymentId($orderId)) {
+            $status = $resp === '00' ? 'succeeded' : 'failed';
+
+            return [
+                'status' => $status,
+                'transaction_id' => $transNo ?: null,
+                'message' => $status === 'succeeded'
+                    ? 'Payment completed via VNPay'
+                    : 'Payment failed: ' . $resp,
+                'package_payment_id' => $packagePaymentId,
+            ];
+        }
 
         if ($resp !== '00') {
             return ['status' => 'failed', 'transaction_id' => $transNo ?: null, 'message' => 'Payment failed: ' . $resp];
@@ -322,5 +394,14 @@ class VnpayGateway implements PaymentGateway
         ]);
 
         return hash_equals($calc, $recv);
+    }
+
+    private function resolvePackagePaymentId(?string $reference): ?int
+    {
+        if (! $reference || ! Str::startsWith($reference, 'PKG-')) {
+            return null;
+        }
+
+        return (int) Str::after($reference, 'PKG-');
     }
 }

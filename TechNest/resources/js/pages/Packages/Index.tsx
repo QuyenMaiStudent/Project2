@@ -1,4 +1,6 @@
+import React from "react";
 import { Head, router, usePage } from "@inertiajs/react";
+import AppLayout from "@/layouts/app-layout";
 import PackageList from "@/components/packages/PackageList";
 import PackageSubscriptionStatus from "@/components/packages/PackageSubscriptionStatus";
 import { PackageItem } from "@/components/packages/PackageCard";
@@ -14,6 +16,7 @@ interface PageProps {
     expires_at: string | null;
     price: number;
   } | null;
+  [key: string]: any;
 }
 
 const PackagesIndex = () => {
@@ -35,10 +38,10 @@ const PackagesIndex = () => {
   };
 
   return (
-    <>
+    <AppLayout breadcrumbs={[{ title: "Gói vận chuyển", href: "/packages" }]}>
       <Head title="Gói vận chuyển" />
 
-      <div className="space-y-6">
+      <div className="max-w-7xl mx-auto p-6 space-y-6">
         <div className="flex items-center justify-between">
           <h1 className="text-2xl font-semibold">Gói vận chuyển tháng</h1>
           {active ? (
@@ -61,7 +64,7 @@ const PackagesIndex = () => {
           activePackageId={active?.package_id}
         />
       </div>
-    </>
+    </AppLayout>
   );
 };
 

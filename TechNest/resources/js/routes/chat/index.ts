@@ -1,7 +1,7 @@
 import { queryParams, type RouteQueryOptions, type RouteDefinition, type RouteFormDefinition, applyUrlDefaults } from './../../wayfinder'
 import messages from './messages'
 /**
- * @see routes/web.php:28
+ * @see routes/web.php:31
  * @route '/chat/chatbot'
  */
 export const chatbot = (options?: RouteQueryOptions): RouteDefinition<'get'> => ({
@@ -15,7 +15,7 @@ chatbot.definition = {
 } satisfies RouteDefinition<["get","head"]>
 
 /**
- * @see routes/web.php:28
+ * @see routes/web.php:31
  * @route '/chat/chatbot'
  */
 chatbot.url = (options?: RouteQueryOptions) => {
@@ -23,7 +23,7 @@ chatbot.url = (options?: RouteQueryOptions) => {
 }
 
 /**
- * @see routes/web.php:28
+ * @see routes/web.php:31
  * @route '/chat/chatbot'
  */
 chatbot.get = (options?: RouteQueryOptions): RouteDefinition<'get'> => ({
@@ -31,7 +31,7 @@ chatbot.get = (options?: RouteQueryOptions): RouteDefinition<'get'> => ({
     method: 'get',
 })
 /**
- * @see routes/web.php:28
+ * @see routes/web.php:31
  * @route '/chat/chatbot'
  */
 chatbot.head = (options?: RouteQueryOptions): RouteDefinition<'head'> => ({
@@ -40,7 +40,7 @@ chatbot.head = (options?: RouteQueryOptions): RouteDefinition<'head'> => ({
 })
 
     /**
- * @see routes/web.php:28
+ * @see routes/web.php:31
  * @route '/chat/chatbot'
  */
     const chatbotForm = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
@@ -49,7 +49,7 @@ chatbot.head = (options?: RouteQueryOptions): RouteDefinition<'head'> => ({
     })
 
             /**
- * @see routes/web.php:28
+ * @see routes/web.php:31
  * @route '/chat/chatbot'
  */
         chatbotForm.get = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
@@ -57,7 +57,7 @@ chatbot.head = (options?: RouteQueryOptions): RouteDefinition<'head'> => ({
             method: 'get',
         })
             /**
- * @see routes/web.php:28
+ * @see routes/web.php:31
  * @route '/chat/chatbot'
  */
         chatbotForm.head = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({

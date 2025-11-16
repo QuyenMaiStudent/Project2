@@ -1,4 +1,5 @@
 import { queryParams, type RouteQueryOptions, type RouteDefinition, type RouteFormDefinition, applyUrlDefaults } from './../../wayfinder'
+import reviews from './reviews'
 /**
 * @see \App\Http\Controllers\ProductIndexController::__invoke
  * @see app/Http/Controllers/ProductIndexController.php:13
@@ -176,6 +177,7 @@ detail.head = (args: { id: string | number } | [id: string | number ] | string |
     detail.form = detailForm
 const products = {
     index: Object.assign(index, index),
+reviews: Object.assign(reviews, reviews),
 detail: Object.assign(detail, detail),
 }
 

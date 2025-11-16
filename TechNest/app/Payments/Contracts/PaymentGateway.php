@@ -14,4 +14,5 @@ interface PaymentGateway
 
     //Xử lý webhook tùy theo nhà cung cấp (momo, stripe, paypal, vnpay, ...)
     public function handleWebhook(array $payload, ?string $signature = null): array;
+    
 }

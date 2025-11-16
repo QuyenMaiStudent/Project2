@@ -57,6 +57,11 @@ export function AppSidebar() {
                 title: 'Quản lý thương hiệu',
                 href: '/admin/brands',
                 icon: Tag,
+            },
+            {
+                title: "Quản lý gói dịch vụ",
+                href: '/admin/packages',
+                icon: CheckCircle,
             }
         ];
 
@@ -135,6 +140,11 @@ export function AppSidebar() {
                 href: '/chat',
                 icon: MessageCircle,
             },
+            {
+                title: 'Gói vận chuyển',
+                href: '/packages',
+                icon: Package,
+            }
         ];
     }
 

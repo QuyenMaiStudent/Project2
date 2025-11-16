@@ -6,6 +6,8 @@ use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
+use App\Models\PackageSubscription;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class User extends Authenticatable implements MustVerifyEmail
 {
@@ -224,5 +226,23 @@ class User extends Authenticatable implements MustVerifyEmail
     public function liveStreams()
     {
         return $this->hasMany(LiveStream::class, 'seller_id');
+    }
+
+    public function packageSubscriptions(): HasMany
+    {
+        return $this->hasMany(PackageSubscription::class);
+    }
+
+    public function activePackageSubscription(): ?PackageSubscription
+    {
+        return $this->packageSubscriptions()
+            ->active()
+            ->latest('expires_at')
+            ->first();
+    }
+
+    public function hasActivePackageSubscription(): bool
+    {
+        return $this->activePackageSubscription()?->isActive() ?? false;
     }
 }

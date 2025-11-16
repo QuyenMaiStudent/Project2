@@ -3,7 +3,7 @@ import specs from './specs'
 import variants from './variants'
 /**
 * @see \App\Http\Controllers\Seller\ProductController::create
- * @see app/Http/Controllers/Seller/ProductController.php:34
+ * @see app/Http/Controllers/Seller/ProductController.php:35
  * @route '/seller/products/create'
  */
 export const create = (options?: RouteQueryOptions): RouteDefinition<'get'> => ({
@@ -18,7 +18,7 @@ create.definition = {
 
 /**
 * @see \App\Http\Controllers\Seller\ProductController::create
- * @see app/Http/Controllers/Seller/ProductController.php:34
+ * @see app/Http/Controllers/Seller/ProductController.php:35
  * @route '/seller/products/create'
  */
 create.url = (options?: RouteQueryOptions) => {
@@ -27,7 +27,7 @@ create.url = (options?: RouteQueryOptions) => {
 
 /**
 * @see \App\Http\Controllers\Seller\ProductController::create
- * @see app/Http/Controllers/Seller/ProductController.php:34
+ * @see app/Http/Controllers/Seller/ProductController.php:35
  * @route '/seller/products/create'
  */
 create.get = (options?: RouteQueryOptions): RouteDefinition<'get'> => ({
@@ -36,7 +36,7 @@ create.get = (options?: RouteQueryOptions): RouteDefinition<'get'> => ({
 })
 /**
 * @see \App\Http\Controllers\Seller\ProductController::create
- * @see app/Http/Controllers/Seller/ProductController.php:34
+ * @see app/Http/Controllers/Seller/ProductController.php:35
  * @route '/seller/products/create'
  */
 create.head = (options?: RouteQueryOptions): RouteDefinition<'head'> => ({
@@ -46,7 +46,7 @@ create.head = (options?: RouteQueryOptions): RouteDefinition<'head'> => ({
 
     /**
 * @see \App\Http\Controllers\Seller\ProductController::create
- * @see app/Http/Controllers/Seller/ProductController.php:34
+ * @see app/Http/Controllers/Seller/ProductController.php:35
  * @route '/seller/products/create'
  */
     const createForm = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
@@ -56,7 +56,7 @@ create.head = (options?: RouteQueryOptions): RouteDefinition<'head'> => ({
 
             /**
 * @see \App\Http\Controllers\Seller\ProductController::create
- * @see app/Http/Controllers/Seller/ProductController.php:34
+ * @see app/Http/Controllers/Seller/ProductController.php:35
  * @route '/seller/products/create'
  */
         createForm.get = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
@@ -65,7 +65,7 @@ create.head = (options?: RouteQueryOptions): RouteDefinition<'head'> => ({
         })
             /**
 * @see \App\Http\Controllers\Seller\ProductController::create
- * @see app/Http/Controllers/Seller/ProductController.php:34
+ * @see app/Http/Controllers/Seller/ProductController.php:35
  * @route '/seller/products/create'
  */
         createForm.head = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
@@ -81,7 +81,7 @@ create.head = (options?: RouteQueryOptions): RouteDefinition<'head'> => ({
     create.form = createForm
 /**
 * @see \App\Http\Controllers\Seller\ProductController::store
- * @see app/Http/Controllers/Seller/ProductController.php:60
+ * @see app/Http/Controllers/Seller/ProductController.php:64
  * @route '/seller/products'
  */
 export const store = (options?: RouteQueryOptions): RouteDefinition<'post'> => ({
@@ -96,7 +96,7 @@ store.definition = {
 
 /**
 * @see \App\Http\Controllers\Seller\ProductController::store
- * @see app/Http/Controllers/Seller/ProductController.php:60
+ * @see app/Http/Controllers/Seller/ProductController.php:64
  * @route '/seller/products'
  */
 store.url = (options?: RouteQueryOptions) => {
@@ -105,7 +105,7 @@ store.url = (options?: RouteQueryOptions) => {
 
 /**
 * @see \App\Http\Controllers\Seller\ProductController::store
- * @see app/Http/Controllers/Seller/ProductController.php:60
+ * @see app/Http/Controllers/Seller/ProductController.php:64
  * @route '/seller/products'
  */
 store.post = (options?: RouteQueryOptions): RouteDefinition<'post'> => ({
@@ -115,7 +115,7 @@ store.post = (options?: RouteQueryOptions): RouteDefinition<'post'> => ({
 
     /**
 * @see \App\Http\Controllers\Seller\ProductController::store
- * @see app/Http/Controllers/Seller/ProductController.php:60
+ * @see app/Http/Controllers/Seller/ProductController.php:64
  * @route '/seller/products'
  */
     const storeForm = (options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
@@ -125,7 +125,7 @@ store.post = (options?: RouteQueryOptions): RouteDefinition<'post'> => ({
 
             /**
 * @see \App\Http\Controllers\Seller\ProductController::store
- * @see app/Http/Controllers/Seller/ProductController.php:60
+ * @see app/Http/Controllers/Seller/ProductController.php:64
  * @route '/seller/products'
  */
         storeForm.post = (options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
@@ -136,7 +136,7 @@ store.post = (options?: RouteQueryOptions): RouteDefinition<'post'> => ({
     store.form = storeForm
 /**
 * @see \App\Http\Controllers\Seller\ProductController::index
- * @see app/Http/Controllers/Seller/ProductController.php:20
+ * @see app/Http/Controllers/Seller/ProductController.php:21
  * @route '/seller/products'
  */
 export const index = (options?: RouteQueryOptions): RouteDefinition<'get'> => ({
@@ -151,7 +151,7 @@ index.definition = {
 
 /**
 * @see \App\Http\Controllers\Seller\ProductController::index
- * @see app/Http/Controllers/Seller/ProductController.php:20
+ * @see app/Http/Controllers/Seller/ProductController.php:21
  * @route '/seller/products'
  */
 index.url = (options?: RouteQueryOptions) => {
@@ -160,7 +160,7 @@ index.url = (options?: RouteQueryOptions) => {
 
 /**
 * @see \App\Http\Controllers\Seller\ProductController::index
- * @see app/Http/Controllers/Seller/ProductController.php:20
+ * @see app/Http/Controllers/Seller/ProductController.php:21
  * @route '/seller/products'
  */
 index.get = (options?: RouteQueryOptions): RouteDefinition<'get'> => ({
@@ -169,7 +169,7 @@ index.get = (options?: RouteQueryOptions): RouteDefinition<'get'> => ({
 })
 /**
 * @see \App\Http\Controllers\Seller\ProductController::index
- * @see app/Http/Controllers/Seller/ProductController.php:20
+ * @see app/Http/Controllers/Seller/ProductController.php:21
  * @route '/seller/products'
  */
 index.head = (options?: RouteQueryOptions): RouteDefinition<'head'> => ({
@@ -179,7 +179,7 @@ index.head = (options?: RouteQueryOptions): RouteDefinition<'head'> => ({
 
     /**
 * @see \App\Http\Controllers\Seller\ProductController::index
- * @see app/Http/Controllers/Seller/ProductController.php:20
+ * @see app/Http/Controllers/Seller/ProductController.php:21
  * @route '/seller/products'
  */
     const indexForm = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
@@ -189,7 +189,7 @@ index.head = (options?: RouteQueryOptions): RouteDefinition<'head'> => ({
 
             /**
 * @see \App\Http\Controllers\Seller\ProductController::index
- * @see app/Http/Controllers/Seller/ProductController.php:20
+ * @see app/Http/Controllers/Seller/ProductController.php:21
  * @route '/seller/products'
  */
         indexForm.get = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
@@ -198,7 +198,7 @@ index.head = (options?: RouteQueryOptions): RouteDefinition<'head'> => ({
         })
             /**
 * @see \App\Http\Controllers\Seller\ProductController::index
- * @see app/Http/Controllers/Seller/ProductController.php:20
+ * @see app/Http/Controllers/Seller/ProductController.php:21
  * @route '/seller/products'
  */
         indexForm.head = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
@@ -214,7 +214,7 @@ index.head = (options?: RouteQueryOptions): RouteDefinition<'head'> => ({
     index.form = indexForm
 /**
 * @see \App\Http\Controllers\Seller\ProductController::edit
- * @see app/Http/Controllers/Seller/ProductController.php:212
+ * @see app/Http/Controllers/Seller/ProductController.php:219
  * @route '/seller/products/{product}/edit'
  */
 export const edit = (args: { product: number | { id: number } } | [product: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions): RouteDefinition<'get'> => ({
@@ -229,7 +229,7 @@ edit.definition = {
 
 /**
 * @see \App\Http\Controllers\Seller\ProductController::edit
- * @see app/Http/Controllers/Seller/ProductController.php:212
+ * @see app/Http/Controllers/Seller/ProductController.php:219
  * @route '/seller/products/{product}/edit'
  */
 edit.url = (args: { product: number | { id: number } } | [product: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions) => {
@@ -262,7 +262,7 @@ edit.url = (args: { product: number | { id: number } } | [product: number | { id
 
 /**
 * @see \App\Http\Controllers\Seller\ProductController::edit
- * @see app/Http/Controllers/Seller/ProductController.php:212
+ * @see app/Http/Controllers/Seller/ProductController.php:219
  * @route '/seller/products/{product}/edit'
  */
 edit.get = (args: { product: number | { id: number } } | [product: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions): RouteDefinition<'get'> => ({
@@ -271,7 +271,7 @@ edit.get = (args: { product: number | { id: number } } | [product: number | { id
 })
 /**
 * @see \App\Http\Controllers\Seller\ProductController::edit
- * @see app/Http/Controllers/Seller/ProductController.php:212
+ * @see app/Http/Controllers/Seller/ProductController.php:219
  * @route '/seller/products/{product}/edit'
  */
 edit.head = (args: { product: number | { id: number } } | [product: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions): RouteDefinition<'head'> => ({
@@ -281,7 +281,7 @@ edit.head = (args: { product: number | { id: number } } | [product: number | { i
 
     /**
 * @see \App\Http\Controllers\Seller\ProductController::edit
- * @see app/Http/Controllers/Seller/ProductController.php:212
+ * @see app/Http/Controllers/Seller/ProductController.php:219
  * @route '/seller/products/{product}/edit'
  */
     const editForm = (args: { product: number | { id: number } } | [product: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
@@ -291,7 +291,7 @@ edit.head = (args: { product: number | { id: number } } | [product: number | { i
 
             /**
 * @see \App\Http\Controllers\Seller\ProductController::edit
- * @see app/Http/Controllers/Seller/ProductController.php:212
+ * @see app/Http/Controllers/Seller/ProductController.php:219
  * @route '/seller/products/{product}/edit'
  */
         editForm.get = (args: { product: number | { id: number } } | [product: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
@@ -300,7 +300,7 @@ edit.head = (args: { product: number | { id: number } } | [product: number | { i
         })
             /**
 * @see \App\Http\Controllers\Seller\ProductController::edit
- * @see app/Http/Controllers/Seller/ProductController.php:212
+ * @see app/Http/Controllers/Seller/ProductController.php:219
  * @route '/seller/products/{product}/edit'
  */
         editForm.head = (args: { product: number | { id: number } } | [product: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
@@ -316,7 +316,7 @@ edit.head = (args: { product: number | { id: number } } | [product: number | { i
     edit.form = editForm
 /**
 * @see \App\Http\Controllers\Seller\ProductController::update
- * @see app/Http/Controllers/Seller/ProductController.php:245
+ * @see app/Http/Controllers/Seller/ProductController.php:252
  * @route '/seller/products/{product}'
  */
 export const update = (args: { product: number | { id: number } } | [product: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions): RouteDefinition<'put'> => ({
@@ -331,7 +331,7 @@ update.definition = {
 
 /**
 * @see \App\Http\Controllers\Seller\ProductController::update
- * @see app/Http/Controllers/Seller/ProductController.php:245
+ * @see app/Http/Controllers/Seller/ProductController.php:252
  * @route '/seller/products/{product}'
  */
 update.url = (args: { product: number | { id: number } } | [product: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions) => {
@@ -364,7 +364,7 @@ update.url = (args: { product: number | { id: number } } | [product: number | { 
 
 /**
 * @see \App\Http\Controllers\Seller\ProductController::update
- * @see app/Http/Controllers/Seller/ProductController.php:245
+ * @see app/Http/Controllers/Seller/ProductController.php:252
  * @route '/seller/products/{product}'
  */
 update.put = (args: { product: number | { id: number } } | [product: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions): RouteDefinition<'put'> => ({
@@ -374,7 +374,7 @@ update.put = (args: { product: number | { id: number } } | [product: number | { 
 
     /**
 * @see \App\Http\Controllers\Seller\ProductController::update
- * @see app/Http/Controllers/Seller/ProductController.php:245
+ * @see app/Http/Controllers/Seller/ProductController.php:252
  * @route '/seller/products/{product}'
  */
     const updateForm = (args: { product: number | { id: number } } | [product: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
@@ -389,7 +389,7 @@ update.put = (args: { product: number | { id: number } } | [product: number | { 
 
             /**
 * @see \App\Http\Controllers\Seller\ProductController::update
- * @see app/Http/Controllers/Seller/ProductController.php:245
+ * @see app/Http/Controllers/Seller/ProductController.php:252
  * @route '/seller/products/{product}'
  */
         updateForm.put = (args: { product: number | { id: number } } | [product: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
@@ -646,7 +646,7 @@ deleteImage.delete = (args: { product: string | number, image: number | { id: nu
     deleteImage.form = deleteImageForm
 /**
 * @see \App\Http\Controllers\Seller\ProductController::toggleVisibility
- * @see app/Http/Controllers/Seller/ProductController.php:568
+ * @see app/Http/Controllers/Seller/ProductController.php:580
  * @route '/seller/products/{product}/toggle-visibility'
  */
 export const toggleVisibility = (args: { product: number | { id: number } } | [product: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions): RouteDefinition<'post'> => ({
@@ -661,7 +661,7 @@ toggleVisibility.definition = {
 
 /**
 * @see \App\Http\Controllers\Seller\ProductController::toggleVisibility
- * @see app/Http/Controllers/Seller/ProductController.php:568
+ * @see app/Http/Controllers/Seller/ProductController.php:580
  * @route '/seller/products/{product}/toggle-visibility'
  */
 toggleVisibility.url = (args: { product: number | { id: number } } | [product: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions) => {
@@ -694,7 +694,7 @@ toggleVisibility.url = (args: { product: number | { id: number } } | [product: n
 
 /**
 * @see \App\Http\Controllers\Seller\ProductController::toggleVisibility
- * @see app/Http/Controllers/Seller/ProductController.php:568
+ * @see app/Http/Controllers/Seller/ProductController.php:580
  * @route '/seller/products/{product}/toggle-visibility'
  */
 toggleVisibility.post = (args: { product: number | { id: number } } | [product: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions): RouteDefinition<'post'> => ({
@@ -704,7 +704,7 @@ toggleVisibility.post = (args: { product: number | { id: number } } | [product: 
 
     /**
 * @see \App\Http\Controllers\Seller\ProductController::toggleVisibility
- * @see app/Http/Controllers/Seller/ProductController.php:568
+ * @see app/Http/Controllers/Seller/ProductController.php:580
  * @route '/seller/products/{product}/toggle-visibility'
  */
     const toggleVisibilityForm = (args: { product: number | { id: number } } | [product: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
@@ -714,7 +714,7 @@ toggleVisibility.post = (args: { product: number | { id: number } } | [product: 
 
             /**
 * @see \App\Http\Controllers\Seller\ProductController::toggleVisibility
- * @see app/Http/Controllers/Seller/ProductController.php:568
+ * @see app/Http/Controllers/Seller/ProductController.php:580
  * @route '/seller/products/{product}/toggle-visibility'
  */
         toggleVisibilityForm.post = (args: { product: number | { id: number } } | [product: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
@@ -725,7 +725,7 @@ toggleVisibility.post = (args: { product: number | { id: number } } | [product: 
     toggleVisibility.form = toggleVisibilityForm
 /**
 * @see \App\Http\Controllers\Seller\ProductController::preview
- * @see app/Http/Controllers/Seller/ProductController.php:480
+ * @see app/Http/Controllers/Seller/ProductController.php:492
  * @route '/seller/products/{product}/preview'
  */
 export const preview = (args: { product: number | { id: number } } | [product: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions): RouteDefinition<'get'> => ({
@@ -740,7 +740,7 @@ preview.definition = {
 
 /**
 * @see \App\Http\Controllers\Seller\ProductController::preview
- * @see app/Http/Controllers/Seller/ProductController.php:480
+ * @see app/Http/Controllers/Seller/ProductController.php:492
  * @route '/seller/products/{product}/preview'
  */
 preview.url = (args: { product: number | { id: number } } | [product: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions) => {
@@ -773,7 +773,7 @@ preview.url = (args: { product: number | { id: number } } | [product: number | {
 
 /**
 * @see \App\Http\Controllers\Seller\ProductController::preview
- * @see app/Http/Controllers/Seller/ProductController.php:480
+ * @see app/Http/Controllers/Seller/ProductController.php:492
  * @route '/seller/products/{product}/preview'
  */
 preview.get = (args: { product: number | { id: number } } | [product: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions): RouteDefinition<'get'> => ({
@@ -782,7 +782,7 @@ preview.get = (args: { product: number | { id: number } } | [product: number | {
 })
 /**
 * @see \App\Http\Controllers\Seller\ProductController::preview
- * @see app/Http/Controllers/Seller/ProductController.php:480
+ * @see app/Http/Controllers/Seller/ProductController.php:492
  * @route '/seller/products/{product}/preview'
  */
 preview.head = (args: { product: number | { id: number } } | [product: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions): RouteDefinition<'head'> => ({
@@ -792,7 +792,7 @@ preview.head = (args: { product: number | { id: number } } | [product: number | 
 
     /**
 * @see \App\Http\Controllers\Seller\ProductController::preview
- * @see app/Http/Controllers/Seller/ProductController.php:480
+ * @see app/Http/Controllers/Seller/ProductController.php:492
  * @route '/seller/products/{product}/preview'
  */
     const previewForm = (args: { product: number | { id: number } } | [product: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
@@ -802,7 +802,7 @@ preview.head = (args: { product: number | { id: number } } | [product: number | 
 
             /**
 * @see \App\Http\Controllers\Seller\ProductController::preview
- * @see app/Http/Controllers/Seller/ProductController.php:480
+ * @see app/Http/Controllers/Seller/ProductController.php:492
  * @route '/seller/products/{product}/preview'
  */
         previewForm.get = (args: { product: number | { id: number } } | [product: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
@@ -811,7 +811,7 @@ preview.head = (args: { product: number | { id: number } } | [product: number | 
         })
             /**
 * @see \App\Http\Controllers\Seller\ProductController::preview
- * @see app/Http/Controllers/Seller/ProductController.php:480
+ * @see app/Http/Controllers/Seller/ProductController.php:492
  * @route '/seller/products/{product}/preview'
  */
         previewForm.head = (args: { product: number | { id: number } } | [product: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
@@ -827,7 +827,7 @@ preview.head = (args: { product: number | { id: number } } | [product: number | 
     preview.form = previewForm
 /**
 * @see \App\Http\Controllers\Seller\ProductController::submit
- * @see app/Http/Controllers/Seller/ProductController.php:496
+ * @see app/Http/Controllers/Seller/ProductController.php:508
  * @route '/seller/products/{product}/submit'
  */
 export const submit = (args: { product: number | { id: number } } | [product: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions): RouteDefinition<'post'> => ({
@@ -842,7 +842,7 @@ submit.definition = {
 
 /**
 * @see \App\Http\Controllers\Seller\ProductController::submit
- * @see app/Http/Controllers/Seller/ProductController.php:496
+ * @see app/Http/Controllers/Seller/ProductController.php:508
  * @route '/seller/products/{product}/submit'
  */
 submit.url = (args: { product: number | { id: number } } | [product: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions) => {
@@ -875,7 +875,7 @@ submit.url = (args: { product: number | { id: number } } | [product: number | { 
 
 /**
 * @see \App\Http\Controllers\Seller\ProductController::submit
- * @see app/Http/Controllers/Seller/ProductController.php:496
+ * @see app/Http/Controllers/Seller/ProductController.php:508
  * @route '/seller/products/{product}/submit'
  */
 submit.post = (args: { product: number | { id: number } } | [product: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions): RouteDefinition<'post'> => ({
@@ -885,7 +885,7 @@ submit.post = (args: { product: number | { id: number } } | [product: number | {
 
     /**
 * @see \App\Http\Controllers\Seller\ProductController::submit
- * @see app/Http/Controllers/Seller/ProductController.php:496
+ * @see app/Http/Controllers/Seller/ProductController.php:508
  * @route '/seller/products/{product}/submit'
  */
     const submitForm = (args: { product: number | { id: number } } | [product: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
@@ -895,7 +895,7 @@ submit.post = (args: { product: number | { id: number } } | [product: number | {
 
             /**
 * @see \App\Http\Controllers\Seller\ProductController::submit
- * @see app/Http/Controllers/Seller/ProductController.php:496
+ * @see app/Http/Controllers/Seller/ProductController.php:508
  * @route '/seller/products/{product}/submit'
  */
         submitForm.post = (args: { product: number | { id: number } } | [product: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({

@@ -12,6 +12,9 @@ use App\Payments\Contracts\PaymentGateway;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Log;
+use App\Models\Package;
+use App\Models\PackagePayment;
+use Illuminate\Support\Str;
 
 class MomoGateway implements PaymentGateway
 {
@@ -111,6 +114,80 @@ class MomoGateway implements PaymentGateway
         return $data['payUrl'];
     }
 
+    /**
+     * Create payment for a Package (not Order) and return redirect URL.
+     * Non-destructive: does not change existing createPayment(Order $order).
+     */
+    public function createPackagePayment(Package $package, PackagePayment $payment): string
+    {
+        $amountVnd = $this->amountToVndInt((float) $package->price, 'VND');
+
+        $requestId = (string) now()->timestamp . rand(1000, 9999);
+        $orderId = 'PKG-' . $payment->id;
+        $orderInfo = 'Thanh toan package #' . $package->id;
+        $extraData = base64_encode(json_encode([
+            'package_id' => $package->id,
+            'user_id' => $payment->user_id,
+            'package_payment_id' => $payment->id,
+        ]));
+
+        $payload = [
+            'partnerCode' => $this->partnerCode,
+            'accessKey'   => $this->accessKey,
+            'requestId'   => $requestId,
+            'amount'      => (string) $amountVnd,
+            'orderId'     => $orderId,
+            'orderInfo'   => $orderInfo,
+            'redirectUrl' => $payment->return_url,
+            'ipnUrl'      => $this->ipnUrl,
+            'lang'        => 'vi',
+            'extraData'   => $extraData,
+            'requestType' => 'captureWallet',
+        ];
+
+        $payload['signature'] = $this->signCreate($payload);
+
+        Log::info('MoMo create package payment request', [
+            'payment_id' => $payment->id,
+            'package_id' => $package->id,
+            'amount_vnd' => $amountVnd,
+            'payload' => $payload,
+        ]);
+
+        $res = Http::timeout(15)->acceptJson()->asJson()->post($this->endpoint, $payload);
+
+        if (!$res->successful()) {
+            Log::error('MoMo create package failed', [
+                'status' => $res->status(),
+                'body' => $res->body(),
+                'payment_id' => $payment->id,
+            ]);
+            throw new \RuntimeException('MoMo create failed: ' . $res->body());
+        }
+
+        $data = $res->json();
+
+        if (($data['resultCode'] ?? -1) !== 0 || empty($data['payUrl'])) {
+            Log::error('MoMo rejected (package)', [
+                'result_code' => $data['resultCode'] ?? -1,
+                'message' => $data['message'] ?? 'Unknown error',
+                'response' => $data,
+                'payment_id' => $payment->id,
+            ]);
+            throw new \RuntimeException('MoMo rejected: ' . ($data['message'] ?? 'Unknown error'));
+        }
+
+        $payment->update([
+            'reference' => $orderId,
+            'external_id' => $data['orderId'] ?? $orderId,
+            'metadata' => array_merge($payment->metadata ?? [], [
+                'request_id' => $requestId,
+            ]),
+        ]);
+
+        return $data['payUrl'];
+    }
+
     public function handleReturn(array $payload): array
     {
         Log::info('MoMo return handler called', ['payload' => $payload]);
@@ -120,14 +197,28 @@ class MomoGateway implements PaymentGateway
         $orderId    = (string) ($payload['orderId'] ?? '');
         $transId    = (string) ($payload['transId'] ?? '');
 
+        if ($packagePaymentId = $this->resolvePackagePaymentId($orderId)) {
+            $status = match ($resultCode) {
+                0 => 'succeeded',
+                49 => 'canceled',
+                default => 'failed',
+            };
+
+            return [
+                'status' => $status,
+                'transaction_id' => $transId ?: null,
+                'message' => $message,
+                'package_payment_id' => $packagePaymentId,
+            ];
+        }
+
         if ($resultCode === 0) {
-            // FIX: Xử lý thành công ngay tại đây thay vì chờ IPN
             try {
                 $this->completePayment($orderId, $transId, $payload);
-                
+
                 return [
-                    'status' => 'succeeded', // Thay đổi từ 'processing' thành 'succeeded'
-                    'transaction_id' => $transId, 
+                    'status' => 'succeeded',
+                    'transaction_id' => $transId,
                     'message' => 'Payment completed successfully'
                 ];
             } catch (\Throwable $e) {
@@ -136,10 +227,10 @@ class MomoGateway implements PaymentGateway
                     'order_id' => $orderId,
                     'trans_id' => $transId
                 ]);
-                
+
                 return [
-                    'status' => 'failed', 
-                    'transaction_id' => $transId ?: null, 
+                    'status' => 'failed',
+                    'transaction_id' => $transId ?: null,
                     'message' => 'Payment completion failed: ' . $e->getMessage()
                 ];
             }
@@ -164,13 +255,28 @@ class MomoGateway implements PaymentGateway
     {
         Log::info('MoMo webhook/IPN received', ['payload' => $payload]);
 
-        // FIX 3: Verify signature trước khi xử lý
         if (!$this->verifyIpn($payload)) {
             Log::error('MoMo IPN signature verification failed', ['payload' => $payload]);
             return [
-                'status' => 'failed', 
-                'transaction_id' => null, 
+                'status' => 'failed',
+                'transaction_id' => null,
                 'message' => 'Invalid signature'
+            ];
+        }
+
+        $resultCode = (int) ($payload['resultCode'] ?? -1);
+        $orderId    = (string) ($payload['orderId'] ?? '');
+        $transId    = (string) ($payload['transId'] ?? '');
+        $message    = (string) ($payload['message'] ?? '');
+
+        if ($packagePaymentId = $this->resolvePackagePaymentId($orderId)) {
+            $status = $resultCode === 0 ? 'succeeded' : 'failed';
+
+            return [
+                'status' => $status,
+                'transaction_id' => $transId ?: null,
+                'message' => $message,
+                'package_payment_id' => $packagePaymentId,
             ];
         }
 
@@ -401,5 +507,14 @@ class MomoGateway implements PaymentGateway
         ]);
         
         return hash_equals($sig, (string) ($p['signature'] ?? ''));
+    }
+
+    private function resolvePackagePaymentId(?string $reference): ?int
+    {
+        if (! $reference || ! Str::startsWith($reference, 'PKG-')) {
+            return null;
+        }
+
+        return (int) Str::after($reference, 'PKG-');
     }
 }

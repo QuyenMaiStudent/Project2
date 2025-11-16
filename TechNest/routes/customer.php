@@ -9,6 +9,7 @@ use App\Http\Controllers\Customer\CustomerReviewController;
 use App\Http\Controllers\Customer\TransactionController;
 use App\Http\Controllers\Subscription\PackageController;
 use App\Http\Controllers\Subscription\PackagePaymentController;
+use App\Http\Controllers\Subscription\PackagePaymentReturnController;
 use Illuminate\Support\Facades\Route;
 
 Route::middleware(['auth', 'customer'])->group(function () {
@@ -46,8 +47,8 @@ Route::middleware(['auth', 'customer'])->group(function () {
     Route::post('/packages/{package}/subscribe', [PackageController::class, 'subscribe'])->name('packages.subscribe');
 
     Route::get('/packages/{package}/checkout', [PackagePaymentController::class, 'checkout'])->name('packages.checkout');
-   Route::post('/packages/{package}/pay', [PackagePaymentController::class, 'process'])->name('packages.pay');
-   Route::get('/packages/{package}/payment-return', [PackagePaymentController::class, 'return'])->name('packages.payment.return');
+    Route::post('/packages/{package}/pay', [PackagePaymentController::class, 'pay'])->name('packages.pay');
+    Route::get('/packages/payment/return', PackagePaymentReturnController::class)->name('packages.payment.return');
 
     Route::post('/packages/subscriptions/{subscription}/cancel', [PackageController::class, 'cancel'])->name('packages.cancel');
     Route::post('/packages/subscriptions/{subscription}/toggle-auto-renew', [PackageController::class, 'toggleAutoRenew'])->name('packages.toggleAutoRenew');

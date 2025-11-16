@@ -1,3 +1,4 @@
+import CustomerReviewController from './CustomerReviewController'
 import CustomerController from './CustomerController'
 import CartController from './CartController'
 import ShippingAddressController from './ShippingAddressController'
@@ -6,7 +7,8 @@ import OrderController from './OrderController'
 import TransactionController from './TransactionController'
 import ViewerController from './ViewerController'
 const Customer = {
-    CustomerController: Object.assign(CustomerController, CustomerController),
+    CustomerReviewController: Object.assign(CustomerReviewController, CustomerReviewController),
+CustomerController: Object.assign(CustomerController, CustomerController),
 CartController: Object.assign(CartController, CartController),
 ShippingAddressController: Object.assign(ShippingAddressController, ShippingAddressController),
 CheckoutController: Object.assign(CheckoutController, CheckoutController),
