@@ -1,14 +1,12 @@
-import AuthenticatedSessionController from '@/actions/App/Http/Controllers/Auth/AuthenticatedSessionController';
+import { Head, Form } from '@inertiajs/react';
+import AuthLayout from '@/layouts/auth-layout';
 import InputError from '@/components/input-error';
 import TextLink from '@/components/text-link';
 import { Button } from '@/components/ui/button';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import AuthLayout from '@/layouts/auth-layout';
-import { register } from '@/routes';
-import { request } from '@/routes/password';
-import { Form, Head } from '@inertiajs/react';
+import AuthenticatedSessionController from '@/actions/App/Http/Controllers/Auth/AuthenticatedSessionController';
 import { LoaderCircle } from 'lucide-react';
 
 interface LoginProps {
@@ -18,89 +16,119 @@ interface LoginProps {
 
 export default function Login({ status, canResetPassword }: LoginProps) {
     return (
-        <AuthLayout title="Log in to your account" description="Enter your email and password below to log in">
-            <Head title="Log in" />
+        <AuthLayout title="Đăng nhập tài khoản" description="">
+            <Head title="Đăng nhập" />
 
-            <Form {...AuthenticatedSessionController.store.form()} resetOnSuccess={['password']} className="flex flex-col gap-6">
-                {({ processing, errors }) => (
-                    <>
-                        <div className="grid gap-6">
-                            <div className="grid gap-2">
-                                <Label htmlFor="email">Email address</Label>
-                                <Input
-                                    id="email"
-                                    type="email"
-                                    name="email"
-                                    required
-                                    autoFocus
-                                    tabIndex={1}
-                                    autoComplete="email"
-                                    placeholder="email@example.com"
-                                />
-                                <InputError message={errors.email} />
-                            </div>
+            {/* Banner full màn hình */}
+            <section
+                className="absolute top-0 left-0 w-full h-screen bg-cover bg-center flex items-center justify-center"
+                style={{ backgroundImage: "url('/images/banner_bg.jpg')" }}
+            >
+                <div className="w-full max-w-md rounded-2xl border-2 border-[#0AC1EF] bg-white p-10 shadow-xl mx-6">
+                    <h2 className="mb-2 text-center text-3xl font-bold text-[#1b1b18]">
+                        Chào mừng bạn trở lại
+                    </h2>
+                    <p className="mb-8 text-center text-gray-600">
+                        Đăng nhập để tiếp tục mua sắm cùng TechNest
+                    </p>
 
-                            <div className="grid gap-2">
-                                <div className="flex items-center">
-                                    <Label htmlFor="password">Password</Label>
-                                    {canResetPassword && (
-                                        <TextLink href={request()} className="ml-auto text-sm" tabIndex={5}>
-                                            Forgot password?
-                                        </TextLink>
-                                    )}
+                    <Form
+                        {...AuthenticatedSessionController.store.form()}
+                        resetOnSuccess={['password']}
+                        className="flex flex-col gap-6"
+                    >
+                        {({ processing, errors }) => (
+                            <>
+                                {/* Email */}
+                                <div className="flex flex-col gap-2">
+                                    <Label htmlFor="email">Email</Label>
+                                    <Input
+                                        id="email"
+                                        name="email"
+                                        type="email"
+                                        required
+                                        placeholder="email@example.com"
+                                        autoComplete="email"
+                                        className="border-[#0AC1EF]"
+                                    />
+                                    <InputError message={errors.email} />
                                 </div>
-                                <Input
-                                    id="password"
-                                    type="password"
-                                    name="password"
-                                    required
-                                    tabIndex={2}
-                                    autoComplete="current-password"
-                                    placeholder="Password"
-                                />
-                                <InputError message={errors.password} />
-                            </div>
 
-                            <div className="flex items-center space-x-3">
-                                <Checkbox id="remember" name="remember" tabIndex={3} />
-                                <Label htmlFor="remember">Remember me</Label>
-                            </div>
+                                {/* Password */}
+                                <div className="flex flex-col gap-2">
+                                    <div className="flex items-center justify-between">
+                                        <Label htmlFor="password">Mật khẩu</Label>
+                                        {canResetPassword && (
+                                            <TextLink
+                                                href="/forgot-password"
+                                                className="text-sm text-[#0AC1EF]"
+                                            >
+                                                Quên mật khẩu?
+                                            </TextLink>
+                                        )}
+                                    </div>
+                                    <Input
+                                        id="password"
+                                        name="password"
+                                        type="password"
+                                        required
+                                        placeholder="••••••••"
+                                        autoComplete="current-password"
+                                        className="border-[#0AC1EF]"
+                                    />
+                                    <InputError message={errors.password} />
+                                </div>
 
-                            <Button type="submit" className="mt-4 w-full" tabIndex={4} disabled={processing} data-test="login-button">
-                                {processing && <LoaderCircle className="h-4 w-4 animate-spin" />}
-                                Log in
-                            </Button>
+                                {/* Remember me */}
+                                <div className="flex items-center gap-2">
+                                    <Checkbox id="remember" name="remember" />
+                                    <Label htmlFor="remember">Ghi nhớ đăng nhập</Label>
+                                </div>
+
+                                {/* Nút đăng nhập chính */}
+                                <Button
+                                    type="submit"
+                                    disabled={processing}
+                                    className="mt-1 w-full rounded-lg bg-[#0AC1EF] text-white hover:bg-[#0999c2]"
+                                >
+                                    {processing && (
+                                        <LoaderCircle className="mr-2 h-4 w-4 animate-spin" />
+                                    )}
+                                    Đăng nhập
+                                </Button>
+
+                                {/* Đăng nhập bằng Google */}
+                                <div className="flex justify-center">
+                                    <a
+                                        href="/auth/google"
+                                        className="flex items-center gap-2 w-full justify-center rounded-lg border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-700 shadow hover:bg-gray-100"
+                                    >
+                                        <img src="/images/google-icon.svg" alt="Google" className="h-5 w-5" />
+                                        Đăng nhập với Google
+                                    </a>
+                                </div>
+
+                                {/* Link đăng ký */}
+                                <div className="mt-1 text-center text-sm">
+                                    Bạn chưa có tài khoản?{' '}
+                                    <TextLink
+                                        href="/register"
+                                        className="text-[#0AC1EF] font-semibold"
+                                    >
+                                        Đăng ký ngay
+                                    </TextLink>
+                                </div>
+                            </>
+                        )}
+                    </Form>
+
+                    {status && (
+                        <div className="mt-5 text-center text-sm font-medium text-green-600">
+                            {status}
                         </div>
-
-                        <div className="text-center text-sm text-muted-foreground">
-                            Don't have an account?{' '}
-                            <TextLink href={register()} tabIndex={5}>
-                                Sign up
-                            </TextLink>
-                        </div>
-
-                        <div className="mt-4 text-center">
-                            <a
-                                href="/auth/google"
-                                className="bg-black text-white px-4 py-2 rounded flex items-center justify-center mt-4"
-                            >
-                                {/* Google SVG icon */}
-                                <svg className="h-5 w-5 mr-2" viewBox="0 0 48 48">
-                                    <g>
-                                        <path fill="#4285F4" d="M44.5,20H24v8.5h11.7C34.7,33.1,29.8,36,24,36c-6.6,0-12-5.4-12-12s5.4-12,12-12c3.1,0,5.9,1.1,8.1,2.9l6.4-6.4C34.5,5.1,29.5,3,24,3C12.9,3,4,11.9,4,23s8.9,20,20,20c11,0,19.8-8,19.8-20C44,21.3,44.3,20.6,44.5,20z"/>
-                                        <path fill="#34A853" d="M6.3,14.7l7,5.1C15.2,17.1,19.2,14,24,14c3.1,0,5.9,1.1,8.1,2.9l6.4-6.4C34.5,5.1,29.5,3,24,3C16.1,3,9.1,7.9,6.3,14.7z"/>
-                                        <path fill="#FBBC05" d="M24,44c5.5,0,10.5-2.1,14.3-5.7l-6.6-5.4C29.7,35.1,27,36,24,36c-5.8,0-10.7-2.9-13.7-7.5l-7,5.4C9.1,40.1,16.1,44,24,44z"/>
-                                        <path fill="#EA4335" d="M44.5,20H24v8.5h11.7c-1.6,4.1-5.7,7.5-11.7,7.5c-5.8,0-10.7-2.9-13.7-7.5l-7,5.4C9.1,40.1,16.1,44,24,44c11,0,19.8-8,19.8-20C44,21.3,44.3,20.6,44.5,20z"/>
-                                    </g>
-                                </svg>
-                                Đăng nhập bằng Google
-                            </a>
-                        </div>
-                    </>
-                )}
-            </Form>
-
-            {status && <div className="mb-4 text-center text-sm font-medium text-green-600">{status}</div>}
+                    )}
+                </div>
+            </section>
         </AuthLayout>
     );
 }
