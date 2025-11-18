@@ -2,7 +2,6 @@
 
 namespace Database\Factories;
 
-use App\Models\District;
 use App\Models\Province;
 use App\Models\User;
 use App\Models\Ward;
@@ -26,8 +25,8 @@ class UserAddressFactory extends Factory
             'phone' => $this->faker->phoneNumber(),
             'address_line' => $this->faker->streetAddress(),
             'ward_id' => Ward::inRandomOrder()->first()?->id ?? Ward::factory(),
-            'district_id' => District::inRandomOrder()->first()?->id ?? District::factory(),
-            'province_id' => District::inRandomOrder()->first()?->province_id ?? Province::factory(),
+            'district_id' => null,
+            'province_id' => Province::inRandomOrder()->first()?->id ?? Province::factory(),
             'is_default' => $this->faker->boolean(20),
         ];
     }

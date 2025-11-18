@@ -234,7 +234,6 @@ class OrderController extends Controller
             'items.variant.image',
             'payment.method',
             'shippingAddress.province',
-            'shippingAddress.district',
             'shippingAddress.ward',
             'promotion',
             'statusLogs'
@@ -268,6 +267,8 @@ class OrderController extends Controller
                     'recipient_name' => $order->shippingAddress->recipient_name,
                     'phone' => $order->shippingAddress->phone,
                     'full_address' => $this->formatFullAddress($order->shippingAddress),
+                    'latitude' => $order->shippingAddress->latitude,
+                    'longitude' => $order->shippingAddress->longitude,
                 ],
                 'payment' => [
                     'status' => $order->payment?->status ?? 'pending',
@@ -302,7 +303,6 @@ class OrderController extends Controller
         $parts = [
             $address->address_line,
             optional($address->ward)->name,
-            optional($address->district)->name,
             optional($address->province)->name,
         ];
 

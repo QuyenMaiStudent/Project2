@@ -3,7 +3,6 @@
 namespace App\Http\Controllers\Customer;
 
 use App\Http\Controllers\Controller;
-use App\Models\District;
 use App\Models\Province;
 use App\Models\ShippingAddress;
 use App\Models\Ward;
@@ -22,18 +21,34 @@ class ShippingAddressController extends Controller
     public function index()
     {
         $addresses = ShippingAddress::where('user_id', Auth::id())
+            ->with(['province', 'ward'])
             ->latest()
-            ->paginate(10);
+            ->paginate(10)
+            ->through(function (ShippingAddress $address) {
+                return [
+                    'id' => $address->id,
+                    'recipient_name' => $address->recipient_name,
+                    'phone' => $address->phone,
+                    'address_line' => $address->address_line,
+                    'province_code' => $address->province_code,
+                    'province_name' => optional($address->province)->name,
+                    'ward_code' => $address->ward_code,
+                    'ward_name' => optional($address->ward)->name,
+                    'latitude' => $address->latitude,
+                    'longitude' => $address->longitude,
+                    'is_default' => (bool) $address->is_default,
+                    'full_address' => $this->formatFullAddress($address),
+                ];
+            });
 
-        $provinces = Province::orderBy('name')->get(['id', 'name']);
-        $districts = District::orderBy('name')->get(['id', 'name', 'province_id']);
-        $wards = Ward::orderBy('name')->get(['id', 'name', 'district_id']);
+        $provinces = Province::orderBy('name')->get(['code', 'name']);
+        $wards = Ward::orderBy('name')->get(['code', 'name', 'province_code']);
 
         return Inertia::render('Customer/ShippingAddress/Index', [
             'addresses' => $addresses,
             'provinces' => $provinces,
-            'districts' => $districts,
             'wards' => $wards,
+            'mapsApiKey' => config('services.google_maps.api_key'),
         ]);
     }
 
@@ -54,11 +69,19 @@ class ShippingAddressController extends Controller
             'recipient_name' => 'required|string|max:255',
             'phone' => 'required|string|max:20',
             'address_line' => 'required|string|max:255',
-            'province_id' => 'required|integer|exists:provinces,id',
-            'district_id' => 'required|integer|exists:districts,id',
-            'ward_id' => 'required|integer|exists:wards,id',
+            'province_code' => 'required|string|exists:provinces,code',
+            'ward_code' => 'required|string|exists:wards,code',
+            'latitude' => 'nullable|numeric|between:-90,90',
+            'longitude' => 'nullable|numeric|between:-180,180',
             'is_default' => 'boolean',
         ]);
+
+        $ward = Ward::where('code', $request->ward_code)->first();
+        if ($ward && $ward->province_code !== $request->province_code) {
+            return back()->withErrors([
+                'ward_code' => 'Phường/Xã không thuộc tỉnh/thành đã chọn.',
+            ]);
+        }
 
         //Nếu đổi địa chỉ mặc định, bỏ mặc định các địa chỉ khác
         if ($request->is_default) {
@@ -70,9 +93,10 @@ class ShippingAddressController extends Controller
             'recipient_name' => $request->recipient_name,
             'phone' => $request->phone,
             'address_line' => $request->address_line,
-            'province_id' => $request->province_id,
-            'district_id' => $request->district_id,
-            'ward_id' => $request->ward_id,
+            'province_code' => $request->province_code,
+            'ward_code' => $request->ward_code,
+            'latitude' => $request->latitude,
+            'longitude' => $request->longitude,
             'is_default' => $request->is_default ?? false,
         ]);
 
@@ -103,11 +127,19 @@ class ShippingAddressController extends Controller
             'recipient_name' => 'required|string|max:255',
             'phone' => 'required|string|max:20',
             'address_line' => 'required|string|max:255',
-            'province_id' => 'required|integer|exists:provinces,id',
-            'district_id' => 'required|integer|exists:districts,id',
-            'ward_id' => 'required|integer|exists:wards,id',
+            'province_code' => 'required|string|exists:provinces,code',
+            'ward_code' => 'required|string|exists:wards,code',
+            'latitude' => 'nullable|numeric|between:-90,90',
+            'longitude' => 'nullable|numeric|between:-180,180',
             'is_default' => 'boolean',
         ]);
+
+        $ward = Ward::where('code', $request->ward_code)->first();
+        if ($ward && $ward->province_code !== $request->province_code) {
+            return back()->withErrors([
+                'ward_code' => 'Phường/Xã không thuộc tỉnh/thành đã chọn.',
+            ]);
+        }
 
         if ($request->is_default) {
             ShippingAddress::where('user_id', Auth::id())->update(['is_default' => false]);
@@ -117,9 +149,10 @@ class ShippingAddressController extends Controller
             'recipient_name' => $request->recipient_name,
             'phone' => $request->phone,
             'address_line' => $request->address_line,
-            'province_id' => $request->province_id,
-            'district_id' => $request->district_id,
-            'ward_id' => $request->ward_id,
+            'province_code' => $request->province_code,
+            'ward_code' => $request->ward_code,
+            'latitude' => $request->latitude,
+            'longitude' => $request->longitude,
             'is_default' => $request->is_default ?? false,
         ]);
 
@@ -138,5 +171,16 @@ class ShippingAddressController extends Controller
 
         return redirect()->route('shipping_addresses.index')
             ->with('success', 'Đã xóa địa chỉ giao hàng!');
+    }
+
+    private function formatFullAddress(ShippingAddress $address): string
+    {
+        $parts = [
+            $address->address_line,
+            optional($address->ward)->name,
+            optional($address->province)->name,
+        ];
+
+        return implode(', ', array_filter($parts));
     }
 }

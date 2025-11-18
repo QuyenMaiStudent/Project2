@@ -5,7 +5,6 @@ namespace Database\Factories;
 use Illuminate\Database\Eloquent\Factories\Factory;
 use App\Models\User;
 use App\Models\Province;
-use App\Models\District;
 use App\Models\Ward;
 
 /**
@@ -26,7 +25,6 @@ class ShippingAddressFactory extends Factory
             'phone' => $this->faker->phoneNumber(),
             'address_line' => $this->faker->streetAddress(),
             'province_id' => Province::inRandomOrder()->first()?->id ?? Province::factory(),
-            'district_id' => District::inRandomOrder()->first()?->id ?? District::factory(),
             'ward_id' => Ward::inRandomOrder()->first()?->id ?? Ward::factory(),
             'is_default' => $this->faker->boolean(20),
         ];

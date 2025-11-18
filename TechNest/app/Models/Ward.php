@@ -2,27 +2,35 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
 class Ward extends Model
 {
-    use HasFactory;
+    protected $primaryKey = 'code';
+    public $incrementing = false;
+    protected $keyType = 'string';
 
-    protected $fillable = ['name', 'code', 'district_id', 'latitude', 'longitude'];
+    protected $fillable = [
+        'code',
+        'name',
+        'name_en',
+        'full_name',
+        'full_name_en',
+        'code_name',
+        'province_code',
+        'administrative_unit_id',
+    ];
 
-    public function district()
+    // Quan hệ với administrative unit
+    public function administrativeUnit()
     {
-        return $this->belongsTo(District::class);
+        return $this->belongsTo(AdministrativeUnit::class, 'administrative_unit_id');
     }
 
-    public function userAddresses()
+    // Quan hệ với province
+    public function province()
     {
-        return $this->hasMany(UserAddress::class);
+        return $this->belongsTo(Province::class, 'province_code', 'code');
     }
 
-    public function shippingAddresses()
-    {
-        return $this->hasMany(ShippingAddress::class);
-    }
 }

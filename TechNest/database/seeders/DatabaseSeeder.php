@@ -8,7 +8,6 @@ use App\Models\Brand;
 use App\Models\Cart;
 use App\Models\CartItem;
 use App\Models\Category;
-use App\Models\District;
 use App\Models\Notification;
 use App\Models\Product;
 use App\Models\Order;
@@ -68,7 +67,6 @@ class DatabaseSeeder extends Seeder
         Cart::truncate();
         CartItem::truncate();
         Category::truncate();
-        District::truncate();
         Notification::truncate();
         Order::truncate();
         OrderItem::truncate();
@@ -167,11 +165,7 @@ class DatabaseSeeder extends Seeder
         if (Province::count() === 0) {
             Province::factory(10)->create();
         }
-
-        if (District::count() === 0) {
-            District::factory(20)->create();
-        }
-
+        
         Ward::factory(30)->create();
 
         foreach (User::all() as $user) {

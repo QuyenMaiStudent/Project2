@@ -29,7 +29,14 @@ interface Address {
   recipient_name: string;
   phone: string;
   address_line: string;
+  full_address: string;
+  province_code: string;
+  province_name?: string;
+  ward_code: string;
+  ward_name?: string;
   is_default: boolean;
+  latitude?: number | null;
+  longitude?: number | null;
 }
 
 interface Promotion {
@@ -247,6 +254,16 @@ export default function Checkout({
                         <div className="font-semibold">{selectedAddress.recipient_name}</div>
                         <div className="text-gray-600">{selectedAddress.phone}</div>
                         <div className="text-gray-700">{selectedAddress.full_address || selectedAddress.address_line}</div>
+                        {selectedAddress.latitude && selectedAddress.longitude && (
+                          <a
+                            href={`https://www.google.com/maps/search/?api=1&query=${selectedAddress.latitude},${selectedAddress.longitude}`}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="text-blue-600 text-sm"
+                          >
+                            Xem trên Google Maps
+                          </a>
+                        )}
                       </div>
                     )}
                   </>

@@ -2,7 +2,6 @@
 
 namespace Database\Factories;
 
-use App\Models\District;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 /**
@@ -31,7 +30,7 @@ class WardFactory extends Factory
         return [
             'name' => $this->faker->unique()->randomElement($wards),
             'code' => $this->faker->unique()->numerify('W###'),
-            'district_id' => District::inRandomOrder()->first()?->id ?? District::factory(),
+            'district_id' => null,
         ];
     }
 }

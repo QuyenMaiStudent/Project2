@@ -1,21 +1,25 @@
 import { Head, router, usePage } from '@inertiajs/react';
 import AppLayout from '@/layouts/app-layout';
 import React, { useState, useEffect } from 'react';
+import LeafletMapPicker from '@/components/LeafletMapPicker'; // Changed from GoogleMapPicker
 
 interface Address {
     id: number;
     recipient_name: string;
     phone: string;
     address_line: string;
-    province_id: number;
-    district_id: number;
-    ward_id: number;
+    province_code: string;
+    province_name?: string;
+    ward_code: string;
+    ward_name?: string;
     is_default: boolean;
+    latitude?: number | null;
+    longitude?: number | null;
+    full_address: string;
 }
 
-interface Province { id: number; name: string; }
-interface District { id: number; name: string; province_id: number; }
-interface Ward { id: number; name: string; district_id: number; }
+interface Province { code: string; name: string; }
+interface Ward { code: string; name: string; province_code: string; }
 
 interface Props {
     addresses: {
@@ -23,11 +27,10 @@ interface Props {
         links: { url: string | null; label: string; active: boolean }[];
     };
     provinces: Province[];
-    districts: District[];
     wards: Ward[];
 }
 
-export default function Index({ addresses, provinces, districts, wards }: Props) {
+export default function Index({ addresses, provinces, wards }: Props) {
     const { flash } = usePage().props as any;
     const [showForm, setShowForm] = useState(false);
     const [isEdit, setIsEdit] = useState(false);
@@ -36,23 +39,24 @@ export default function Index({ addresses, provinces, districts, wards }: Props)
         recipient_name: '',
         phone: '',
         address_line: '',
-        province_id: '',
-        district_id: '',
-        ward_id: '',
+        province_code: '',
+        ward_code: '',
+        latitude: '',
+        longitude: '',
         is_default: false,
     });
     const [errors, setErrors] = useState<any>({});
 
-    // Reset form when closing
     const resetForm = () => {
         setForm({
             id: null,
             recipient_name: '',
             phone: '',
             address_line: '',
-            province_id: '',
-            district_id: '',
-            ward_id: '',
+            province_code: '',
+            ward_code: '',
+            latitude: '',
+            longitude: '',
             is_default: false,
         });
         setErrors({});
@@ -60,7 +64,6 @@ export default function Index({ addresses, provinces, districts, wards }: Props)
         setShowForm(false);
     };
 
-    // Handle submit
     const handleSubmit = (e: React.FormEvent) => {
         e.preventDefault();
         setErrors({});
@@ -77,33 +80,29 @@ export default function Index({ addresses, provinces, districts, wards }: Props)
         }
     };
 
-    // Handle edit
     const handleEdit = (addr: Address) => {
         setForm({
             id: addr.id,
             recipient_name: addr.recipient_name,
             phone: addr.phone,
             address_line: addr.address_line,
-            province_id: addr.province_id + '',
-            district_id: addr.district_id + '',
-            ward_id: addr.ward_id + '',
+            province_code: addr.province_code ?? '',
+            ward_code: addr.ward_code ?? '',
+            latitude: addr.latitude?.toString() ?? '',
+            longitude: addr.longitude?.toString() ?? '',
             is_default: addr.is_default,
         });
         setIsEdit(true);
         setShowForm(true);
     };
 
-    // Handle delete
     const handleDelete = (id: number) => {
         if (confirm('Bạn có chắc muốn xóa địa chỉ này?')) {
             router.delete(`/shipping-addresses/${id}`);
         }
     };
 
-    // Lọc quận theo tỉnh
-    const filteredDistricts = districts.filter(d => d.province_id == form.province_id);
-    // Lọc phường theo quận
-    const filteredWards = wards.filter(w => w.district_id == form.district_id);
+    const filteredWards = wards.filter(w => w.province_code == form.province_code);
 
     return (
         <AppLayout
@@ -128,7 +127,7 @@ export default function Index({ addresses, provinces, districts, wards }: Props)
                         Thêm mới
                     </button>
                 </div>
-                {/* Form Thêm/Sửa */}
+
                 {showForm && (
                     <form
                         onSubmit={handleSubmit}
@@ -143,6 +142,7 @@ export default function Index({ addresses, provinces, districts, wards }: Props)
                                 title="Đóng"
                             >✕</button>
                         </div>
+                        
                         <div>
                             <label className="block font-medium mb-1">Người nhận</label>
                             <input
@@ -154,6 +154,7 @@ export default function Index({ addresses, provinces, districts, wards }: Props)
                             />
                             {errors.recipient_name && <div className="text-red-600 text-sm">{errors.recipient_name}</div>}
                         </div>
+
                         <div>
                             <label className="block font-medium mb-1">Số điện thoại</label>
                             <input
@@ -165,6 +166,7 @@ export default function Index({ addresses, provinces, districts, wards }: Props)
                             />
                             {errors.phone && <div className="text-red-600 text-sm">{errors.phone}</div>}
                         </div>
+
                         <div>
                             <label className="block font-medium mb-1">Địa chỉ</label>
                             <input
@@ -176,66 +178,62 @@ export default function Index({ addresses, provinces, districts, wards }: Props)
                             />
                             {errors.address_line && <div className="text-red-600 text-sm">{errors.address_line}</div>}
                         </div>
+
                         <div>
                             <label className="block font-medium mb-1">Tỉnh/Thành phố</label>
                             <select
                                 className="border rounded px-3 py-2 w-full"
-                                value={form.province_id}
+                                value={form.province_code}
                                 onChange={e => {
                                     setForm(f => ({
                                         ...f,
-                                        province_id: e.target.value,
-                                        district_id: '',
-                                        ward_id: '',
+                                        province_code: e.target.value,
+                                        ward_code: '',
                                     }));
                                 }}
                                 required
                             >
                                 <option value="">-- Chọn tỉnh/thành --</option>
                                 {provinces.map(p => (
-                                    <option key={p.id} value={p.id}>{p.name}</option>
+                                    <option key={p.code} value={p.code}>{p.name}</option>
                                 ))}
                             </select>
-                            {errors.province_id && <div className="text-red-600 text-sm">{errors.province_id}</div>}
+                            {errors.province_code && <div className="text-red-600 text-sm">{errors.province_code}</div>}
                         </div>
-                        <div>
-                            <label className="block font-medium mb-1">Quận/Huyện</label>
-                            <select
-                                className="border rounded px-3 py-2 w-full"
-                                value={form.district_id}
-                                onChange={e => {
-                                    setForm(f => ({
-                                        ...f,
-                                        district_id: e.target.value,
-                                        ward_id: '',
-                                    }));
-                                }}
-                                required
-                                disabled={!form.province_id}
-                            >
-                                <option value="">-- Chọn quận/huyện --</option>
-                                {filteredDistricts.map(d => (
-                                    <option key={d.id} value={d.id}>{d.name}</option>
-                                ))}
-                            </select>
-                            {errors.district_id && <div className="text-red-600 text-sm">{errors.district_id}</div>}
-                        </div>
+
                         <div>
                             <label className="block font-medium mb-1">Phường/Xã</label>
                             <select
                                 className="border rounded px-3 py-2 w-full"
-                                value={form.ward_id}
-                                onChange={e => setForm(f => ({ ...f, ward_id: e.target.value }))}
+                                value={form.ward_code}
+                                onChange={e => setForm(f => ({ ...f, ward_code: e.target.value }))}
                                 required
-                                disabled={!form.district_id}
+                                disabled={!form.province_code}
                             >
                                 <option value="">-- Chọn phường/xã --</option>
                                 {filteredWards.map(w => (
-                                    <option key={w.id} value={w.id}>{w.name}</option>
+                                    <option key={w.code} value={w.code}>{w.name}</option>
                                 ))}
                             </select>
-                            {errors.ward_id && <div className="text-red-600 text-sm">{errors.ward_id}</div>}
+                            {errors.ward_code && <div className="text-red-600 text-sm">{errors.ward_code}</div>}
                         </div>
+
+                        <div>
+                            <label className="block font-medium mb-1">Vị trí trên bản đồ</label>
+                            <LeafletMapPicker
+                                lat={form.latitude ? Number(form.latitude) : undefined}
+                                lng={form.longitude ? Number(form.longitude) : undefined}
+                                onLocationChange={(lat, lng, formattedAddress) => {
+                                    setForm(f => ({
+                                        ...f,
+                                        latitude: lat.toString(),
+                                        longitude: lng.toString(),
+                                        address_line: formattedAddress ?? f.address_line,
+                                    }));
+                                }}
+                            />
+                        </div>
+
                         <div>
                             <label className="block font-medium mb-1">Mặc định</label>
                             <input
@@ -244,6 +242,7 @@ export default function Index({ addresses, provinces, districts, wards }: Props)
                                 onChange={e => setForm(f => ({ ...f, is_default: e.target.checked }))}
                             /> Đặt làm địa chỉ mặc định
                         </div>
+
                         <div>
                             <button
                                 type="submit"
@@ -261,7 +260,7 @@ export default function Index({ addresses, provinces, districts, wards }: Props)
                         </div>
                     </form>
                 )}
-                {/* Danh sách địa chỉ */}
+
                 <div className="bg-white rounded shadow">
                     <table className="w-full">
                         <thead>
@@ -285,7 +284,22 @@ export default function Index({ addresses, provinces, districts, wards }: Props)
                                     <tr key={addr.id}>
                                         <td className="py-2 px-3">{addr.recipient_name}</td>
                                         <td className="py-2 px-3">{addr.phone}</td>
-                                        <td className="py-2 px-3">{addr.address_line}</td>
+                                        <td className="py-2 px-3">
+                                            <div>{addr.address_line}</div>
+                                            <div className="text-sm text-gray-500">
+                                                {[addr.ward_name, addr.province_name].filter(Boolean).join(', ')}
+                                            </div>
+                                            {addr.latitude && addr.longitude && (
+                                                <a
+                                                    href={`https://www.openstreetmap.org/?mlat=${addr.latitude}&mlon=${addr.longitude}#map=16/${addr.latitude}/${addr.longitude}`}
+                                                    target="_blank"
+                                                    rel="noopener noreferrer"
+                                                    className="text-blue-600 text-xs"
+                                                >
+                                                    Xem bản đồ
+                                                </a>
+                                            )}
+                                        </td>
                                         <td className="py-2 px-3 text-center">
                                             {addr.is_default ? (
                                                 <span className="text-green-600 font-semibold">Mặc định</span>
@@ -312,9 +326,9 @@ export default function Index({ addresses, provinces, districts, wards }: Props)
                             )}
                         </tbody>
                     </table>
-                    {/* Phân trang */}
+
                     {addresses.links && addresses.links.length > 1 && (
-                        <div className="mt-4 flex justify-center gap-1">
+                        <div className="mt-4 flex justify-center gap-1 pb-4">
                             {addresses.links.map((link, idx) =>
                                 link.url ? (
                                     <button

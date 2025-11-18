@@ -68,7 +68,7 @@ class CheckoutController extends Controller
 
         // Load shipping addresses với đầy đủ thông tin
         $addresses = ShippingAddress::where('user_id', Auth::id())
-            ->with(['province', 'district', 'ward'])
+            ->with(['province', 'ward'])
             ->get()
             ->map(function ($a) {
                 return [
@@ -76,10 +76,13 @@ class CheckoutController extends Controller
                     'recipient_name' => $a->recipient_name,
                     'phone' => $a->phone,
                     'address_line' => $a->address_line,
-                    'province_id' => $a->province_id,
-                    'district_id' => $a->district_id,
-                    'ward_id' => $a->ward_id,
+                    'province_code' => $a->province_code,
+                    'province_name' => optional($a->province)->name,
+                    'ward_code' => $a->ward_code,
+                    'ward_name' => optional($a->ward)->name,
                     'is_default' => (bool) $a->is_default,
+                    'latitude' => $a->latitude,
+                    'longitude' => $a->longitude,
                     'full_address' => $this->formatFullAddress($a),
                 ];
             });
@@ -237,7 +240,6 @@ class CheckoutController extends Controller
         $parts = [
             $address->address_line,
             optional($address->ward)->name,
-            optional($address->district)->name,
             optional($address->province)->name,
         ];
 

@@ -1,7 +1,7 @@
 import { queryParams, type RouteQueryOptions, type RouteDefinition, type RouteFormDefinition, applyUrlDefaults } from './../../../../../wayfinder'
 /**
 * @see \App\Http\Controllers\Customer\ShippingAddressController::index
- * @see app/Http/Controllers/Customer/ShippingAddressController.php:22
+ * @see app/Http/Controllers/Customer/ShippingAddressController.php:21
  * @route '/shipping-addresses'
  */
 export const index = (options?: RouteQueryOptions): RouteDefinition<'get'> => ({
@@ -16,7 +16,7 @@ index.definition = {
 
 /**
 * @see \App\Http\Controllers\Customer\ShippingAddressController::index
- * @see app/Http/Controllers/Customer/ShippingAddressController.php:22
+ * @see app/Http/Controllers/Customer/ShippingAddressController.php:21
  * @route '/shipping-addresses'
  */
 index.url = (options?: RouteQueryOptions) => {
@@ -25,7 +25,7 @@ index.url = (options?: RouteQueryOptions) => {
 
 /**
 * @see \App\Http\Controllers\Customer\ShippingAddressController::index
- * @see app/Http/Controllers/Customer/ShippingAddressController.php:22
+ * @see app/Http/Controllers/Customer/ShippingAddressController.php:21
  * @route '/shipping-addresses'
  */
 index.get = (options?: RouteQueryOptions): RouteDefinition<'get'> => ({
@@ -34,7 +34,7 @@ index.get = (options?: RouteQueryOptions): RouteDefinition<'get'> => ({
 })
 /**
 * @see \App\Http\Controllers\Customer\ShippingAddressController::index
- * @see app/Http/Controllers/Customer/ShippingAddressController.php:22
+ * @see app/Http/Controllers/Customer/ShippingAddressController.php:21
  * @route '/shipping-addresses'
  */
 index.head = (options?: RouteQueryOptions): RouteDefinition<'head'> => ({
@@ -44,7 +44,7 @@ index.head = (options?: RouteQueryOptions): RouteDefinition<'head'> => ({
 
     /**
 * @see \App\Http\Controllers\Customer\ShippingAddressController::index
- * @see app/Http/Controllers/Customer/ShippingAddressController.php:22
+ * @see app/Http/Controllers/Customer/ShippingAddressController.php:21
  * @route '/shipping-addresses'
  */
     const indexForm = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
@@ -54,7 +54,7 @@ index.head = (options?: RouteQueryOptions): RouteDefinition<'head'> => ({
 
             /**
 * @see \App\Http\Controllers\Customer\ShippingAddressController::index
- * @see app/Http/Controllers/Customer/ShippingAddressController.php:22
+ * @see app/Http/Controllers/Customer/ShippingAddressController.php:21
  * @route '/shipping-addresses'
  */
         indexForm.get = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
@@ -63,7 +63,7 @@ index.head = (options?: RouteQueryOptions): RouteDefinition<'head'> => ({
         })
             /**
 * @see \App\Http\Controllers\Customer\ShippingAddressController::index
- * @see app/Http/Controllers/Customer/ShippingAddressController.php:22
+ * @see app/Http/Controllers/Customer/ShippingAddressController.php:21
  * @route '/shipping-addresses'
  */
         indexForm.head = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
@@ -79,7 +79,7 @@ index.head = (options?: RouteQueryOptions): RouteDefinition<'head'> => ({
     index.form = indexForm
 /**
 * @see \App\Http\Controllers\Customer\ShippingAddressController::store
- * @see app/Http/Controllers/Customer/ShippingAddressController.php:51
+ * @see app/Http/Controllers/Customer/ShippingAddressController.php:66
  * @route '/shipping-addresses'
  */
 export const store = (options?: RouteQueryOptions): RouteDefinition<'post'> => ({
@@ -94,7 +94,7 @@ store.definition = {
 
 /**
 * @see \App\Http\Controllers\Customer\ShippingAddressController::store
- * @see app/Http/Controllers/Customer/ShippingAddressController.php:51
+ * @see app/Http/Controllers/Customer/ShippingAddressController.php:66
  * @route '/shipping-addresses'
  */
 store.url = (options?: RouteQueryOptions) => {
@@ -103,7 +103,7 @@ store.url = (options?: RouteQueryOptions) => {
 
 /**
 * @see \App\Http\Controllers\Customer\ShippingAddressController::store
- * @see app/Http/Controllers/Customer/ShippingAddressController.php:51
+ * @see app/Http/Controllers/Customer/ShippingAddressController.php:66
  * @route '/shipping-addresses'
  */
 store.post = (options?: RouteQueryOptions): RouteDefinition<'post'> => ({
@@ -113,7 +113,7 @@ store.post = (options?: RouteQueryOptions): RouteDefinition<'post'> => ({
 
     /**
 * @see \App\Http\Controllers\Customer\ShippingAddressController::store
- * @see app/Http/Controllers/Customer/ShippingAddressController.php:51
+ * @see app/Http/Controllers/Customer/ShippingAddressController.php:66
  * @route '/shipping-addresses'
  */
     const storeForm = (options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
@@ -123,7 +123,7 @@ store.post = (options?: RouteQueryOptions): RouteDefinition<'post'> => ({
 
             /**
 * @see \App\Http\Controllers\Customer\ShippingAddressController::store
- * @see app/Http/Controllers/Customer/ShippingAddressController.php:51
+ * @see app/Http/Controllers/Customer/ShippingAddressController.php:66
  * @route '/shipping-addresses'
  */
         storeForm.post = (options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
@@ -134,7 +134,7 @@ store.post = (options?: RouteQueryOptions): RouteDefinition<'post'> => ({
     store.form = storeForm
 /**
 * @see \App\Http\Controllers\Customer\ShippingAddressController::update
- * @see app/Http/Controllers/Customer/ShippingAddressController.php:98
+ * @see app/Http/Controllers/Customer/ShippingAddressController.php:122
  * @route '/shipping-addresses/{shippingAddress}'
  */
 export const update = (args: { shippingAddress: number | { id: number } } | [shippingAddress: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions): RouteDefinition<'put'> => ({
@@ -149,7 +149,7 @@ update.definition = {
 
 /**
 * @see \App\Http\Controllers\Customer\ShippingAddressController::update
- * @see app/Http/Controllers/Customer/ShippingAddressController.php:98
+ * @see app/Http/Controllers/Customer/ShippingAddressController.php:122
  * @route '/shipping-addresses/{shippingAddress}'
  */
 update.url = (args: { shippingAddress: number | { id: number } } | [shippingAddress: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions) => {
@@ -182,7 +182,7 @@ update.url = (args: { shippingAddress: number | { id: number } } | [shippingAddr
 
 /**
 * @see \App\Http\Controllers\Customer\ShippingAddressController::update
- * @see app/Http/Controllers/Customer/ShippingAddressController.php:98
+ * @see app/Http/Controllers/Customer/ShippingAddressController.php:122
  * @route '/shipping-addresses/{shippingAddress}'
  */
 update.put = (args: { shippingAddress: number | { id: number } } | [shippingAddress: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions): RouteDefinition<'put'> => ({
@@ -192,7 +192,7 @@ update.put = (args: { shippingAddress: number | { id: number } } | [shippingAddr
 
     /**
 * @see \App\Http\Controllers\Customer\ShippingAddressController::update
- * @see app/Http/Controllers/Customer/ShippingAddressController.php:98
+ * @see app/Http/Controllers/Customer/ShippingAddressController.php:122
  * @route '/shipping-addresses/{shippingAddress}'
  */
     const updateForm = (args: { shippingAddress: number | { id: number } } | [shippingAddress: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
@@ -207,7 +207,7 @@ update.put = (args: { shippingAddress: number | { id: number } } | [shippingAddr
 
             /**
 * @see \App\Http\Controllers\Customer\ShippingAddressController::update
- * @see app/Http/Controllers/Customer/ShippingAddressController.php:98
+ * @see app/Http/Controllers/Customer/ShippingAddressController.php:122
  * @route '/shipping-addresses/{shippingAddress}'
  */
         updateForm.put = (args: { shippingAddress: number | { id: number } } | [shippingAddress: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
@@ -223,7 +223,7 @@ update.put = (args: { shippingAddress: number | { id: number } } | [shippingAddr
     update.form = updateForm
 /**
 * @see \App\Http\Controllers\Customer\ShippingAddressController::destroy
- * @see app/Http/Controllers/Customer/ShippingAddressController.php:133
+ * @see app/Http/Controllers/Customer/ShippingAddressController.php:166
  * @route '/shipping-addresses/{shippingAddress}'
  */
 export const destroy = (args: { shippingAddress: number | { id: number } } | [shippingAddress: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions): RouteDefinition<'delete'> => ({
@@ -238,7 +238,7 @@ destroy.definition = {
 
 /**
 * @see \App\Http\Controllers\Customer\ShippingAddressController::destroy
- * @see app/Http/Controllers/Customer/ShippingAddressController.php:133
+ * @see app/Http/Controllers/Customer/ShippingAddressController.php:166
  * @route '/shipping-addresses/{shippingAddress}'
  */
 destroy.url = (args: { shippingAddress: number | { id: number } } | [shippingAddress: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions) => {
@@ -271,7 +271,7 @@ destroy.url = (args: { shippingAddress: number | { id: number } } | [shippingAdd
 
 /**
 * @see \App\Http\Controllers\Customer\ShippingAddressController::destroy
- * @see app/Http/Controllers/Customer/ShippingAddressController.php:133
+ * @see app/Http/Controllers/Customer/ShippingAddressController.php:166
  * @route '/shipping-addresses/{shippingAddress}'
  */
 destroy.delete = (args: { shippingAddress: number | { id: number } } | [shippingAddress: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions): RouteDefinition<'delete'> => ({
@@ -281,7 +281,7 @@ destroy.delete = (args: { shippingAddress: number | { id: number } } | [shipping
 
     /**
 * @see \App\Http\Controllers\Customer\ShippingAddressController::destroy
- * @see app/Http/Controllers/Customer/ShippingAddressController.php:133
+ * @see app/Http/Controllers/Customer/ShippingAddressController.php:166
  * @route '/shipping-addresses/{shippingAddress}'
  */
     const destroyForm = (args: { shippingAddress: number | { id: number } } | [shippingAddress: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
@@ -296,7 +296,7 @@ destroy.delete = (args: { shippingAddress: number | { id: number } } | [shipping
 
             /**
 * @see \App\Http\Controllers\Customer\ShippingAddressController::destroy
- * @see app/Http/Controllers/Customer/ShippingAddressController.php:133
+ * @see app/Http/Controllers/Customer/ShippingAddressController.php:166
  * @route '/shipping-addresses/{shippingAddress}'
  */
         destroyForm.delete = (args: { shippingAddress: number | { id: number } } | [shippingAddress: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({

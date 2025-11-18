@@ -2,27 +2,34 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
 class Province extends Model
 {
-    use HasFactory;
+    protected $primaryKey = 'code'; // vì bạn dùng code làm khóa chính
+    public $incrementing = false;   // vì code không phải kiểu số tự tăng
+    protected $keyType = 'string';  // vì code là varchar
 
-    protected $fillable = ['name', 'code', 'latitude', 'longitude'];
+    protected $fillable = [
+        'code',
+        'name',
+        'name_en',
+        'full_name',
+        'full_name_en',
+        'code_name',
+        'administrative_unit_id',
+    ];
 
-    public function districts()
+    // Quan hệ với administrative unit
+    public function administrativeUnit()
     {
-        return $this->hasMany(District::class);
+        return $this->belongsTo(AdministrativeUnit::class, 'administrative_unit_id');
     }
 
-    public function userAddresses()
+    // Quan hệ với wards
+    public function wards()
     {
-        return $this->hasMany(UserAddress::class);
+        return $this->hasMany(Ward::class, 'province_code', 'code');
     }
 
-    public function shippingAddresses()
-    {
-        return $this->hasMany(ShippingAddress::class);
-    }
 }

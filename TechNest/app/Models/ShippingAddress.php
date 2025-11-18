@@ -14,10 +14,17 @@ class ShippingAddress extends Model
         'recipient_name',
         'phone',
         'address_line',
-        'province_id',
-        'district_id',
-        'ward_id',
+        'province_code',   // đổi từ province_id sang province_code
+        'ward_code',       // đổi từ ward_id sang ward_code
+        'latitude',
+        'longitude',
         'is_default'
+    ];
+
+    protected $casts = [
+        'is_default' => 'boolean',
+        'latitude' => 'float',
+        'longitude' => 'float',
     ];
 
     public function user()
@@ -27,17 +34,14 @@ class ShippingAddress extends Model
 
     public function province()
     {
-        return $this->belongsTo(Province::class);
-    }
-
-    public function district()
-    {
-        return $this->belongsTo(District::class);
+        // province_code (local) -> code (remote)
+        return $this->belongsTo(Province::class, 'province_code', 'code');
     }
 
     public function ward()
     {
-        return $this->belongsTo(Ward::class);
+        // ward_code (local) -> code (remote)
+        return $this->belongsTo(Ward::class, 'ward_code', 'code');
     }
 
     public function orders()

@@ -3,7 +3,6 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
-use App\Models\District;
 use App\Models\Province;
 use App\Models\Ward;
 use Illuminate\Http\Request;
@@ -65,26 +64,23 @@ class ManageLocationController extends Controller
             'latitude' => 'nullable|numeric',
             'longitude' => 'nullable|numeric',
         ]);
-        District::create($data);
         return redirect()->route('admin.locations.index')->with('success', 'Tạo quận/huyện thành công.');
     }
 
-    public function updateDistrict(Request $request, District $district)
+    public function updateDistrict(Request $request)
     {
         $data = $request->validate([
             'name' => 'required|string',
-            'code' => 'required|string|unique:districts,code,' . $district->id,
+            'code' => 'required|string|unique:districts,code,',
             'province_id' => 'required|exists:provinces,id',
             'latitude' => 'nullable|numeric',
             'longitude' => 'nullable|numeric',
         ]);
-        $district->update($data);
         return redirect()->route('admin.locations.index')->with('success', 'Cập nhật quận/huyện thành công.');
     }
 
-    public function destroyDistrict(District $district)
+    public function destroyDistrict()
     {
-        $district->delete();
         return redirect()->route('admin.locations.index')->with('success', 'Xóa quận/huyện thành công.');
     }
 
