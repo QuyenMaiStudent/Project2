@@ -1,13 +1,28 @@
 import { Head, Link, router, usePage } from '@inertiajs/react';
 import AppLayout from '@/layouts/app-layout';
-import React from 'react';
+import React, { useState } from 'react';
 
 function Index() {
     const { brands, breadcrumbs }: any = usePage().props;
+    const [showDeleteModal, setShowDeleteModal] = useState(false);
+    const [selectedBrand, setSelectedBrand] = useState<any>(null);
 
-    const handleDelete = (id: number) => {
-        if (!confirm('Bạn có chắc muốn xóa thương hiệu này?')) return;
-        router.delete(`/admin/brands/${id}`);
+    const handleDeleteClick = (brand: any) => {
+        setSelectedBrand(brand);
+        setShowDeleteModal(true);
+    };
+
+    const confirmDelete = () => {
+        if (selectedBrand) {
+            router.delete(`/admin/brands/${selectedBrand.id}`);
+            setShowDeleteModal(false);
+            setSelectedBrand(null);
+        }
+    };
+
+    const cancelDelete = () => {
+        setShowDeleteModal(false);
+        setSelectedBrand(null);
     };
 
     const fallbackBreadcrumbs = [
@@ -39,6 +54,7 @@ function Index() {
                                 <th className="p-3 border">Logo</th>
                                 <th className="p-3 border">Tên</th>
                                 <th className="p-3 border">Mô tả</th>
+                                <th className="p-3 border text-center">Sản phẩm liên quan</th>
                                 <th className="p-3 border text-center">Hành động</th>
                             </tr>
                         </thead>
@@ -82,6 +98,11 @@ function Index() {
                                             </div>
                                         </td>
 
+                                        {/* Sản phẩm liên quan */}
+                                        <td className="p-3 text-center align-top">
+                                            {b.products_count > 0 ? `${b.products_count} sản phẩm` : 'Không có'}
+                                        </td>
+
                                         {/* Actions: ensure top alignment and buttons on same row */}
                                         <td className="p-3 text-center align-top">
                                             <div className="flex items-start justify-center gap-2">
@@ -92,8 +113,14 @@ function Index() {
                                                     Sửa
                                                 </Link>
                                                 <button
-                                                    onClick={() => handleDelete(b.id)}
-                                                    className="inline-block bg-red-600 text-white px-3 py-1 rounded"
+                                                    onClick={() => handleDeleteClick(b)}
+                                                    disabled={b.has_products}
+                                                    className={`inline-block px-3 py-1 rounded ${
+                                                        b.has_products
+                                                            ? 'bg-gray-400 text-gray-600 cursor-not-allowed'
+                                                            : 'bg-red-600 text-white hover:bg-red-500'
+                                                    }`}
+                                                    title={b.has_products ? 'Không thể xóa vì đã có sản phẩm liên quan' : ''}
                                                 >
                                                     Xóa
                                                 </button>
@@ -103,7 +130,7 @@ function Index() {
                                 ))
                             ) : (
                                 <tr>
-                                    <td colSpan={5} className="p-4 text-center text-gray-500">
+                                    <td colSpan={6} className="p-4 text-center text-gray-500">
                                         Không có thương hiệu nào
                                     </td>
                                 </tr>
@@ -125,6 +152,30 @@ function Index() {
                         </Link>
                     ))}
                 </div>
+
+                {/* Modal xác nhận xóa */}
+                {showDeleteModal && selectedBrand && (
+                    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+                        <div className="bg-white p-6 rounded shadow-lg max-w-md w-full">
+                            <h2 className="text-lg font-semibold mb-4">Xác nhận xóa</h2>
+                            <p className="mb-4">Bạn có chắc muốn xóa thương hiệu "{selectedBrand.name}"?</p>
+                            <div className="flex justify-end gap-2">
+                                <button
+                                    onClick={cancelDelete}
+                                    className="bg-gray-300 text-gray-700 px-4 py-2 rounded hover:bg-gray-400"
+                                >
+                                    Hủy
+                                </button>
+                                <button
+                                    onClick={confirmDelete}
+                                    className="bg-red-600 text-white px-4 py-2 rounded hover:bg-red-500"
+                                >
+                                    Xóa
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                )}
             </div>
         </AppLayout>
     );

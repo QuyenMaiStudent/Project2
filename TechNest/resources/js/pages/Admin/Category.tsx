@@ -6,6 +6,7 @@ interface Category {
     id: number;
     name: string;
     description?: string;
+    products_count: number; // Thêm để hiển thị số sản phẩm
 }
 interface PaginationLink {
     url: string | null;
@@ -22,6 +23,8 @@ interface Props {
 export default function CategoryPage({ categories }: Props) {
     const [form, setForm] = useState({ name: '', description: '', id: null as number | null });
     const [isEdit, setIsEdit] = useState(false);
+    const [showDeleteModal, setShowDeleteModal] = useState(false);
+    const [selectedCategory, setSelectedCategory] = useState<Category | null>(null);
     const { flash, errors } = usePage().props as any;
     const success = flash?.success;
     const error = flash?.error;
@@ -46,10 +49,22 @@ export default function CategoryPage({ categories }: Props) {
         }, 100);
     };
 
-    const handleDelete = (id: number) => {
-        if (confirm('Bạn có chắc muốn xóa danh mục này?')) {
-            router.delete(`/admin/categories/${id}/delete`);
+    const handleDeleteClick = (cat: Category) => {
+        setSelectedCategory(cat);
+        setShowDeleteModal(true);
+    };
+
+    const confirmDelete = () => {
+        if (selectedCategory) {
+            router.delete(`/admin/categories/${selectedCategory.id}/delete`);
+            setShowDeleteModal(false);
+            setSelectedCategory(null);
         }
+    };
+
+    const cancelDelete = () => {
+        setShowDeleteModal(false);
+        setSelectedCategory(null);
     };
 
     return (
@@ -128,13 +143,14 @@ export default function CategoryPage({ categories }: Props) {
                             <tr className="bg-gray-100">
                                 <th className="py-2 px-3 text-left">Tên danh mục</th>
                                 <th className="py-2 px-3 text-left">Mô tả</th>
+                                <th className="py-2 px-3 text-center">Sản phẩm liên quan</th>
                                 <th className="py-2 px-3 text-center">Thao tác</th>
                             </tr>
                         </thead>
                         <tbody>
                             {categories.data.length === 0 ? (
                                 <tr>
-                                    <td colSpan={3} className="text-center py-4 text-gray-500">
+                                    <td colSpan={4} className="text-center py-4 text-gray-500">
                                         Chưa có danh mục nào.
                                     </td>
                                 </tr>
@@ -144,6 +160,9 @@ export default function CategoryPage({ categories }: Props) {
                                         <td className="py-2 px-3">{cat.name}</td>
                                         <td className="py-2 px-3">{cat.description}</td>
                                         <td className="py-2 px-3 text-center">
+                                            {cat.products_count > 0 ? `${cat.products_count} sản phẩm` : 'Không có'}
+                                        </td>
+                                        <td className="py-2 px-3 text-center">
                                             <div className="flex items-center justify-center gap-2">
                                                 <button
                                                     onClick={() => handleEdit(cat)}
@@ -152,8 +171,14 @@ export default function CategoryPage({ categories }: Props) {
                                                     Sửa
                                                 </button>
                                                 <button
-                                                    onClick={() => handleDelete(cat.id)}
-                                                    className="bg-red-600 text-white px-3 py-1 rounded hover:bg-red-700"
+                                                    onClick={() => handleDeleteClick(cat)}
+                                                    disabled={cat.products_count > 0}
+                                                    className={`px-3 py-1 rounded ${
+                                                        cat.products_count > 0
+                                                            ? 'bg-gray-400 text-gray-600 cursor-not-allowed'
+                                                            : 'bg-red-600 text-white hover:bg-red-700'
+                                                    }`}
+                                                    title={cat.products_count > 0 ? 'Không thể xóa vì đã có sản phẩm liên quan' : ''}
                                                 >
                                                     Xóa
                                                 </button>
@@ -186,6 +211,30 @@ export default function CategoryPage({ categories }: Props) {
                         </div>
                     )}
                 </div>
+
+                {/* Modal xác nhận xóa */}
+                {showDeleteModal && selectedCategory && (
+                    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+                        <div className="bg-white p-6 rounded shadow-lg max-w-md w-full">
+                            <h2 className="text-lg font-semibold mb-4">Xác nhận xóa</h2>
+                            <p className="mb-4">Bạn có chắc muốn xóa danh mục "{selectedCategory.name}"?</p>
+                            <div className="flex justify-end gap-2">
+                                <button
+                                    onClick={cancelDelete}
+                                    className="bg-gray-300 text-gray-700 px-4 py-2 rounded hover:bg-gray-400"
+                                >
+                                    Hủy
+                                </button>
+                                <button
+                                    onClick={confirmDelete}
+                                    className="bg-red-600 text-white px-4 py-2 rounded hover:bg-red-500"
+                                >
+                                    Xóa
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                )}
             </div>
         </AppLayout>
     );

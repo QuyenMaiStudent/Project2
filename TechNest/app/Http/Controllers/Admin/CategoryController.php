@@ -11,7 +11,7 @@ class CategoryController extends Controller
 {
     public function index()
     {
-        $categories = Category::orderBy('id', 'desc')->paginate(10);
+        $categories = Category::withCount('products')->orderBy('id', 'desc')->paginate(10);
         return Inertia::render('Admin/Category', [
             'categories' => $categories
         ]);
@@ -52,6 +52,10 @@ class CategoryController extends Controller
 
     public function destroy(Category $category)
     {
+        if ($category->products()->count() > 0) {
+            return redirect()->back()->with('error', 'Không thể xóa danh mục vì có sản phẩm liên quan.');
+        }
+
         $category->delete();
         return redirect()->route('admin.categories.index')->with('success', 'Xóa danh mục thành công!');
     }

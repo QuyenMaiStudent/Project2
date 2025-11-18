@@ -14,7 +14,12 @@ class BrandController extends Controller
     // Hiển thị danh sách thương hiệu
     public function index()
     {
-        $brands = Brand::orderByDesc('id')->paginate(10);
+        $brands = Brand::withCount('products')->orderByDesc('id')->paginate(10);
+
+        $brands->getCollection()->transform(function ($brand) {
+            $brand->has_products = $brand->products_count > 0;
+            return $brand;
+        });
 
         return Inertia::render('Admin/Brands/Index', [
             'brands' => $brands,
@@ -141,6 +146,12 @@ class BrandController extends Controller
     public function destroy($id)
     {
         $brand = Brand::findOrFail($id);
+
+        // Kiểm tra nếu brand đã có sản phẩm liên quan, không cho phép xóa
+        if ($brand->products()->count() > 0) {
+            return redirect()->back()->with('error', 'Không thể xóa thương hiệu vì đã có sản phẩm liên quan!');
+        }
+
         // delete local logo file if exists
         if ($brand->logo && !str_starts_with($brand->logo, 'http') && Storage::disk('public')->exists($brand->logo)) {
             Storage::disk('public')->delete($brand->logo);
