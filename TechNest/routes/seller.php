@@ -5,6 +5,7 @@ use App\Http\Controllers\Seller\ProductSpecController;
 use App\Http\Controllers\Seller\ProductVariantController;
 use App\Http\Controllers\Seller\SellerController;
 use App\Http\Controllers\Seller\SellerPromotionController;
+use App\Http\Controllers\Seller\SellerStoreController;
 use Illuminate\Support\Facades\Route;
 
 // Seller routes
@@ -57,4 +58,7 @@ Route::middleware(['auth', 'seller'])->group(function () {
     Route::delete('/seller/promotions/{id}', [SellerPromotionController::class, 'destroy'])->name('seller.promotions.destroy');
     Route::post('/seller/promotions/{id}/toggle-status', [SellerPromotionController::class, 'toggleStatus'])->name('seller.promotions.toggleStatus');
     Route::get('/seller/promotions/{id}/usage', [SellerPromotionController::class, 'usageStats'])->name('seller.promotions.usageStats');
+
+    Route::get('/seller/store', [SellerStoreController::class, 'show'])->name('seller.store.show');
+    Route::post('/seller/store/location', [SellerStoreController::class, 'update'])->name('seller.store.update');
 });

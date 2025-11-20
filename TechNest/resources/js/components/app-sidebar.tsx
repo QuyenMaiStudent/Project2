@@ -100,6 +100,11 @@ export function AppSidebar() {
                 href: '/chat',
                 icon: MessageCircle,
             },
+            {
+                title: 'Vị trí cửa hàng',
+                href: '/seller/store',
+                icon: MapPin,
+            },
         ];
     }
 

@@ -1,7 +1,7 @@
 import { Head, router, usePage } from '@inertiajs/react';
 import AppLayout from '@/layouts/app-layout';
-import React, { useState, useEffect } from 'react';
-import LeafletMapPicker from '@/components/LeafletMapPicker'; // Changed from GoogleMapPicker
+import React, { useState } from 'react';
+import MapLibreMapPicker from '@/components/MapLibrMapPicker';
 
 interface Address {
     id: number;
@@ -149,7 +149,8 @@ export default function Index({ addresses, provinces, wards }: Props) {
                                 type="text"
                                 className="border rounded px-3 py-2 w-full"
                                 value={form.recipient_name}
-                                onChange={e => setForm(f => ({ ...f, recipient_name: e.target.value }))}
+                                onChange={e => setForm(f => ({ ...f, recipient_name: e.target.value }))
+                                }
                                 required
                             />
                             {errors.recipient_name && <div className="text-red-600 text-sm">{errors.recipient_name}</div>}
@@ -161,7 +162,8 @@ export default function Index({ addresses, provinces, wards }: Props) {
                                 type="text"
                                 className="border rounded px-3 py-2 w-full"
                                 value={form.phone}
-                                onChange={e => setForm(f => ({ ...f, phone: e.target.value }))}
+                                onChange={e => setForm(f => ({ ...f, phone: e.target.value }))
+                                }
                                 required
                             />
                             {errors.phone && <div className="text-red-600 text-sm">{errors.phone}</div>}
@@ -173,7 +175,8 @@ export default function Index({ addresses, provinces, wards }: Props) {
                                 type="text"
                                 className="border rounded px-3 py-2 w-full"
                                 value={form.address_line}
-                                onChange={e => setForm(f => ({ ...f, address_line: e.target.value }))}
+                                onChange={e => setForm(f => ({ ...f, address_line: e.target.value }))
+                                }
                                 required
                             />
                             {errors.address_line && <div className="text-red-600 text-sm">{errors.address_line}</div>}
@@ -206,7 +209,8 @@ export default function Index({ addresses, provinces, wards }: Props) {
                             <select
                                 className="border rounded px-3 py-2 w-full"
                                 value={form.ward_code}
-                                onChange={e => setForm(f => ({ ...f, ward_code: e.target.value }))}
+                                onChange={e => setForm(f => ({ ...f, ward_code: e.target.value }))
+                                }
                                 required
                                 disabled={!form.province_code}
                             >
@@ -220,7 +224,7 @@ export default function Index({ addresses, provinces, wards }: Props) {
 
                         <div>
                             <label className="block font-medium mb-1">Vị trí trên bản đồ</label>
-                            <LeafletMapPicker
+                            <MapLibreMapPicker
                                 lat={form.latitude ? Number(form.latitude) : undefined}
                                 lng={form.longitude ? Number(form.longitude) : undefined}
                                 onLocationChange={(lat, lng, formattedAddress) => {
@@ -239,7 +243,8 @@ export default function Index({ addresses, provinces, wards }: Props) {
                             <input
                                 type="checkbox"
                                 checked={form.is_default}
-                                onChange={e => setForm(f => ({ ...f, is_default: e.target.checked }))}
+                                onChange={e => setForm(f => ({ ...f, is_default: e.target.checked }))
+                                }
                             /> Đặt làm địa chỉ mặc định
                         </div>
 

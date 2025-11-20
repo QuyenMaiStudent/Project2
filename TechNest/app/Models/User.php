@@ -245,4 +245,9 @@ class User extends Authenticatable implements MustVerifyEmail
     {
         return $this->activePackageSubscription()?->isActive() ?? false;
     }
+
+    public function sellerStore()
+    {
+        return $this->hasOne(SellerStore::class, 'seller_id');
+    }
 }
