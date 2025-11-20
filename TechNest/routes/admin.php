@@ -26,6 +26,9 @@ Route::middleware(['auth', 'admin'])->group(function () {
     // update product status directly (admin)
     Route::post('/admin/products/{product}/status', [AdminProductController::class, 'updateStatus'])->name('admin.products.updateStatus');
 
+    // THÊM: Route cho toggle active
+    Route::patch('/admin/products/{product}/toggle-active', [AdminProductController::class, 'toggleActive'])->name('admin.products.toggleActive');
+
     Route::get('/admin/categories', [CategoryController::class, 'index'])->name('admin.categories.index');
 
     Route::post('/admin/categories', [CategoryController::class, 'store'])->name('admin.categories.store');

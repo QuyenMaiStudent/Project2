@@ -16,6 +16,11 @@ class AdminProductController extends Controller
     {
         $query = Product::with(['brand', 'seller']);
 
+        // THÊM: Filter theo tên sản phẩm (q)
+        if ($request->filled('q')) {
+            $query->where('name', 'like', '%' . $request->input('q') . '%');
+        }
+
         if ($request->filled('seller')) {
             $query->where('created_by', $request->input('seller'));
         }
@@ -41,7 +46,7 @@ class AdminProductController extends Controller
 
         return Inertia::render('Admin/ManageProducts', [
             'products' => $products,
-            'filters' => $request->only(['seller', 'status']),
+            'filters' => $request->only(['seller', 'status', 'q']), // THÊM: Bao gồm 'q'
         ]);
     }
 
@@ -96,4 +101,19 @@ class AdminProductController extends Controller
         $product->categories()->sync($request->categories ?? []);
         return back()->with('success', 'Đã cập nhật danh mục cho sản phẩm!');
     }
+
+    public function toggleActive(Request $request, Product $product)
+    {
+        $isInCart = CartItem::where('product_id', $product->id)->exists();
+
+        if ($isInCart) {
+            return response()->json(['error' => 'Không thể thay đổi trạng thái ẩn/hiện vì sản phẩm đang trong giỏ hàng của khách hàng'], 422);
+        }
+
+        $product->update(['is_active' => !$product->is_active]);
+
+        // SỬA: Trả 204 No Content (không có body JSON)
+        return response()->noContent();
+    }
+
 }

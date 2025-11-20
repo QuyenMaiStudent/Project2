@@ -35,38 +35,40 @@ function Index() {
             breadcrumbs={breadcrumbs ?? fallbackBreadcrumbs}
         >
             <Head title="Quản lý thương hiệu" />
-            <div className="p-6 bg-gray-100 min-h-[80vh]">
-                <div className="flex items-center justify-between mb-4">
-                    <h1 className="text-2xl font-semibold">Danh sách thương hiệu</h1>
-                    <Link
-                        href="/admin/brands/create"
-                        className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-500"
-                    >
-                        + Thêm thương hiệu
-                    </Link>
-                </div>
+            <div className="p-6 bg-gradient-to-br from-blue-50 to-cyan-50 min-h-screen">
+                <header className="mb-6 bg-white p-6 rounded-lg shadow-lg border-l-4 border-[#0AC1EF]">
+                    <div className="flex items-center justify-between">
+                        <h1 className="text-3xl font-bold text-gray-800">Quản lý thương hiệu</h1>
+                        <Link
+                            href="/admin/brands/create"
+                            className="bg-[#0AC1EF] text-white px-4 py-2 rounded hover:bg-[#09b3db] transition-colors"
+                        >
+                            + Thêm thương hiệu
+                        </Link>
+                    </div>
+                </header>
 
-                <div className="bg-white shadow rounded overflow-x-auto">
-                    <table className="w-full text-sm text-left">
-                        <thead className="bg-gray-50">
+                <div className="bg-white rounded-lg shadow-lg overflow-hidden border border-gray-200">
+                    <table className="w-full">
+                        <thead className="bg-gradient-to-r from-[#0AC1EF] to-[#0894c7] text-white">
                             <tr>
-                                <th className="p-3 border">#</th>
-                                <th className="p-3 border">Logo</th>
-                                <th className="p-3 border">Tên</th>
-                                <th className="p-3 border">Mô tả</th>
-                                <th className="p-3 border text-center">Sản phẩm liên quan</th>
-                                <th className="p-3 border text-center">Hành động</th>
+                                <th className="py-3 px-4 text-left text-sm font-semibold uppercase tracking-wider">#</th>
+                                <th className="py-3 px-4 text-left text-sm font-semibold uppercase tracking-wider">Logo</th>
+                                <th className="py-3 px-4 text-left text-sm font-semibold uppercase tracking-wider">Tên</th>
+                                <th className="py-3 px-4 text-left text-sm font-semibold uppercase tracking-wider">Mô tả</th>
+                                <th className="py-3 px-4 text-center text-sm font-semibold uppercase tracking-wider">Sản phẩm liên quan</th>
+                                <th className="py-3 px-4 text-center text-sm font-semibold uppercase tracking-wider">Hành động</th>
                             </tr>
                         </thead>
-                        <tbody>
+                        <tbody className="divide-y divide-gray-200">
                             {brands?.data?.length ? (
                                 brands.data.map((b: any, i: number) => (
-                                    <tr key={b.id} className="border-t">
-                                        <td className="p-3 align-top">
+                                    <tr key={b.id} className="hover:bg-gray-50 transition-colors">
+                                        <td className="py-3 px-4 text-gray-900 font-medium">
                                             {i + 1 + ((brands.meta?.current_page - 1) * brands.meta?.per_page || 0)}
                                         </td>
 
-                                        <td className="p-3 align-top">
+                                        <td className="py-3 px-4">
                                             {b.logo ? (
                                                 <img
                                                     src={b.logo.startsWith('http') ? b.logo : `/storage/${b.logo}`}
@@ -80,10 +82,10 @@ function Index() {
                                             )}
                                         </td>
 
-                                        <td className="p-3 align-top">{b.name}</td>
+                                        <td className="py-3 px-4 text-gray-900 font-medium">{b.name}</td>
 
                                         {/* Description: clamp to 3 lines with ellipsis */}
-                                        <td className="p-3 align-top max-w-[48rem]">
+                                        <td className="py-3 px-4 max-w-[48rem]">
                                             <div
                                                 className="text-sm text-gray-700"
                                                 style={{
@@ -99,26 +101,26 @@ function Index() {
                                         </td>
 
                                         {/* Sản phẩm liên quan */}
-                                        <td className="p-3 text-center align-top">
+                                        <td className="py-3 px-4 text-center text-gray-700">
                                             {b.products_count > 0 ? `${b.products_count} sản phẩm` : 'Không có'}
                                         </td>
 
                                         {/* Actions: ensure top alignment and buttons on same row */}
-                                        <td className="p-3 text-center align-top">
-                                            <div className="flex items-start justify-center gap-2">
+                                        <td className="py-3 px-4 text-center">
+                                            <div className="flex items-center justify-center gap-2">
                                                 <Link
                                                     href={`/admin/brands/${b.id}/edit`}
-                                                    className="inline-block bg-yellow-400 text-black px-3 py-1 rounded"
+                                                    className="bg-yellow-500 text-white px-3 py-1 rounded hover:bg-yellow-600 transition-colors"
                                                 >
                                                     Sửa
                                                 </Link>
                                                 <button
                                                     onClick={() => handleDeleteClick(b)}
                                                     disabled={b.has_products}
-                                                    className={`inline-block px-3 py-1 rounded ${
+                                                    className={`px-3 py-1 rounded transition-colors ${
                                                         b.has_products
                                                             ? 'bg-gray-400 text-gray-600 cursor-not-allowed'
-                                                            : 'bg-red-600 text-white hover:bg-red-500'
+                                                            : 'bg-red-600 text-white hover:bg-red-700'
                                                     }`}
                                                     title={b.has_products ? 'Không thể xóa vì đã có sản phẩm liên quan' : ''}
                                                 >
@@ -130,8 +132,14 @@ function Index() {
                                 ))
                             ) : (
                                 <tr>
-                                    <td colSpan={6} className="p-4 text-center text-gray-500">
-                                        Không có thương hiệu nào
+                                    <td colSpan={6} className="text-center py-12">
+                                        <div className="flex flex-col items-center">
+                                            <svg className="w-16 h-16 text-gray-400 mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1} d="M20 13V6a2 2 0 00-2-2H6a2 2 0 00-2 2v7m16 0v5a2 2 0 01-2 2H6a2 2 0 01-2-2v-5m16 0h-2.586a1 1 0 00-.707.293l-2.414 2.414a1 1 0 01-.707.293h-3.172a1 1 0 01-.707-.293l-2.414-2.414A1 1 0 006.586 13H4" />
+                                            </svg>
+                                            <h3 className="text-lg font-medium text-gray-900 mb-2">Chưa có thương hiệu nào.</h3>
+                                            <p className="text-gray-500">Hãy thêm thương hiệu mới để bắt đầu.</p>
+                                        </div>
                                     </td>
                                 </tr>
                             )}
@@ -140,35 +148,46 @@ function Index() {
                 </div>
 
                 {/* Pagination (Inertia style) */}
-                <div className="mt-4 flex items-center justify-end space-x-2">
-                    {brands?.links?.map((l: any, idx: number) => (
-                        <Link
-                            key={idx}
-                            href={l.url ?? '#'}
-                            className={`px-3 py-1 rounded border text-sm ${l.active ? 'bg-gray-800 text-white' : 'bg-white text-gray-700'}`}
-                            preserveScroll
-                        >
-                            <span dangerouslySetInnerHTML={{ __html: l.label }} />
-                        </Link>
-                    ))}
-                </div>
+                {brands?.links && brands.links.length > 1 && (
+                    <div className="mt-4 flex justify-center gap-1 p-4 bg-gray-50">
+                        {brands.links.map((l: any, idx: number) =>
+                            l.url ? (
+                                <Link
+                                    key={idx}
+                                    href={l.url}
+                                    className={`px-3 py-1 rounded transition-all duration-200 ${
+                                        l.active ? 'bg-[#0AC1EF] text-white' : 'bg-gray-200 text-gray-700 hover:bg-gray-300'
+                                    }`}
+                                    preserveScroll
+                                    dangerouslySetInnerHTML={{ __html: l.label }}
+                                />
+                            ) : (
+                                <span
+                                    key={idx}
+                                    className="px-3 py-1 text-gray-400"
+                                    dangerouslySetInnerHTML={{ __html: l.label }}
+                                />
+                            )
+                        )}
+                    </div>
+                )}
 
                 {/* Modal xác nhận xóa */}
                 {showDeleteModal && selectedBrand && (
                     <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-                        <div className="bg-white p-6 rounded shadow-lg max-w-md w-full">
-                            <h2 className="text-lg font-semibold mb-4">Xác nhận xóa</h2>
-                            <p className="mb-4">Bạn có chắc muốn xóa thương hiệu "{selectedBrand.name}"?</p>
+                        <div className="bg-white p-6 rounded-lg shadow-lg max-w-md w-full">
+                            <h2 className="text-lg font-semibold mb-4 text-gray-800">Xác nhận xóa</h2>
+                            <p className="mb-4 text-gray-700">Bạn có chắc muốn xóa thương hiệu "{selectedBrand.name}"?</p>
                             <div className="flex justify-end gap-2">
                                 <button
                                     onClick={cancelDelete}
-                                    className="bg-gray-300 text-gray-700 px-4 py-2 rounded hover:bg-gray-400"
+                                    className="bg-gray-300 text-gray-700 px-4 py-2 rounded hover:bg-gray-400 transition-colors"
                                 >
                                     Hủy
                                 </button>
                                 <button
                                     onClick={confirmDelete}
-                                    className="bg-red-600 text-white px-4 py-2 rounded hover:bg-red-500"
+                                    className="bg-red-600 text-white px-4 py-2 rounded hover:bg-red-500 transition-colors"
                                 >
                                     Xóa
                                 </button>

@@ -115,30 +115,30 @@ function Edit() {
     return (
         <AppLayout breadcrumbs={breadcrumbs ?? fallbackBreadcrumbs}>
             <Head title="Chỉnh sửa thương hiệu" />
-            <div className="p-6 bg-gray-100 min-h-[70vh]">
-                <div className="max-w-2xl mx-auto bg-white p-6 rounded shadow">
-                    <div className="flex items-center justify-between mb-4">
-                        <h2 className="text-lg font-medium">Chỉnh sửa thương hiệu</h2>
-                        <Link href="/admin/brands" className="text-sm text-gray-600">Quay lại</Link>
+            <div className="p-6 bg-gradient-to-br from-blue-50 to-cyan-50 min-h-screen">
+                <div className="max-w-2xl mx-auto bg-white p-6 rounded-lg shadow-lg border border-gray-200">
+                    <div className="flex items-center justify-between mb-6">
+                        <h2 className="text-2xl font-bold text-gray-800 border-l-4 border-[#0AC1EF] pl-4">Chỉnh sửa thương hiệu</h2>
+                        <Link href="/admin/brands" className="text-sm text-[#0AC1EF] hover:text-[#09b3db] transition-colors">Quay lại</Link>
                     </div>
 
                     <form onSubmit={handleSubmit}>
                         <div className="mb-4">
-                            <label className="block text-sm mb-1">Tên thương hiệu</label>
+                            <label className="block text-sm font-medium mb-1 text-gray-700">Tên thương hiệu</label>
                             <input
                                 value={name}
                                 onChange={(e) => setName(e.target.value)}
-                                className="w-full border rounded p-2"
+                                className="w-full border border-gray-300 rounded px-3 py-2 focus:ring-2 focus:ring-[#0AC1EF] focus:border-transparent"
                                 type="text"
                             />
                             {errors.name && <div className="text-red-600 text-sm mt-1">{errors.name}</div>}
                         </div>
 
                         <div className="mb-4">
-                            <label className="block text-sm mb-1">Logo (đổi / bỏ qua để giữ hiện tại)</label>
+                            <label className="block text-sm font-medium mb-1 text-gray-700">Logo (đổi / bỏ qua để giữ hiện tại)</label>
 
                             <div className="flex gap-3 mb-2">
-                                <label className={`px-3 py-1 rounded border cursor-pointer ${!useUrl ? 'bg-gray-100' : ''}`}>
+                                <label className={`px-3 py-1 rounded border cursor-pointer transition-colors ${!useUrl ? 'bg-[#0AC1EF] text-white border-[#0AC1EF]' : 'bg-gray-100 border-gray-300 hover:bg-gray-200'}`}>
                                     <input
                                         type="radio"
                                         name="logo_choice"
@@ -148,7 +148,7 @@ function Edit() {
                                     />
                                     Tải ảnh lên
                                 </label>
-                                <label className={`px-3 py-1 rounded border cursor-pointer ${useUrl ? 'bg-gray-100' : ''}`}>
+                                <label className={`px-3 py-1 rounded border cursor-pointer transition-colors ${useUrl ? 'bg-[#0AC1EF] text-white border-[#0AC1EF]' : 'bg-gray-100 border-gray-300 hover:bg-gray-200'}`}>
                                     <input
                                         type="radio"
                                         name="logo_choice"
@@ -163,7 +163,7 @@ function Edit() {
                             {!useUrl ? (
                                 <input
                                     onChange={onFileChange}
-                                    className="w-full"
+                                    className="w-full border border-gray-300 rounded px-3 py-2 focus:ring-2 focus:ring-[#0AC1EF] focus:border-transparent"
                                     type="file"
                                     accept="image/*"
                                 />
@@ -171,7 +171,7 @@ function Edit() {
                                 <input
                                     value={logoUrl}
                                     onChange={onUrlChange}
-                                    className="w-full border rounded p-2"
+                                    className="w-full border border-gray-300 rounded px-3 py-2 focus:ring-2 focus:ring-[#0AC1EF] focus:border-transparent"
                                     type="url"
                                     placeholder="https://example.com/logo.png"
                                 />
@@ -180,7 +180,7 @@ function Edit() {
                             {errors.logo_url && <div className="text-red-600 text-sm mt-1">{errors.logo_url}</div>}
 
                             <div className="mt-3">
-                                <div className="w-48 h-24 border rounded overflow-hidden bg-gray-50 flex items-center justify-center">
+                                <div className="w-48 h-24 border border-gray-300 rounded overflow-hidden bg-gray-50 flex items-center justify-center">
                                     {preview ? (
                                         <img src={preview} alt="Logo preview" className="max-h-full object-contain" />
                                     ) : (
@@ -192,11 +192,11 @@ function Edit() {
                         </div>
 
                         <div className="mb-4">
-                            <label className="block text-sm mb-1">Mô tả</label>
+                            <label className="block text-sm font-medium mb-1 text-gray-700">Mô tả</label>
                             <textarea
                                 value={description}
                                 onChange={(e) => setDescription(e.target.value)}
-                                className="w-full border rounded p-2"
+                                className="w-full border border-gray-300 rounded px-3 py-2 focus:ring-2 focus:ring-[#0AC1EF] focus:border-transparent"
                                 rows={4}
                             />
                             {errors.description && <div className="text-red-600 text-sm mt-1">{errors.description}</div>}
@@ -205,7 +205,7 @@ function Edit() {
                         <div className="flex items-center justify-end">
                             <button
                                 type="submit"
-                                className="bg-yellow-500 text-black px-4 py-2 rounded disabled:opacity-60"
+                                className="bg-[#0AC1EF] text-white px-4 py-2 rounded hover:bg-[#09b3db] transition-colors disabled:opacity-60"
                                 disabled={processing}
                             >
                                 {processing ? 'Đang lưu...' : 'Cập nhật'}

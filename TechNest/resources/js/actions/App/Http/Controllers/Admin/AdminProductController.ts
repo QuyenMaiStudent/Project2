@@ -79,7 +79,7 @@ index.head = (options?: RouteQueryOptions): RouteDefinition<'head'> => ({
     index.form = indexForm
 /**
 * @see \App\Http\Controllers\Admin\AdminProductController::show
- * @see app/Http/Controllers/Admin/AdminProductController.php:49
+ * @see app/Http/Controllers/Admin/AdminProductController.php:54
  * @route '/admin/products/{product}'
  */
 export const show = (args: { product: number | { id: number } } | [product: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions): RouteDefinition<'get'> => ({
@@ -94,7 +94,7 @@ show.definition = {
 
 /**
 * @see \App\Http\Controllers\Admin\AdminProductController::show
- * @see app/Http/Controllers/Admin/AdminProductController.php:49
+ * @see app/Http/Controllers/Admin/AdminProductController.php:54
  * @route '/admin/products/{product}'
  */
 show.url = (args: { product: number | { id: number } } | [product: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions) => {
@@ -127,7 +127,7 @@ show.url = (args: { product: number | { id: number } } | [product: number | { id
 
 /**
 * @see \App\Http\Controllers\Admin\AdminProductController::show
- * @see app/Http/Controllers/Admin/AdminProductController.php:49
+ * @see app/Http/Controllers/Admin/AdminProductController.php:54
  * @route '/admin/products/{product}'
  */
 show.get = (args: { product: number | { id: number } } | [product: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions): RouteDefinition<'get'> => ({
@@ -136,7 +136,7 @@ show.get = (args: { product: number | { id: number } } | [product: number | { id
 })
 /**
 * @see \App\Http\Controllers\Admin\AdminProductController::show
- * @see app/Http/Controllers/Admin/AdminProductController.php:49
+ * @see app/Http/Controllers/Admin/AdminProductController.php:54
  * @route '/admin/products/{product}'
  */
 show.head = (args: { product: number | { id: number } } | [product: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions): RouteDefinition<'head'> => ({
@@ -146,7 +146,7 @@ show.head = (args: { product: number | { id: number } } | [product: number | { i
 
     /**
 * @see \App\Http\Controllers\Admin\AdminProductController::show
- * @see app/Http/Controllers/Admin/AdminProductController.php:49
+ * @see app/Http/Controllers/Admin/AdminProductController.php:54
  * @route '/admin/products/{product}'
  */
     const showForm = (args: { product: number | { id: number } } | [product: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
@@ -156,7 +156,7 @@ show.head = (args: { product: number | { id: number } } | [product: number | { i
 
             /**
 * @see \App\Http\Controllers\Admin\AdminProductController::show
- * @see app/Http/Controllers/Admin/AdminProductController.php:49
+ * @see app/Http/Controllers/Admin/AdminProductController.php:54
  * @route '/admin/products/{product}'
  */
         showForm.get = (args: { product: number | { id: number } } | [product: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
@@ -165,7 +165,7 @@ show.head = (args: { product: number | { id: number } } | [product: number | { i
         })
             /**
 * @see \App\Http\Controllers\Admin\AdminProductController::show
- * @see app/Http/Controllers/Admin/AdminProductController.php:49
+ * @see app/Http/Controllers/Admin/AdminProductController.php:54
  * @route '/admin/products/{product}'
  */
         showForm.head = (args: { product: number | { id: number } } | [product: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
@@ -181,7 +181,7 @@ show.head = (args: { product: number | { id: number } } | [product: number | { i
     show.form = showForm
 /**
 * @see \App\Http\Controllers\Admin\AdminProductController::updateCategories
- * @see app/Http/Controllers/Admin/AdminProductController.php:88
+ * @see app/Http/Controllers/Admin/AdminProductController.php:93
  * @route '/admin/products/{product}/categories'
  */
 export const updateCategories = (args: { product: number | { id: number } } | [product: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions): RouteDefinition<'post'> => ({
@@ -196,7 +196,7 @@ updateCategories.definition = {
 
 /**
 * @see \App\Http\Controllers\Admin\AdminProductController::updateCategories
- * @see app/Http/Controllers/Admin/AdminProductController.php:88
+ * @see app/Http/Controllers/Admin/AdminProductController.php:93
  * @route '/admin/products/{product}/categories'
  */
 updateCategories.url = (args: { product: number | { id: number } } | [product: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions) => {
@@ -229,7 +229,7 @@ updateCategories.url = (args: { product: number | { id: number } } | [product: n
 
 /**
 * @see \App\Http\Controllers\Admin\AdminProductController::updateCategories
- * @see app/Http/Controllers/Admin/AdminProductController.php:88
+ * @see app/Http/Controllers/Admin/AdminProductController.php:93
  * @route '/admin/products/{product}/categories'
  */
 updateCategories.post = (args: { product: number | { id: number } } | [product: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions): RouteDefinition<'post'> => ({
@@ -239,7 +239,7 @@ updateCategories.post = (args: { product: number | { id: number } } | [product: 
 
     /**
 * @see \App\Http\Controllers\Admin\AdminProductController::updateCategories
- * @see app/Http/Controllers/Admin/AdminProductController.php:88
+ * @see app/Http/Controllers/Admin/AdminProductController.php:93
  * @route '/admin/products/{product}/categories'
  */
     const updateCategoriesForm = (args: { product: number | { id: number } } | [product: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
@@ -249,7 +249,7 @@ updateCategories.post = (args: { product: number | { id: number } } | [product: 
 
             /**
 * @see \App\Http\Controllers\Admin\AdminProductController::updateCategories
- * @see app/Http/Controllers/Admin/AdminProductController.php:88
+ * @see app/Http/Controllers/Admin/AdminProductController.php:93
  * @route '/admin/products/{product}/categories'
  */
         updateCategoriesForm.post = (args: { product: number | { id: number } } | [product: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
@@ -260,7 +260,7 @@ updateCategories.post = (args: { product: number | { id: number } } | [product: 
     updateCategories.form = updateCategoriesForm
 /**
 * @see \App\Http\Controllers\Admin\AdminProductController::updateStatus
- * @see app/Http/Controllers/Admin/AdminProductController.php:69
+ * @see app/Http/Controllers/Admin/AdminProductController.php:74
  * @route '/admin/products/{product}/status'
  */
 export const updateStatus = (args: { product: number | { id: number } } | [product: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions): RouteDefinition<'post'> => ({
@@ -275,7 +275,7 @@ updateStatus.definition = {
 
 /**
 * @see \App\Http\Controllers\Admin\AdminProductController::updateStatus
- * @see app/Http/Controllers/Admin/AdminProductController.php:69
+ * @see app/Http/Controllers/Admin/AdminProductController.php:74
  * @route '/admin/products/{product}/status'
  */
 updateStatus.url = (args: { product: number | { id: number } } | [product: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions) => {
@@ -308,7 +308,7 @@ updateStatus.url = (args: { product: number | { id: number } } | [product: numbe
 
 /**
 * @see \App\Http\Controllers\Admin\AdminProductController::updateStatus
- * @see app/Http/Controllers/Admin/AdminProductController.php:69
+ * @see app/Http/Controllers/Admin/AdminProductController.php:74
  * @route '/admin/products/{product}/status'
  */
 updateStatus.post = (args: { product: number | { id: number } } | [product: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions): RouteDefinition<'post'> => ({
@@ -318,7 +318,7 @@ updateStatus.post = (args: { product: number | { id: number } } | [product: numb
 
     /**
 * @see \App\Http\Controllers\Admin\AdminProductController::updateStatus
- * @see app/Http/Controllers/Admin/AdminProductController.php:69
+ * @see app/Http/Controllers/Admin/AdminProductController.php:74
  * @route '/admin/products/{product}/status'
  */
     const updateStatusForm = (args: { product: number | { id: number } } | [product: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
@@ -328,7 +328,7 @@ updateStatus.post = (args: { product: number | { id: number } } | [product: numb
 
             /**
 * @see \App\Http\Controllers\Admin\AdminProductController::updateStatus
- * @see app/Http/Controllers/Admin/AdminProductController.php:69
+ * @see app/Http/Controllers/Admin/AdminProductController.php:74
  * @route '/admin/products/{product}/status'
  */
         updateStatusForm.post = (args: { product: number | { id: number } } | [product: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
@@ -337,6 +337,95 @@ updateStatus.post = (args: { product: number | { id: number } } | [product: numb
         })
     
     updateStatus.form = updateStatusForm
-const AdminProductController = { index, show, updateCategories, updateStatus }
+/**
+* @see \App\Http\Controllers\Admin\AdminProductController::toggleActive
+ * @see app/Http/Controllers/Admin/AdminProductController.php:105
+ * @route '/admin/products/{product}/toggle-active'
+ */
+export const toggleActive = (args: { product: number | { id: number } } | [product: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions): RouteDefinition<'patch'> => ({
+    url: toggleActive.url(args, options),
+    method: 'patch',
+})
+
+toggleActive.definition = {
+    methods: ["patch"],
+    url: '/admin/products/{product}/toggle-active',
+} satisfies RouteDefinition<["patch"]>
+
+/**
+* @see \App\Http\Controllers\Admin\AdminProductController::toggleActive
+ * @see app/Http/Controllers/Admin/AdminProductController.php:105
+ * @route '/admin/products/{product}/toggle-active'
+ */
+toggleActive.url = (args: { product: number | { id: number } } | [product: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions) => {
+    if (typeof args === 'string' || typeof args === 'number') {
+        args = { product: args }
+    }
+
+            if (typeof args === 'object' && !Array.isArray(args) && 'id' in args) {
+            args = { product: args.id }
+        }
+    
+    if (Array.isArray(args)) {
+        args = {
+                    product: args[0],
+                }
+    }
+
+    args = applyUrlDefaults(args)
+
+    const parsedArgs = {
+                        product: typeof args.product === 'object'
+                ? args.product.id
+                : args.product,
+                }
+
+    return toggleActive.definition.url
+            .replace('{product}', parsedArgs.product.toString())
+            .replace(/\/+$/, '') + queryParams(options)
+}
+
+/**
+* @see \App\Http\Controllers\Admin\AdminProductController::toggleActive
+ * @see app/Http/Controllers/Admin/AdminProductController.php:105
+ * @route '/admin/products/{product}/toggle-active'
+ */
+toggleActive.patch = (args: { product: number | { id: number } } | [product: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions): RouteDefinition<'patch'> => ({
+    url: toggleActive.url(args, options),
+    method: 'patch',
+})
+
+    /**
+* @see \App\Http\Controllers\Admin\AdminProductController::toggleActive
+ * @see app/Http/Controllers/Admin/AdminProductController.php:105
+ * @route '/admin/products/{product}/toggle-active'
+ */
+    const toggleActiveForm = (args: { product: number | { id: number } } | [product: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
+        action: toggleActive.url(args, {
+                    [options?.mergeQuery ? 'mergeQuery' : 'query']: {
+                        _method: 'PATCH',
+                        ...(options?.query ?? options?.mergeQuery ?? {}),
+                    }
+                }),
+        method: 'post',
+    })
+
+            /**
+* @see \App\Http\Controllers\Admin\AdminProductController::toggleActive
+ * @see app/Http/Controllers/Admin/AdminProductController.php:105
+ * @route '/admin/products/{product}/toggle-active'
+ */
+        toggleActiveForm.patch = (args: { product: number | { id: number } } | [product: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
+            action: toggleActive.url(args, {
+                        [options?.mergeQuery ? 'mergeQuery' : 'query']: {
+                            _method: 'PATCH',
+                            ...(options?.query ?? options?.mergeQuery ?? {}),
+                        }
+                    }),
+            method: 'post',
+        })
+    
+    toggleActive.form = toggleActiveForm
+const AdminProductController = { index, show, updateCategories, updateStatus, toggleActive }
 
 export default AdminProductController

@@ -110,26 +110,28 @@ export default function Index({ cart }: CartProps) {
 
         <h1 className="text-2xl font-bold mb-6">Giỏ hàng của bạn</h1>
 
-        <div className="flex items-center justify-between mb-4 gap-2">
-          <div className="text-sm text-gray-600">
-            Tổng mặt hàng: {cart.items.length}
-          </div>
-          <div className="flex items-center gap-2">
-            <Link
-              href="/checkout"
-              className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700"
-            >
-              Mua tất cả
-            </Link>
+        {cart.items.length > 0 && (
+          <div className="flex items-center justify-between mb-4 gap-2">
+            <div className="text-sm text-gray-600">
+              Tổng mặt hàng: {cart.items.length}
+            </div>
+            <div className="flex items-center gap-2">
+              <Link
+                href="/checkout"
+                className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700"
+              >
+                Mua tất cả
+              </Link>
 
-            <button
-              onClick={() => setShowClearModal(true)}
-              className="bg-red-600 text-white px-4 py-2 rounded hover:bg-red-700"
-            >
-              Xóa tất cả
-            </button>
+              <button
+                onClick={() => setShowClearModal(true)}
+                className="bg-red-600 text-white px-4 py-2 rounded hover:bg-red-700"
+              >
+                Xóa tất cả
+              </button>
+            </div>
           </div>
-        </div>
+        )}
 
         {cart.items.length === 0 ? (
           <div className="text-gray-500 text-center py-12">

@@ -113,29 +113,31 @@ export default function Index() {
   return (
     <AppLayout breadcrumbs={breadcrumbs}>
       <Head title="Quản lý khuyến mãi" />
-      <div className="max-w-7xl mx-auto p-6">
-        <div className="flex justify-between items-center mb-4">
-          <h1 className="text-2xl font-bold">Khuyến mãi</h1>
-          <Link href="/admin/promotions/create" className="bg-green-600 text-white px-4 py-2 rounded">Tạo mới</Link>
+      <div className="max-w-7xl mx-auto p-6 bg-gradient-to-br from-blue-50 to-cyan-50 min-h-screen">
+        <div className="flex justify-between items-center mb-6 bg-white p-6 rounded-lg shadow-lg border-l-4 border-[#0AC1EF]">
+          <h1 className="text-3xl font-bold text-gray-800">Khuyến mãi</h1>
+          <Link href="/admin/promotions/create" className="bg-[#0AC1EF] hover:bg-[#0894c7] text-white px-6 py-3 rounded-lg shadow-md transition duration-200 transform hover:scale-105">
+            Tạo mới
+          </Link>
         </div>
 
-        <div className="bg-white rounded shadow overflow-x-auto">
+        <div className="bg-white rounded-lg shadow-xl overflow-hidden">
           <table className="w-full min-w-[1000px]">
-            <thead className="bg-gray-50">
+            <thead className="bg-gradient-to-r from-[#0AC1EF] to-[#0894c7] text-white">
               <tr>
-                <th className="px-4 py-3 text-left">Mã</th>
-                <th className="px-4 py-3 text-left">Loại</th>
-                <th className="px-4 py-3 text-left">Giá trị</th>
-                <th className="px-4 py-3 text-left">Trạng thái</th>
-                <th className="px-4 py-3 text-left">Áp dụng</th>
-                <th className="px-4 py-3 text-left">Giới hạn sử dụng</th>
-                <th className="px-4 py-3 text-left">Giá trị đơn hàng tối thiểu</th>
-                <th className="px-4 py-3 text-center">Thao tác</th>
+                <th className="px-6 py-4 text-left font-semibold">Mã</th>
+                <th className="px-6 py-4 text-left font-semibold">Loại</th>
+                <th className="px-6 py-4 text-left font-semibold">Giá trị</th>
+                <th className="px-6 py-4 text-left font-semibold">Trạng thái</th>
+                <th className="px-6 py-4 text-left font-semibold">Áp dụng</th>
+                <th className="px-6 py-4 text-left font-semibold">Giới hạn sử dụng</th>
+                <th className="px-6 py-4 text-left font-semibold">Giá trị đơn hàng tối thiểu</th>
+                <th className="px-6 py-4 text-center font-semibold">Thao tác</th>
               </tr>
             </thead>
             <tbody>
               {promotions.data.length === 0 ? (
-                <tr><td colSpan={8} className="py-6 text-center text-gray-500">Chưa có khuyến mãi</td></tr>
+                <tr><td colSpan={8} className="py-12 text-center text-gray-500 bg-gray-50">Chưa có khuyến mãi</td></tr>
               ) : promotions.data.map((p:any) => {
                 const conds = p.conditions ?? [];
                 // summary for apply column
@@ -170,35 +172,37 @@ export default function Index() {
                   : formatMoney(Math.trunc(Number(p.min_order_amount)));
 
                  return (
-                   <React.Fragment key={p.id}>
-                     <tr className="odd:bg-white even:bg-gray-50">
-                       <td className="px-4 py-3">{p.code}</td>
-                       <td className="px-4 py-3">{p.type}</td>
-                       <td className="px-4 py-3">
-                          {valueDisplay}
-                       </td>
-                       <td className="px-4 py-3">{p.is_active ? 'Hoạt động' : 'Tắt'}</td>
-                       <td className="px-4 py-3">
-                         <div className="flex items-center gap-2">
-                           <span>{applySummary}</span>
-                           {conds.length > 0 && (
-                             <button
-                               onClick={() => toggleExpand(p.id)}
-                               className="text-sm text-blue-600 hover:underline ml-2"
-                               aria-expanded={!!expandedRows[p.id]}
-                             >
-                               Chi tiết
-                             </button>
-                           )}
-                         </div>
-                       </td>
-                       <td className="px-4 py-3">{p.usage_limit === null ? 'Không giới hạn' : p.usage_limit}</td>
-                       <td className="px-4 py-3">{minOrderDisplay}</td>
-                       <td className="px-4 py-3 text-center">
-                         <div className="relative inline-block text-left">
+                  <React.Fragment key={p.id}>
+                    <tr className="odd:bg-white even:bg-gray-50 hover:bg-blue-50 transition duration-150">
+                      <td className="px-6 py-4 text-gray-800">{p.code}</td>
+                      <td className="px-6 py-4 text-gray-800">{p.type}</td>
+                      <td className="px-6 py-4 text-gray-800 font-medium">{valueDisplay}</td>
+                      <td className="px-6 py-4">
+                        <span className={`inline-flex items-center px-3 py-1 rounded-full text-sm font-medium ${p.is_active ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'}`}>
+                          {p.is_active ? 'Hoạt động' : 'Tắt'}
+                        </span>
+                      </td>
+                      <td className="px-6 py-4 text-gray-800">
+                        <div className="flex items-center gap-2">
+                          <span>{applySummary}</span>
+                          {conds.length > 0 && (
+                            <button
+                              onClick={() => toggleExpand(p.id)}
+                              className="text-sm text-[#0AC1EF] hover:text-[#0894c7] hover:underline transition duration-200"
+                              aria-expanded={!!expandedRows[p.id]}
+                            >
+                              Chi tiết
+                            </button>
+                          )}
+                        </div>
+                      </td>
+                      <td className="px-6 py-4 text-gray-800">{p.usage_limit === null ? 'Không giới hạn' : p.usage_limit}</td>
+                      <td className="px-6 py-4 text-gray-800">{minOrderDisplay}</td>
+                      <td className="px-6 py-4 text-center">
+                        <div className="relative inline-block text-left">
                           <button
                             onClick={(e) => toggleMenu(p.id, e)}
-                            className="px-3 py-1 bg-gray-100 hover:bg-gray-200 rounded-full"
+                            className="px-4 py-2 bg-gray-100 hover:bg-[#0AC1EF] hover:text-white rounded-full transition duration-200 shadow-sm"
                             aria-haspopup="true"
                             aria-expanded={!!openMenu[p.id]}
                           >
@@ -207,58 +211,64 @@ export default function Index() {
 
                           {openMenu[p.id] && (
                             <PortalMenu rect={menuAnchor.rect} onClose={() => closeMenu(p.id)}>
-                              <div className="py-1">
-                                <Link href={`/admin/promotions/${p.id}/edit`} className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100" onClick={() => closeMenu(p.id)}>Sửa</Link>
-                                <Link href={`/admin/promotions/${p.id}/usage`} className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100" onClick={() => closeMenu(p.id)}>Lượt</Link>
-                                <button onClick={() => { toggle(p.id); closeMenu(p.id); }} className="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
+                              <div className="py-2 bg-white rounded-lg shadow-xl border border-gray-200">
+                                <Link href={`/admin/promotions/${p.id}/edit`} className="block px-4 py-3 text-sm text-gray-700 hover:bg-[#0AC1EF] hover:text-white transition duration-200" onClick={() => closeMenu(p.id)}>Sửa</Link>
+                                <Link href={`/admin/promotions/${p.id}/usage`} className="block px-4 py-3 text-sm text-gray-700 hover:bg-[#0AC1EF] hover:text-white transition duration-200" onClick={() => closeMenu(p.id)}>Lượt</Link>
+                                <button onClick={() => { toggle(p.id); closeMenu(p.id); }} className="w-full text-left px-4 py-3 text-sm text-gray-700 hover:bg-[#0AC1EF] hover:text-white transition duration-200">
                                   {p.is_active ? 'Tắt' : 'Bật'}
                                 </button>
-                                <button onClick={() => { askDelete(p.id, p.code); closeMenu(p.id); }} className="w-full text-left px-4 py-2 text-sm text-red-600 hover:bg-red-50">
+                                <button onClick={() => { askDelete(p.id, p.code); closeMenu(p.id); }} className="w-full text-left px-4 py-3 text-sm text-red-600 hover:bg-red-50 hover:text-red-800 transition duration-200">
                                   Xóa
                                 </button>
                               </div>
                             </PortalMenu>
                           )}
                         </div>
-                       </td>
-                     </tr>
+                      </td>
+                    </tr>
 
-                     {/* details row */}
-                     {expandedRows[p.id] && (
-                       <tr className="bg-gray-50">
-                         <td colSpan={8} className="px-4 py-3 text-sm text-gray-700">
-                           <strong>Chi tiết áp dụng:</strong> {applyDetails}
-                         </td>
-                       </tr>
-                     )}
-                   </React.Fragment>
-                 );
-               })}
+                    {/* details row */}
+                    {expandedRows[p.id] && (
+                      <tr className="bg-gradient-to-r from-gray-50 to-blue-50">
+                        <td colSpan={8} className="px-6 py-4 text-sm text-gray-700 border-t border-gray-200">
+                          <strong className="text-[#0AC1EF]">Chi tiết áp dụng:</strong> {applyDetails}
+                        </td>
+                      </tr>
+                    )}
+                  </React.Fragment>
+                );
+              })}
             </tbody>
           </table>
         </div>
 
-        <div className="mt-4 flex justify-center gap-2">
+        <div className="mt-6 flex justify-center gap-2 bg-white p-4 rounded-lg shadow-md">
           {promotions.links?.map((link:any, idx:number) =>
             link.url ? (
-              <button key={idx} onClick={() => router.visit(link.url)} className={`px-3 py-1 rounded ${link.active ? 'bg-blue-600 text-white' : 'bg-gray-200'}`} dangerouslySetInnerHTML={{ __html: link.label }} />
+              <button key={idx} onClick={() => router.visit(link.url)} className={`px-4 py-2 rounded-lg transition duration-200 ${link.active ? 'bg-[#0AC1EF] text-white shadow-md' : 'bg-gray-200 hover:bg-gray-300'}`} dangerouslySetInnerHTML={{ __html: link.label }} />
             ) : (
-              <span key={idx} className="px-3 py-1 text-gray-400" dangerouslySetInnerHTML={{ __html: link.label }} />
+              <span key={idx} className="px-4 py-2 text-gray-400" dangerouslySetInnerHTML={{ __html: link.label }} />
             )
           )}
         </div>
+
+        {/* Success message */}
+        {successMessage && (
+          <div className="fixed top-4 right-4 bg-green-500 text-white px-6 py-3 rounded-lg shadow-lg z-50 transition duration-300">
+            {successMessage}
+          </div>
+        )}
       </div>
 
       {/* Confirm modal */}
       {confirmModal.open && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center">
-          <div className="absolute inset-0 bg-black opacity-40" onClick={cancelDelete} />
-          <div className="bg-white rounded-lg shadow-lg z-10 max-w-lg w-full p-6">
-            <h3 className="text-lg font-semibold mb-2">Xác nhận xóa</h3>
-            <p className="text-sm text-gray-700 mb-4">Bạn có chắc muốn xóa mã khuyến mãi <strong>{confirmModal.code}</strong>? Hành động này không thể hoàn tác.</p>
-            <div className="flex justify-end gap-2">
-              <button onClick={cancelDelete} className="px-4 py-2 bg-gray-200 text-gray-800 rounded">Hủy</button>
-              <button onClick={() => confirmDelete(confirmModal.id)} className="px-4 py-2 bg-red-600 text-white rounded">Xác nhận</button>
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50">
+          <div className="bg-white rounded-xl shadow-2xl z-10 max-w-lg w-full p-8 border-t-4 border-[#0AC1EF]">
+            <h3 className="text-xl font-bold mb-4 text-gray-800">Xác nhận xóa</h3>
+            <p className="text-sm text-gray-700 mb-6">Bạn có chắc muốn xóa mã khuyến mãi <strong className="text-[#0AC1EF]">{confirmModal.code}</strong>? Hành động này không thể hoàn tác.</p>
+            <div className="flex justify-end gap-3">
+              <button onClick={cancelDelete} className="px-6 py-2 bg-gray-200 hover:bg-gray-300 text-gray-800 rounded-lg transition duration-200">Hủy</button>
+              <button onClick={() => confirmDelete(confirmModal.id)} className="px-6 py-2 bg-red-600 hover:bg-red-700 text-white rounded-lg transition duration-200">Xác nhận</button>
             </div>
           </div>
         </div>

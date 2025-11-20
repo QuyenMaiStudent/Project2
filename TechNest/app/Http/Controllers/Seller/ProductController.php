@@ -120,12 +120,14 @@ class ProductController extends Controller
                     // stock default to 0; will be updated when variants are added
                     'stock' => 0, // <-- changed
                     'brand_id' => $validated['brand_id'],
-                    'category_id' => $validated['category_id'], // <-- changed
                     'warranty_id' => $validated['warranty_id'] ?? null,
                     'is_active' => $validated['is_active'] ?? true,
                     'created_by' => auth()->id(),
                     'status' => 'draft',
                 ]);
+
+                // Attach category qua pivot table
+                $product->categories()->attach($validated['category_id']);
 
                 Log::info('Product created', ['product_id' => $product->id]);
 
@@ -216,6 +218,49 @@ class ProductController extends Controller
         ]);
     }
 
+    // Thêm method để kiểm tra cart items
+    public function checkCart(Product $product)
+    {
+        $this->authorizeProduct($product);
+
+        $hasCartItems = $product->cartItems()->exists();
+
+        return response()->json([
+            'has_cart_items' => $hasCartItems
+        ]);
+    }
+
+    // Thêm method để xóa cart items
+    public function clearCartItems(Product $product)
+    {
+        $this->authorizeProduct($product);
+
+        try {
+            // Xóa CartItem của product này (bao gồm cả variants)
+            $deletedCount = $product->cartItems()->delete();
+
+            Log::info('Cart items cleared before edit', [
+                'product_id' => $product->id,
+                'deleted_count' => $deletedCount
+            ]);
+
+            return response()->json([
+                'success' => true,
+                'message' => 'Đã xóa sản phẩm khỏi giỏ hàng của khách hàng.'
+            ]);
+        } catch (\Exception $e) {
+            Log::error('Failed to clear cart items', [
+                'product_id' => $product->id,
+                'error' => $e->getMessage()
+            ]);
+            
+            return response()->json([
+                'success' => false,
+                'message' => 'Có lỗi xảy ra: ' . $e->getMessage()
+            ], 500);
+        }
+    }
+
     public function edit(Product $product)
     {
         $this->authorizeProduct($product);
@@ -223,21 +268,29 @@ class ProductController extends Controller
         try {
             $brands = Brand::all();
             $warranties = WarrantyPolicy::all();
+            $categories = Category::all(); // Thêm categories
 
             // Load ảnh chính của sản phẩm
             $product->load(['brand', 'warrantyPolicy', 'primaryImage']);
+
+            // Kiểm tra sản phẩm có trong giỏ hàng không
+            $has_cart_items = $product->cartItems()->exists();
 
             Log::info('Edit product page loaded', [
                 'product_id' => $product->id,
                 'brands_count' => $brands->count(),
                 'warranties_count' => $warranties->count(),
+                'categories_count' => $categories->count(),
+                'has_cart_items' => $has_cart_items,
                 'user_id' => auth()->id()
             ]);
 
             return Inertia::render('Products/EditProduct', [
                 'product' => $product,
                 'brands' => $brands,
-                'warranties' => $warranties
+                'warranties' => $warranties,
+                'categories' => $categories, // Thêm vào response
+                'has_cart_items' => $has_cart_items,
             ]);
         } catch (\Exception $e) {
             Log::error('Error loading edit product page', [
@@ -256,7 +309,7 @@ class ProductController extends Controller
         Log::info('Product update started', [
             'product_id' => $product->id,
             'user_id' => auth()->id(),
-            'request_data' => $request->all(), // Log toàn bộ để debug
+            'request_data' => $request->all(),
         ]);
 
         try {
@@ -267,15 +320,16 @@ class ProductController extends Controller
                 'price' => 'required|numeric|min:0',
                 // 'stock' removed
                 'brand_id' => 'required|integer|exists:brands,id',
-                'category_id' => 'nullable|integer|exists:categories,id', // <-- optional update
+                'category_id' => 'nullable|integer|exists:categories,id',
                 'warranty_id' => 'nullable|integer|exists:warranty_policies,id',
-                'is_active' => 'sometimes|boolean', // Đổi thành sometimes
+                'is_active' => 'sometimes|boolean',
+                'confirmed' => 'sometimes|boolean', // Thêm để kiểm tra xác nhận
                 'image' => 'nullable|image|mimes:jpeg,png,jpg,gif,webp|max:4096',
             ]);
 
             // Đảm bảo is_active có giá trị
             if (!isset($validated['is_active'])) {
-                $validated['is_active'] = false; // Mặc định false nếu không có
+                $validated['is_active'] = false;
             }
 
             Log::info('Update validation passed', ['validated_data' => $validated]);
@@ -297,9 +351,23 @@ class ProductController extends Controller
 
             Log::info('Content validation passed');
 
+            // Kiểm tra nếu sản phẩm có trong giỏ hàng và chưa xác nhận
+            if (!$request->input('confirmed', false) && $product->cartItems()->exists()) {
+                return back()->withErrors([
+                    'confirm' => 'Sản phẩm hiện tại có trong giỏ hàng của một số khách hàng. Thao tác này sẽ loại bỏ các sản phẩm trong giỏ hàng của khách hàng. Bạn có chắc muốn thực hiện thao tác này?'
+                ])->withInput();
+            }
+
             DB::beginTransaction();
 
             try {
+                // Nếu đã xác nhận, xóa các CartItem liên quan (bao gồm của product_variant thuộc sản phẩm)
+                if ($request->input('confirmed', false)) {
+                    // Xóa CartItem của product này (và variants nếu có)
+                    $product->cartItems()->delete();
+                    Log::info('Cart items deleted for product update', ['product_id' => $product->id]);
+                }
+
                 // Chuẩn bị dữ liệu để update (stock removed)
                 $updateData = [
                     'name' => $validated['name'],
@@ -348,6 +416,16 @@ class ProductController extends Controller
                     ]);
                 }
 
+                // Sync category nếu có thay đổi
+                if (array_key_exists('category_id', $validated) && $validated['category_id'] !== null) {
+                    $product->categories()->sync([$validated['category_id']]);
+                    Log::info('Product category updated', [
+                        'product_id' => $product->id,
+                        'new_category_id' => $validated['category_id']
+                    ]);
+                    $hasChanges = true;
+                }
+
                 // Xử lý upload ảnh mới nếu có
                 if ($request->hasFile('image')) {
                     Log::info('Starting image update');
@@ -380,7 +458,7 @@ class ProductController extends Controller
                             } catch (\Exception $e) {
                                 Log::warning('Failed to delete old image from Cloudinary', [
                                     'error' => $e->getMessage()
-                                ]);
+                            ]);
                             }
                         }
                         $oldImage->delete();

@@ -7,8 +7,8 @@ import ProductDetailController from './ProductDetailController'
 import Payments from './Payments'
 import Subscription from './Subscription'
 import CommentController from './CommentController'
-import Settings from './Settings'
 import Seller from './Seller'
+import Settings from './Settings'
 import Admin from './Admin'
 import LiveStreamController from './LiveStreamController'
 const Controllers = {
@@ -21,8 +21,8 @@ ProductDetailController: Object.assign(ProductDetailController, ProductDetailCon
 Payments: Object.assign(Payments, Payments),
 Subscription: Object.assign(Subscription, Subscription),
 CommentController: Object.assign(CommentController, CommentController),
-Settings: Object.assign(Settings, Settings),
 Seller: Object.assign(Seller, Seller),
+Settings: Object.assign(Settings, Settings),
 Admin: Object.assign(Admin, Admin),
 LiveStreamController: Object.assign(LiveStreamController, LiveStreamController),
 }

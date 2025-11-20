@@ -84,6 +84,16 @@ Route::middleware('auth')->group(function () {
     Route::post('/chat/start', [ChatController::class, 'startConversation'])->name('chat.start');
 });
 
+// Seller routes
+Route::middleware(['auth', 'verified'])->prefix('seller')->name('seller.')->group(function () {
+    // ...existing seller routes...
+    
+    Route::get('/products/{product}/check-cart', [ProductController::class, 'checkCart'])->name('products.check-cart');
+    Route::post('/products/{product}/clear-cart-items', [ProductController::class, 'clearCartItems'])->name('products.clear-cart-items');
+    
+    // ...existing seller routes...
+});
+
 
 
 require __DIR__.'/settings.php';

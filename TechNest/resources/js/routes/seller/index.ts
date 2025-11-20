@@ -81,8 +81,8 @@ dashboard.head = (options?: RouteQueryOptions): RouteDefinition<'head'> => ({
     
     dashboard.form = dashboardForm
 const seller = {
-    dashboard: Object.assign(dashboard, dashboard),
-products: Object.assign(products, products),
+    products: Object.assign(products, products),
+dashboard: Object.assign(dashboard, dashboard),
 promotions: Object.assign(promotions, promotions),
 live: Object.assign(live, live),
 }

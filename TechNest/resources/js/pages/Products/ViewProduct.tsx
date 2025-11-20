@@ -50,7 +50,7 @@ function Pagination({ links }: { links: any[] }) {
                     <Link
                         key={idx}
                         href={link.url}
-                        className={`px-3 py-1 rounded ${link.active ? 'bg-blue-600 text-white' : 'bg-gray-200 text-gray-700'} hover:bg-blue-100`}
+                        className={`px-3 py-1 rounded transition-colors ${link.active ? 'bg-[#0AC1EF] text-white' : 'bg-gray-200 text-gray-700 hover:bg-gray-300'}`}
                         dangerouslySetInnerHTML={{ __html: link.label }}
                     />
                 ) : (
@@ -69,6 +69,8 @@ export default function ViewProduct({ products }: Props) {
     const [localProducts, setLocalProducts] = useState(products.data);
     const [loadingToggle, setLoadingToggle] = useState<number | null>(null);
     const [notice, setNotice] = useState<{ type: 'success' | 'error' | 'info'; message: string } | null>(null);
+    const [showEditConfirmModal, setShowEditConfirmModal] = useState(false);
+    const [selectedProductForEdit, setSelectedProductForEdit] = useState<Product | null>(null);
 
     // auto-dismiss notice after 4s
     useEffect(() => {
@@ -76,6 +78,68 @@ export default function ViewProduct({ products }: Props) {
         const t = setTimeout(() => setNotice(null), 4000);
         return () => clearTimeout(t);
     }, [notice]);
+
+    // Kiểm tra sản phẩm có trong giỏ hàng trước khi edit
+    const handleEditClick = async (product: Product) => {
+        try {
+            const response = await fetch(`/seller/products/${product.id}/check-cart`, {
+                method: 'GET',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') || '',
+                },
+            });
+
+            const data = await response.json();
+
+            if (data.has_cart_items) {
+                setSelectedProductForEdit(product);
+                setShowEditConfirmModal(true);
+            } else {
+                // Chuyển đến trang edit
+                router.visit(`/seller/products/${product.id}/edit`);
+            }
+        } catch (error) {
+            console.error('Error checking cart items:', error);
+            // Nếu lỗi, vẫn cho phép edit
+            router.visit(`/seller/products/${product.id}/edit`);
+        }
+    };
+
+    const confirmEdit = async () => {
+        if (!selectedProductForEdit) return;
+
+        try {
+            // Xóa cart items trước khi chuyển đến edit
+            const response = await fetch(`/seller/products/${selectedProductForEdit.id}/clear-cart-items`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') || '',
+                },
+            });
+
+            const data = await response.json();
+
+            if (data.success) {
+                setNotice({ type: 'success', message: 'Đã xóa sản phẩm khỏi giỏ hàng của khách hàng.' });
+                setShowEditConfirmModal(false);
+                setSelectedProductForEdit(null);
+                // Chuyển đến trang edit
+                router.visit(`/seller/products/${selectedProductForEdit.id}/edit`);
+            } else {
+                setNotice({ type: 'error', message: data.message || 'Có lỗi xảy ra' });
+            }
+        } catch (error) {
+            console.error('Error clearing cart items:', error);
+            setNotice({ type: 'error', message: 'Có lỗi xảy ra khi xóa sản phẩm khỏi giỏ hàng' });
+        }
+    };
+
+    const cancelEdit = () => {
+        setShowEditConfirmModal(false);
+        setSelectedProductForEdit(null);
+    };
 
     const handleToggleVisibility = async (productId: number) => {
         setLoadingToggle(productId);
@@ -117,19 +181,19 @@ export default function ViewProduct({ products }: Props) {
     return (
         <AppLayout breadcrumbs={breadcrumbs}>
             <Head title="Xem sản phẩm" />
-            <div className="max-w-7xl mx-auto p-6">
-                <div className="flex justify-between items-center mb-6">
+            <div className="max-w-7xl mx-auto p-6 bg-gradient-to-br from-blue-50 to-cyan-50 min-h-screen">
+                <div className="flex justify-between items-center mb-6 bg-white p-6 rounded-lg shadow-lg border-l-4 border-[#0AC1EF]">
                     <h1 className="text-2xl font-semibold text-gray-800">Sản phẩm của tôi</h1>
                     <Link
                         href="/seller/products/create"
-                        className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors flex items-center space-x-2"
+                        className="px-4 py-2 bg-[#0AC1EF] text-white rounded-md hover:bg-[#09b3db] transition-colors flex items-center space-x-2"
                     >
                         <Package className="h-4 w-4" />
                         <span>Thêm sản phẩm</span>
                     </Link>
                 </div>
 
-                {/* Inline notification (thay alert) */}
+                {/* Inline notification */}
                 {notice && (
                     <div className={`mb-4 rounded p-3 text-sm ${
                         notice.type === 'success' ? 'bg-green-50 border border-green-200 text-green-800' :
@@ -144,13 +208,13 @@ export default function ViewProduct({ products }: Props) {
                 )}
 
                 {localProducts.length === 0 ? (
-                    <div className="text-center py-12">
+                    <div className="text-center py-12 bg-white rounded-lg shadow-lg">
                         <Package className="h-16 w-16 text-gray-400 mx-auto mb-4" />
                         <h3 className="text-lg font-medium text-gray-900 mb-2">Chưa có sản phẩm nào</h3>
                         <p className="text-gray-500 mb-4">Bắt đầu bằng cách thêm sản phẩm đầu tiên của bạn</p>
                         <Link
                             href="/seller/products/create"
-                            className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors"
+                            className="px-4 py-2 bg-[#0AC1EF] text-white rounded-md hover:bg-[#09b3db] transition-colors"
                         >
                             Thêm sản phẩm đầu tiên
                         </Link>
@@ -158,7 +222,7 @@ export default function ViewProduct({ products }: Props) {
                 ) : (
                     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 xl:grid-cols-3 gap-6">
                         {localProducts.map((product) => (
-                            <div key={product.id} className="bg-white rounded-lg shadow-md overflow-hidden hover:shadow-lg transition-shadow">
+                            <div key={product.id} className="bg-white rounded-lg shadow-lg overflow-hidden hover:shadow-xl transition-shadow border border-gray-200">
                                 <div className="relative">
                                     <div className="aspect-w-16 aspect-h-9">
                                         {product.primary_image ? (
@@ -234,7 +298,7 @@ export default function ViewProduct({ products }: Props) {
                                     </p>
                                     
                                     <div className="flex justify-between items-center mb-4">
-                                        <span className="text-lg font-bold text-blue-600">
+                                        <span className="text-lg font-bold text-[#0AC1EF]">
                                             {new Intl.NumberFormat('vi-VN', {
                                                 style: 'currency',
                                                 currency: 'VND'
@@ -260,13 +324,14 @@ export default function ViewProduct({ products }: Props) {
                                                 <span>Xem trước</span>
                                             </Link>
                                             
-                                            <Link
-                                                href={`/seller/products/${product.id}/edit`}
-                                                className="flex-1 px-3 py-2 bg-blue-100 text-blue-700 rounded-md hover:bg-blue-200 transition-colors inline-flex items-center justify-center gap-2"
+                                            {/* Thay Link bằng button để kiểm tra cart */}
+                                            <button
+                                                onClick={() => handleEditClick(product)}
+                                                className="flex-1 px-3 py-2 bg-[#E6F9FF] text-[#0AC1EF] rounded-md hover:bg-[#dff6fb] transition-colors inline-flex items-center justify-center gap-2"
                                             >
                                                 <Edit className="h-4 w-4" />
                                                 <span>Sửa</span>
-                                            </Link>
+                                            </button>
                                         </div>
                                         
                                         <div className="grid grid-cols-2 gap-2">
@@ -278,7 +343,7 @@ export default function ViewProduct({ products }: Props) {
                                             </Link>
                                             <Link
                                                 href={`/seller/products/${product.id}/variants`}
-                                                className="px-3 py-2 bg-pink-100 text-pink-700 rounded-md hover:bg-pink-200 transition-colors inline-flex items-center justify-center gap-1 text-sm"
+                                                className="px-3 py-2 bg-[#E6F9FF] text-[#0AC1EF] rounded-md hover:bg-[#dff6fb] transition-colors inline-flex items-center justify-center gap-1 text-sm"
                                             >
                                                 <Package className="h-3 w-3" />
                                                 <span>Biến thể</span>
@@ -293,8 +358,36 @@ export default function ViewProduct({ products }: Props) {
 
                 {/* Pagination */}
                 {localProducts.length > 0 && (
-                    <div className="mt-8 flex justify-center">
+                    <div className="mt-8 flex justify-center bg-white p-4 rounded-lg shadow-md">
                         <Pagination links={products.links} />
+                    </div>
+                )}
+
+                {/* Modal xác nhận edit */}
+                {showEditConfirmModal && selectedProductForEdit && (
+                    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+                        <div className="bg-white p-6 rounded-lg shadow-lg max-w-md w-full border-t-4 border-[#0AC1EF]">
+                            <h2 className="text-lg font-semibold mb-4 text-gray-800">Xác nhận chỉnh sửa</h2>
+                            <p className="mb-4 text-gray-700">
+                                Sản phẩm "{selectedProductForEdit.name}" hiện tại có trong giỏ hàng của một số khách hàng. 
+                                Nếu tiếp tục thao tác này sẽ xóa sản phẩm khỏi giỏ hàng của khách hàng. 
+                                Bạn có chắc muốn tiếp tục?
+                            </p>
+                            <div className="flex justify-end gap-2">
+                                <button
+                                    onClick={cancelEdit}
+                                    className="bg-gray-300 text-gray-700 px-4 py-2 rounded hover:bg-gray-400 transition-colors"
+                                >
+                                    Hủy
+                                </button>
+                                <button
+                                    onClick={confirmEdit}
+                                    className="bg-[#0AC1EF] text-white px-4 py-2 rounded hover:bg-[#09b3db] transition-colors"
+                                >
+                                    Tiếp tục
+                                </button>
+                            </div>
+                        </div>
                     </div>
                 )}
             </div>

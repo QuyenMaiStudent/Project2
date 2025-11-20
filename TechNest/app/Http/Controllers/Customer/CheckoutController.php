@@ -164,30 +164,41 @@ class CheckoutController extends Controller
         $applicable = $allPromotions->filter(function (Promotion $p) use ($productIds, $brandIds, $categoryIds) {
             $conds = $p->conditions ?? collect();
             
-            // Global promotion (no conditions)
+            // Global promotion (no conditions) - áp dụng cho tất cả
             if ($conds->isEmpty()) {
+                Log::debug("Promotion {$p->id} ({$p->code}) - Global, no conditions");
                 return true;
             }
 
-            // Check conditions
+            // Check conditions - chỉ cần 1 điều kiện match là OK
             foreach ($conds as $c) {
                 if ($c->condition_type === 'product' && in_array((int)$c->target_id, $productIds, true)) {
+                    Log::debug("Promotion {$p->id} ({$p->code}) - Matched product {$c->target_id}");
                     return true;
                 }
                 if ($c->condition_type === 'brand' && in_array((int)$c->target_id, $brandIds, true)) {
+                    Log::debug("Promotion {$p->id} ({$p->code}) - Matched brand {$c->target_id}");
                     return true;
                 }
                 if ($c->condition_type === 'category' && in_array((int)$c->target_id, $categoryIds, true)) {
+                    Log::debug("Promotion {$p->id} ({$p->code}) - Matched category {$c->target_id}");
                     return true;
                 }
             }
 
+            Log::debug("Promotion {$p->id} ({$p->code}) - No match found", [
+                'conditions' => $conds->map(fn($c) => [
+                    'type' => $c->condition_type,
+                    'target_id' => $c->target_id
+                ])->toArray()
+            ]);
             return false;
         })->values();
 
         Log::info('Promotions filtered', [
             'total_fetched' => $allPromotions->count(),
             'applicable' => $applicable->count(),
+            'applicable_ids' => $applicable->pluck('id')->toArray(),
         ]);
 
         // Format promotions for frontend
