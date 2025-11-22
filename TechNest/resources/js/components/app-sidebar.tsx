@@ -6,7 +6,7 @@ import { SharedData, type NavItem } from '@/types';
 import { Link, usePage } from '@inertiajs/react';
 import { BookOpen, CheckCircle, LayoutGrid, Package, Users, 
          Plus, Eye, Tag, ShoppingCart, MapPin, 
-         CreditCard, MessageCircle, Video, Settings, LogOut } from 'lucide-react';
+         CreditCard, MessageCircle, Video, Settings, LogOut, Truck } from 'lucide-react';
 import AppLogoIcon from './app-logo-icon';
 
 export function AppSidebar() {
@@ -126,6 +126,11 @@ export function AppSidebar() {
                 title: 'Đơn hàng',
                 href: '/orders',
                 icon: BookOpen,
+            },
+            {
+                title: 'Theo dõi vận chuyển',
+                href: '/tracking',
+                icon: Truck,
             },
             {
                 title: 'Giỏ hàng',
