@@ -36,8 +36,8 @@ class VnpayGateway implements PaymentGateway
 
     public function createPayment(Order $order): string
     {
-        // FIX 1: Sử dụng total_amount thay vì amount
-        $amountVnd = $this->toVndInt($order->total_amount, 'VND');
+        $baseAmount = $order->total_amount ?? $order->total ?? 0;
+        $amountVnd = $this->toVndInt($baseAmount, 'VND');
         $vnpAmount = $amountVnd * 100;
 
         $params = [

@@ -36,43 +36,54 @@ class PaypalGateway implements PaymentGateway
 
     public function createPayment(Order $order): string
     {
-        // FIX 1: Chuyển đổi VND sang USD (PayPal không hỗ trợ VND)
-        $vndAmount = (float) $order->total_amount;
-        $usdAmount = $this->convertVndToUsd($vndAmount);
-        
+        // Đảm bảo đã load items + product
+        $order->loadMissing(['items.product']);
+
+        $subtotal = (float) ($order->subtotal_amount ?? 0);
+        $discount = (float) ($order->discount_amount ?? 0);
+        $shipping = (float) ($order->shipping_fee ?? 0);
+        $finalVnd = max(0, $subtotal - $discount + $shipping);
+
+        // Lấy access token (bị thiếu trước đó)
         $token = $this->getAccessToken();
+
+        // Chuyển đổi
+        $usdFinal    = $this->convertVndToUsd($finalVnd);
+        $usdItems    = $this->convertVndToUsd($subtotal);
+        $usdDiscount = $this->convertVndToUsd($discount);
+        $usdShipping = $this->convertVndToUsd($shipping);
 
         $payload = [
             'intent' => 'CAPTURE',
             'purchase_units' => [[
-                'reference_id' => (string) $order->id,
+                'reference_id' => (string)$order->id,
                 'amount' => [
                     'currency_code' => 'USD',
-                    'value' => $usdAmount,
+                    'value' => $usdFinal,
                     'breakdown' => [
-                        'item_total' => [
-                            'currency_code' => 'USD',
-                            'value' => $usdAmount,
-                        ]
-                    ]
+                        'item_total' => ['currency_code' => 'USD', 'value' => $usdItems],
+                        'shipping'   => ['currency_code' => 'USD', 'value' => $usdShipping],
+                        'discount'   => ['currency_code' => 'USD', 'value' => $usdDiscount],
+                    ],
                 ],
                 'description' => "Order #{$order->id} from TechNest",
                 'items' => $this->buildItemsArray($order),
             ]],
             'application_context' => [
-                'brand_name'  => config('app.name', 'TechNest'),
-                'landing_page' => 'NO_PREFERENCE',
-                'user_action' => 'PAY_NOW',
-                'return_url'  => route('payments.return', ['provider' => 'paypal']) . '?order_id=' . $order->id,
-                'cancel_url'  => route('payments.return', ['provider' => 'paypal']) . '?status=cancel&order_id=' . $order->id,
+                'brand_name' => config('app.name', 'TechNest'),
+                'return_url' => route('payments.return', ['provider' => 'paypal']).'?order_id='.$order->id,
+                'cancel_url' => route('payments.return', ['provider' => 'paypal']).'?status=cancel&order_id='.$order->id,
             ],
         ];
 
         Log::info('PayPal create payment request', [
             'order_id' => $order->id,
-            'vnd_amount' => $vndAmount,
-            'usd_amount' => $usdAmount,
-            'payload' => $payload
+            'subtotal_vnd' => $subtotal,
+            'discount_vnd' => $discount,
+            'shipping_vnd' => $shipping,
+            'final_vnd' => $finalVnd,
+            'final_usd' => $usdFinal,
+            'payload' => $payload,
         ]);
 
         $res = Http::withToken($token)
@@ -97,14 +108,13 @@ class PaypalGateway implements PaymentGateway
             throw new RuntimeException('PayPal approve URL not found.');
         }
 
-        // FIX 2: Tạo Payment record với thông tin đúng
         Payment::updateOrCreate(
             ['order_id' => $order->id],
             [
                 'provider' => 'paypal',
                 'status' => 'pending',
-                'amount' => $order->total_amount, // Lưu amount gốc (VND)
-                'currency' => 'VND', // Currency gốc
+                'amount' => $order->total_amount,
+                'currency' => 'VND',
                 'transaction_id' => $data['id'] ?? null,
                 'gateway_event_id' => $data['id'] ?? null,
             ]
@@ -466,14 +476,11 @@ class PaypalGateway implements PaymentGateway
     private function buildItemsArray(Order $order): array
     {
         $items = [];
-        $totalUsd = 0;
-        
         foreach ($order->items as $item) {
-            $vndPrice = (float) $item->price;
-            $usdPrice = $vndPrice / 24000; // Chuyển đổi VND sang USD
-            $usdPrice = max(0.01, $usdPrice); // Tối thiểu $0.01
-            
-            $itemUsd = [
+            // Sử dụng unit_price thay vì price (price không tồn tại)
+            $vndPrice = (float) ($item->unit_price ?? 0);
+            $usdPrice = max(0.01, $vndPrice / 24000);
+            $items[] = [
                 'name' => $item->product->name ?? 'Product',
                 'unit_amount' => [
                     'currency_code' => 'USD',
@@ -481,11 +488,7 @@ class PaypalGateway implements PaymentGateway
                 ],
                 'quantity' => (string) $item->quantity,
             ];
-            
-            $items[] = $itemUsd;
-            $totalUsd += $usdPrice * $item->quantity;
         }
-        
         return $items;
     }
 

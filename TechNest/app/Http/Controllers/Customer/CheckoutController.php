@@ -8,6 +8,7 @@ use App\Models\Promotion;
 use App\Models\PaymentMethod;
 use App\Models\SellerStore;
 use App\Models\ShippingAddress;
+use App\Services\PaymentService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Auth;
@@ -358,5 +359,80 @@ class CheckoutController extends Controller
         $c = 2 * atan2(sqrt($a), sqrt(1 - $a));
 
         return $earthRadiusKm * $c;
+    }
+
+    public function placeOrder(Request $request)
+    {
+        $validated = $request->validate([
+            'shipping_address_id' => 'required|exists:shipping_addresses,id',
+            'payment_method_id' => 'required|exists:payment_methods,id',
+            'promotion_id' => 'nullable|exists:promotions,id',
+            'cart_item_id' => 'nullable|integer',
+            'shipping_fee' => 'required|numeric|min:0',
+            'discount_amount' => 'required|numeric|min:0',
+            'final_total' => 'required|numeric|min:0',
+            'subtotal' => 'required|numeric|min:0',
+        ]);
+
+        $cart = Cart::with(['items.product', 'items.variant'])
+            ->where('user_id', Auth::id())
+            ->firstOrFail();
+
+        $items = $validated['cart_item_id']
+            ? $cart->items->where('id', $validated['cart_item_id'])
+            : $cart->items;
+
+        if ($items->isEmpty()) {
+            return back()->withErrors(['msg' => 'Giỏ hàng trống.']);
+        }
+
+        $paymentMethod = PaymentMethod::findOrFail($validated['payment_method_id']);
+
+        $paymentPayload = [
+            'gateway' => $paymentMethod->provider,
+            'user_id' => Auth::id(),
+            'shipping_address_id' => $validated['shipping_address_id'], // FIX: Thêm dòng này
+            'subtotal' => $validated['subtotal'],
+            'discount_amount' => $validated['discount_amount'],
+            'shipping_fee' => $validated['shipping_fee'],
+            'promotion_id' => $validated['promotion_id'] ?? null,
+            'currency' => 'VND',
+            'items' => $items->map(fn($item) => [
+                'product_id' => $item->product_id,
+                'product_variant_id' => $item->product_variant_id,
+                'quantity' => $item->quantity,
+                'price' => $this->calculateItemPrice($item),
+            ])->toArray(),
+        ];
+
+        Log::info('Place order request', [
+            'user_id' => Auth::id(),
+            'validated' => $validated,
+            'payment_method' => $paymentMethod->provider,
+        ]);
+
+        try {
+            $result = app(PaymentService::class)->createPayment($paymentPayload);
+
+            Log::info('Payment created', [
+                'result' => $result,
+                'gateway' => $paymentMethod->provider,
+            ]);
+
+            if (!empty($result['redirect_url'])) {
+                return Inertia::location($result['redirect_url']);
+            }
+
+            return back()->withErrors(['msg' => 'Không thể tạo thanh toán.']);
+
+        } catch (\Throwable $e) {
+            Log::error('Payment creation failed', [
+                'error' => $e->getMessage(),
+                'trace' => $e->getTraceAsString(),
+                'gateway' => $paymentMethod->provider,
+            ]);
+
+            return back()->withErrors(['msg' => 'Có lỗi xảy ra khi tạo thanh toán.']);
+        }
     }
 }

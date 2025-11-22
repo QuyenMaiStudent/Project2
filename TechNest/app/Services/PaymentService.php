@@ -125,20 +125,35 @@ class PaymentService
 
             if ($type instanceof ReflectionNamedType && ! $type->isBuiltin()) {
                 $paramClass = $type->getName();
-
-                // If gateway expects an Order (or subclass) => create a lightweight Order instance (do not persist)
                 if ($paramClass === Order::class || is_subclass_of($paramClass, Order::class)) {
-                    $order = new Order();
+                    $subtotal = (float) ($payload['subtotal'] ?? 0);
+                    $discount = (float) ($payload['discount_amount'] ?? 0);
+                    $shipping = (float) ($payload['shipping_fee'] ?? 0);
+                    $final    = max(0, $subtotal - $discount + $shipping);
 
-                    // populate common fields if present in payload — keep minimal and non-invasive
-                    if (isset($payload['user_id'])) {
-                        $order->user_id = $payload['user_id'];
+                    // Tạo Order thật (status pending)
+                    $order = Order::create([
+                        'user_id'              => $payload['user_id'] ?? auth()->id(),
+                        'shipping_address_id'  => $payload['shipping_address_id'] ?? null, // FIX: Thêm dòng này
+                        'subtotal_amount'      => $subtotal,
+                        'discount_amount'      => $discount,
+                        'shipping_fee'         => $shipping,
+                        'total_amount'         => $final,
+                        'currency'             => $payload['currency'] ?? 'VND',
+                        'promotion_id'         => $payload['promotion_id'] ?? null,
+                        'status'               => 'pending',
+                    ]);
+
+                    // (Tùy) lưu items nếu payload có
+                    foreach (($payload['items'] ?? []) as $it) {
+                        $order->items()->create([
+                            'product_id'         => $it['product_id'] ?? null,
+                            'product_variant_id' => $it['product_variant_id'] ?? null,
+                            'quantity'           => $it['quantity'] ?? 1,
+                            'unit_price'         => $it['price'] ?? 0,
+                            'subtotal'           => ($it['price'] ?? 0) * ($it['quantity'] ?? 1),
+                        ]);
                     }
-                    $order->total = $payload['amount'] ?? $payload['price'] ?? 0;
-                    $order->currency = $payload['currency'] ?? ($payload['currency_code'] ?? 'VND');
-                    $order->description = $payload['description'] ?? $payload['desc'] ?? null;
-                    // metadata: store raw payload if gateway inspects it
-                    $order->metadata = $payload['metadata'] ?? null;
 
                     $result = $ref->invoke($gateway, $order);
                     return $this->normalizeResult($result);

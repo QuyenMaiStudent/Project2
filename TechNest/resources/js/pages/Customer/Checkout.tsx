@@ -76,6 +76,9 @@ export default function Checkout({
     promotion_id: null,
     cart_item_id: cart_item_id,
     shipping_fee: null,
+    discount_amount: 0,
+    final_total: 0,
+    subtotal: 0,
   });
 
   const shippingFeesMap: Record<string, number | null> = shippingFees ?? {};
@@ -109,39 +112,53 @@ export default function Checkout({
 
   const { total, discount, shipping, final } = computeTotals(shippingFee);
 
+  useEffect(() => {
+    setData('discount_amount', discount);
+    setData('final_total', final);
+    setData('subtotal', total);
+  }, [discount, final, total]);
+
   const onPlaceOrder = (e: React.FormEvent) => {
     e.preventDefault();
     
-    // Validate required fields
-    if (!data.shipping_address_id) {
-        setToastMessage('Vui lòng chọn địa chỉ giao hàng.');
-        return;
-    }
-    if (!data.payment_method_id) {
-        setToastMessage('Vui lòng chọn phương thức thanh toán.');
-        return;
-    }
-    if (!isFreeShipping && data.shipping_address_id && !shippingFeeAvailable) {
-        setToastMessage('Không thể tính phí vận chuyển cho địa chỉ này. Vui lòng cập nhật tọa độ.');
-        return;
-    }
-    
+    console.log('=== PLACE ORDER DEBUG ===');
+    console.log('Form data:', data);
+    console.log('Shipping fee:', shippingFee);
+    console.log('Final total:', final);
+    console.log('Discount:', discount);
+    console.log('========================');
+
     post(placeOrderUrl, {
-        preserveScroll: true,
-        onBefore: () => {
-            setToastMessage(null);
-            console.log('Starting payment process...');
-        },
-        onError: (errors) => {
-            console.error('Payment error:', errors);
-            // show only a generic message to avoid exposing internal errors
-            setToastMessage('Có lỗi xảy ra khi tạo đơn hàng. Vui lòng thử lại hoặc liên hệ hỗ trợ.');
-        },
-        onSuccess: (page) => {
-            // Inertia::location() sẽ tự động redirect đến external URL
-            setToastMessage(null);
-            console.log('Payment initiated successfully');
-        },
+      preserveScroll: true,
+      onError: (errors) => {
+        console.error('=== PLACE ORDER ERROR ===');
+        console.error('Errors object:', errors);
+        console.error('Payment error:', errors.payment);
+        console.error('Full errors:', JSON.stringify(errors, null, 2));
+        console.error('========================');
+        
+        if (errors.payment) {
+          // Log chi tiết payment error
+          console.error('Payment error details:', errors.payment);
+          
+          // Hiển thị toast với message từ server
+          setToastMessage(
+            typeof errors.payment === 'string' 
+              ? errors.payment 
+              : 'Có lỗi xảy ra khi tạo đơn hàng. Vui lòng thử lại hoặc liên hệ hỗ trợ.'
+          );
+        } else {
+          const firstError = Object.values(errors)[0];
+          setToastMessage(
+            typeof firstError === 'string' 
+              ? firstError 
+              : 'Có lỗi xảy ra. Vui lòng kiểm tra lại thông tin.'
+          );
+        }
+      },
+      onSuccess: () => {
+        console.log('=== PLACE ORDER SUCCESS ===');
+      },
     });
   };
 

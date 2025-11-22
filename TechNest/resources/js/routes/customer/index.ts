@@ -83,7 +83,7 @@ dashboard.head = (options?: RouteQueryOptions): RouteDefinition<'head'> => ({
     dashboard.form = dashboardForm
 /**
 * @see \App\Http\Controllers\Customer\CheckoutController::checkout
- * @see app/Http/Controllers/Customer/CheckoutController.php:19
+ * @see app/Http/Controllers/Customer/CheckoutController.php:20
  * @route '/checkout'
  */
 export const checkout = (options?: RouteQueryOptions): RouteDefinition<'get'> => ({
@@ -98,7 +98,7 @@ checkout.definition = {
 
 /**
 * @see \App\Http\Controllers\Customer\CheckoutController::checkout
- * @see app/Http/Controllers/Customer/CheckoutController.php:19
+ * @see app/Http/Controllers/Customer/CheckoutController.php:20
  * @route '/checkout'
  */
 checkout.url = (options?: RouteQueryOptions) => {
@@ -107,7 +107,7 @@ checkout.url = (options?: RouteQueryOptions) => {
 
 /**
 * @see \App\Http\Controllers\Customer\CheckoutController::checkout
- * @see app/Http/Controllers/Customer/CheckoutController.php:19
+ * @see app/Http/Controllers/Customer/CheckoutController.php:20
  * @route '/checkout'
  */
 checkout.get = (options?: RouteQueryOptions): RouteDefinition<'get'> => ({
@@ -116,7 +116,7 @@ checkout.get = (options?: RouteQueryOptions): RouteDefinition<'get'> => ({
 })
 /**
 * @see \App\Http\Controllers\Customer\CheckoutController::checkout
- * @see app/Http/Controllers/Customer/CheckoutController.php:19
+ * @see app/Http/Controllers/Customer/CheckoutController.php:20
  * @route '/checkout'
  */
 checkout.head = (options?: RouteQueryOptions): RouteDefinition<'head'> => ({
@@ -126,7 +126,7 @@ checkout.head = (options?: RouteQueryOptions): RouteDefinition<'head'> => ({
 
     /**
 * @see \App\Http\Controllers\Customer\CheckoutController::checkout
- * @see app/Http/Controllers/Customer/CheckoutController.php:19
+ * @see app/Http/Controllers/Customer/CheckoutController.php:20
  * @route '/checkout'
  */
     const checkoutForm = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
@@ -136,7 +136,7 @@ checkout.head = (options?: RouteQueryOptions): RouteDefinition<'head'> => ({
 
             /**
 * @see \App\Http\Controllers\Customer\CheckoutController::checkout
- * @see app/Http/Controllers/Customer/CheckoutController.php:19
+ * @see app/Http/Controllers/Customer/CheckoutController.php:20
  * @route '/checkout'
  */
         checkoutForm.get = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
@@ -145,7 +145,7 @@ checkout.head = (options?: RouteQueryOptions): RouteDefinition<'head'> => ({
         })
             /**
 * @see \App\Http\Controllers\Customer\CheckoutController::checkout
- * @see app/Http/Controllers/Customer/CheckoutController.php:19
+ * @see app/Http/Controllers/Customer/CheckoutController.php:20
  * @route '/checkout'
  */
         checkoutForm.head = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
