@@ -96,6 +96,11 @@ export function AppSidebar() {
                 icon: Tag,
             },
             {
+                title: 'Đơn hàng',
+                href: '/seller/orders',
+                icon: BookOpen,
+            },
+            {
                 title: 'Tin nhắn',
                 href: '/chat',
                 icon: MessageCircle,

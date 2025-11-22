@@ -6,8 +6,10 @@ use App\Http\Controllers\Controller;
 use App\Models\Cart;
 use App\Models\Promotion;
 use App\Models\PaymentMethod;
+use App\Models\SellerStore;
 use App\Models\ShippingAddress;
 use Illuminate\Http\Request;
+use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Log;
 use Inertia\Inertia;
@@ -116,6 +118,28 @@ class CheckoutController extends Controller
             ->values()
             ->all();
 
+        // Địa chỉ
+        $addressesCollection = ShippingAddress::where('user_id', Auth::id())
+            ->with(['province', 'ward'])
+            ->get();
+
+        $addresses = $addressesCollection->map(function ($a) {
+            return [
+                'id' => $a->id,
+                'recipient_name' => $a->recipient_name,
+                'phone' => $a->phone,
+                'address_line' => $a->address_line,
+                'province_code' => $a->province_code,
+                'province_name' => optional($a->province)->name,
+                'ward_code' => $a->ward_code,
+                'ward_name' => optional($a->ward)->name,
+                'is_default' => (bool) $a->is_default,
+                'latitude' => $a->latitude,
+                'longitude' => $a->longitude,
+                'full_address' => $this->formatFullAddress($a),
+            ];
+        });
+
         // --- replaced: ensure we collect seller IDs from product.created_by and cast to int ---
         $sellerIds = $items->map(fn($it) => data_get($it, 'product.seller_id'))
             ->filter() // remove null/empty
@@ -124,11 +148,13 @@ class CheckoutController extends Controller
             ->values()
             ->all();
 
-        Log::info('Checkout - collected IDs', [
-            'products' => $productIds,
-            'brands' => $brandIds,
-            'categories' => $categoryIds,
-            'sellers' => $sellerIds,
+        // Check Packages
+        $hasActivePackage = (bool) optional(Auth::user())->hasActivePackageSubscription();
+        $shippingFees = $this->calculateShippingFees($addressesCollection, $sellerIds, $hasActivePackage);
+
+        Log::info('Checkout shipping fees', [
+            'has_active_package' => $hasActivePackage,
+            'shipping_fees' => $shippingFees,
         ]);
 
         // Query promotions
@@ -225,6 +251,9 @@ class CheckoutController extends Controller
             'promotions' => $promotions,
             'placeOrderUrl' => route('customer.checkout.placeOrder'),
             'cart_item_id' => $itemId ? (int)$itemId : null,
+            'shippingFees' => $shippingFees,
+            'hasFreeShipping' => $hasActivePackage,
+            'shippingRatePerKm' => config('services.shipping.rate_per_km', 100),
         ]);
     }
 
@@ -255,5 +284,79 @@ class CheckoutController extends Controller
         ];
 
         return implode(', ', array_filter($parts));
+    }
+
+    private function calculateShippingFees(Collection $addresses, array $sellerIds, bool $hasPackage): array
+    {
+        if ($addresses->isEmpty()) {
+            return [];
+        }
+
+        if ($hasPackage) {
+            return $addresses
+                ->mapWithKeys(fn (ShippingAddress $address) => [$address->id => 0])
+                ->toArray();
+        }
+
+        if (empty($sellerIds)) {
+            return $addresses
+                ->mapWithKeys(fn (ShippingAddress $address) => [$address->id => 0])
+                ->toArray();
+        }
+
+        $stores = SellerStore::whereIn('seller_id', $sellerIds)
+            ->whereNotNull('latitude')
+            ->whereNotNull('longitude')
+            ->get()
+            ->keyBy('seller_id');
+
+        $ratePerKm = (float) config('services.shipping.rate_per_km', 100);
+
+        return $addresses->mapWithKeys(function (ShippingAddress $address) use ($stores, $sellerIds, $ratePerKm) {
+            if ($address->latitude === null || $address->longitude === null) {
+                return [$address->id => null];
+            }
+
+            $totalFee = 0.0;
+
+            foreach ($sellerIds as $sellerId) {
+                $store = $stores->get($sellerId);
+
+                if (! $store || $store->latitude === null || $store->longitude === null) {
+                    continue;
+                }
+
+                $distanceKm = $this->calculateDistanceKm(
+                    (float) $store->latitude,
+                    (float) $store->longitude,
+                    (float) $address->latitude,
+                    (float) $address->longitude
+                );
+
+                $totalFee += $distanceKm * $ratePerKm;
+            }
+
+            return [$address->id => round($totalFee)];
+        })->toArray();
+    }
+
+    private function calculateDistanceKm(float $latFrom, float $lonFrom, float $latTo, float $lonTo): float
+    {
+        $earthRadiusKm = 6371;
+
+        $latFromRad = deg2rad($latFrom);
+        $lonFromRad = deg2rad($lonFrom);
+        $latToRad = deg2rad($latTo);
+        $lonToRad = deg2rad($lonTo);
+
+        $latDelta = $latToRad - $latFromRad;
+        $lonDelta = $lonToRad - $lonFromRad;
+
+        $a = sin($latDelta / 2) ** 2 +
+            cos($latFromRad) * cos($latToRad) * sin($lonDelta / 2) ** 2;
+
+        $c = 2 * atan2(sqrt($a), sqrt(1 - $a));
+
+        return $earthRadiusKm * $c;
     }
 }

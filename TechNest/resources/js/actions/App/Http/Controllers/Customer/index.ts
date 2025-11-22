@@ -4,6 +4,7 @@ import CartController from './CartController'
 import ShippingAddressController from './ShippingAddressController'
 import CheckoutController from './CheckoutController'
 import OrderController from './OrderController'
+import CustomerOrderDeliveryController from './CustomerOrderDeliveryController'
 import TransactionController from './TransactionController'
 import ViewerController from './ViewerController'
 const Customer = {
@@ -13,6 +14,7 @@ CartController: Object.assign(CartController, CartController),
 ShippingAddressController: Object.assign(ShippingAddressController, ShippingAddressController),
 CheckoutController: Object.assign(CheckoutController, CheckoutController),
 OrderController: Object.assign(OrderController, OrderController),
+CustomerOrderDeliveryController: Object.assign(CustomerOrderDeliveryController, CustomerOrderDeliveryController),
 TransactionController: Object.assign(TransactionController, TransactionController),
 ViewerController: Object.assign(ViewerController, ViewerController),
 }

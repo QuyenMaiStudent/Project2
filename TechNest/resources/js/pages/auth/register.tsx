@@ -125,6 +125,16 @@ export default function Register() {
                                 Đăng nhập
                             </TextLink>
                         </div>
+                        <div className="mt-2 text-center text-xs text-gray-600">
+                            Dành cho Shipper?{' '}
+                            <a href="/shipper/register" className="font-medium text-indigo-600 hover:text-indigo-500">
+                                Đăng ký Shipper
+                            </a>
+                            {' '}|{' '}
+                            <a href="/shipper/login" className="font-medium text-indigo-600 hover:text-indigo-500">
+                                Đăng nhập Shipper
+                            </a>
+                        </div>
                     </>
                 )}
             </Form>

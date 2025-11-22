@@ -35,17 +35,23 @@ class HandleInertiaRequests extends Middleware
      */
     public function share(Request $request): array
     {
+        $webUser = $request->user('web');      // chỉ lấy user guard web
+        $shipper = $request->user('shipper');  // lấy shipper guard shipper
+
         return array_merge(parent::share($request), [
             'auth' => [
-                'user' => $request->user() ? [
-                    'id' => $request->user()->id,
-                    'name' => $request->user()->name,
-                    'email' => $request->user()->email,
-                    'isAdmin' => $request->user()->isAdmin(),
-                    'isSuperAdmin' => $request->user()->isSuperAdmin(),
-                    'isSeller' => $request->user()->isSeller(),
-                    'isCustomer' => $request->user()->isCustomer(), // Thêm isCustomer
+                'user' => $webUser ? [
+                    'id' => $webUser->id,
+                    'name' => $webUser->name,
+                    'email' => $webUser->email,
+                    'isAdmin' => method_exists($webUser, 'isAdmin') ? $webUser->isAdmin() : false,
+                    'isSuperAdmin' => method_exists($webUser, 'isSuperAdmin') ? $webUser->isSuperAdmin() : false,
+                    'isSeller' => method_exists($webUser, 'isSeller') ? $webUser->isSeller() : false,
+                    'isCustomer' => method_exists($webUser, 'isCustomer') ? $webUser->isCustomer() : false,
                 ] : null,
+                'shipper' => $shipper
+                    ? $shipper->only('id','name','email','phone')
+                    : null,
             ],
         ]);
     }

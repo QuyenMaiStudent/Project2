@@ -79,12 +79,12 @@ export default function Login({ status, canResetPassword }: LoginProps) {
                             </TextLink>
                         </div>
 
-                        <div className="mt-4 text-center">
+                        <div className="mt-4 text-center space-y-2">
                             <a
                                 href="/auth/google"
                                 className="bg-black text-white px-4 py-2 rounded flex items-center justify-center mt-4"
                             >
-                                {/* Google SVG icon */}
+                                {/* Google icon */}
                                 <svg className="h-5 w-5 mr-2" viewBox="0 0 48 48">
                                     <g>
                                         <path fill="#4285F4" d="M44.5,20H24v8.5h11.7C34.7,33.1,29.8,36,24,36c-6.6,0-12-5.4-12-12s5.4-12,12-12c3.1,0,5.9,1.1,8.1,2.9l6.4-6.4C34.5,5.1,29.5,3,24,3C12.9,3,4,11.9,4,23s8.9,20,20,20c11,0,19.8-8,19.8-20C44,21.3,44.3,20.6,44.5,20z"/>
@@ -95,6 +95,16 @@ export default function Login({ status, canResetPassword }: LoginProps) {
                                 </svg>
                                 Đăng nhập bằng Google
                             </a>
+                            <div className="text-xs text-gray-600">
+                                Bạn là Shipper?{' '}
+                                <a href="/shipper/login" className="font-medium text-indigo-600 hover:text-indigo-500">
+                                    Đăng nhập Shipper
+                                </a>
+                                {' '}|{' '}
+                                <a href="/shipper/register" className="font-medium text-indigo-600 hover:text-indigo-500">
+                                    Đăng ký Shipper
+                                </a>
+                            </div>
                         </div>
                     </>
                 )}

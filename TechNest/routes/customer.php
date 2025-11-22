@@ -10,6 +10,7 @@ use App\Http\Controllers\Customer\TransactionController;
 use App\Http\Controllers\Subscription\PackageController;
 use App\Http\Controllers\Subscription\PackagePaymentController;
 use App\Http\Controllers\Subscription\PackagePaymentReturnController;
+use App\Http\Controllers\Customer\CustomerOrderDeliveryController;
 use Illuminate\Support\Facades\Route;
 
 Route::middleware(['auth', 'customer'])->group(function () {
@@ -37,6 +38,7 @@ Route::middleware(['auth', 'customer'])->group(function () {
     
     // Thêm route này để PaymentResult có thể redirect đúng
     Route::get('/customer/orders/{order}', [OrderController::class, 'show'])->name('customer.orders.detail');
+    Route::post('/customer/orders/{order}/confirm-received', [CustomerOrderDeliveryController::class, 'confirm'])->name('customer.orders.confirm-received');
 
     //Transaction routes
     Route::get('/transactions', [TransactionController::class, 'index'])->name('customer.transactions.index');

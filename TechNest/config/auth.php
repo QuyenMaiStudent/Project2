@@ -1,7 +1,6 @@
 <?php
 
 return [
-
     /*
     |--------------------------------------------------------------------------
     | Authentication Defaults
@@ -40,6 +39,10 @@ return [
             'driver' => 'session',
             'provider' => 'users',
         ],
+        'shipper' => [
+            'driver' => 'session',
+            'provider' => 'shippers',
+        ],
     ],
 
     /*
@@ -65,10 +68,10 @@ return [
             'model' => env('AUTH_MODEL', App\Models\User::class),
         ],
 
-        // 'users' => [
-        //     'driver' => 'database',
-        //     'table' => 'users',
-        // ],
+        'shippers' => [
+            'driver' => 'eloquent',
+            'model' => App\Models\Shipper::class,
+        ],
     ],
 
     /*
@@ -97,6 +100,13 @@ return [
             'expire' => 60,
             'throttle' => 60,
         ],
+
+        'shippers' => [
+            'provider' => 'shippers',
+            'table' => 'password_reset_tokens',
+            'expire' => 60,
+            'throttle' => 60,
+        ],
     ],
 
     /*
@@ -111,5 +121,4 @@ return [
     */
 
     'password_timeout' => env('AUTH_PASSWORD_TIMEOUT', 10800),
-
 ];

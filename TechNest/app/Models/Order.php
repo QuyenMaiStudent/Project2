@@ -17,6 +17,9 @@ class Order extends Model
     const STATUS_SHIPPED = 'shipped';
     const STATUS_DELIVERED = 'delivered';
     const STATUS_CANCELLED = 'cancelled';
+    const STATUS_READY_TO_SHIP = 'ready_to_ship';
+    const STATUS_IN_DELIVERY = 'in_delivery';
+    const STATUS_DELIVERED_AWAITING_CONFIRMATION = 'delivered_awaiting_confirmation';
 
     protected $fillable = [
         'user_id',
@@ -25,13 +28,18 @@ class Order extends Model
         'discount_amount',
         'promotion_id',
         'shipping_address_id',
-        'placed_at'
+        'placed_at',
+        'shipper_id',
+        'shipped_at',
+        'delivered_at',
     ];
 
     protected $casts = [
         'total_amount' => 'decimal:2',
         'discount_amount' => 'decimal:2',
         'placed_at' => 'datetime',
+        'shipped_at' => 'datetime',
+        'delivered_at' => 'datetime',
     ];
 
     public function user()
@@ -74,5 +82,20 @@ class Order extends Model
         return $this->hasMany(Transaction::class, 'payment_id', 'id')
                    ->join('payments', 'transactions.payment_id', '=', 'payments.id')
                    ->where('payments.order_id', $this->id);
+    }
+
+    public function shipper()
+    {
+        return $this->belongsTo(Shipper::class);
+    }
+
+    public function scopeReadyForShipper($query)
+    {
+        return $query->where('status', self::STATUS_READY_TO_SHIP);
+    }
+
+    public function scopeForShipper($query, int $shipperId)
+    {
+        return $query->where('shipper_id', $shipperId);
     }
 }

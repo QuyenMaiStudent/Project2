@@ -61,7 +61,10 @@ export default function Checkout({
   paymentMethods = [],
   promotions = [], 
   placeOrderUrl, 
-  cart_item_id = null 
+  cart_item_id = null,
+  shippingFees = {},
+  hasFreeShipping = false,
+  shippingRatePerKm = null,
 }: any) {
   const page = usePage();
   // toast message (floating) shown on top of page for any errors
@@ -72,9 +75,24 @@ export default function Checkout({
     payment_method_id: paymentMethods.length ? paymentMethods[0].id : null,
     promotion_id: null,
     cart_item_id: cart_item_id,
+    shipping_fee: null,
   });
 
-  const computeTotals = (): { total: number; discount: number; final: number } => {
+  const shippingFeesMap: Record<string, number | null> = shippingFees ?? {};
+  const isFreeShipping = Boolean(hasFreeShipping);
+  const selectedAddressKey = data.shipping_address_id != null ? String(data.shipping_address_id) : null;
+  const shippingFeeRaw =
+    selectedAddressKey !== null ? shippingFeesMap[selectedAddressKey] ?? null : null;
+  const shippingFeeAvailable = isFreeShipping || (shippingFeeRaw !== null && shippingFeeRaw !== undefined);
+  const shippingFee = isFreeShipping ? 0 : (shippingFeeAvailable ? Number(shippingFeeRaw) : 0);
+  const ratePerKm = typeof shippingRatePerKm === 'number' ? shippingRatePerKm : null;
+
+  useEffect(() => {
+    const value = shippingFeeAvailable ? shippingFee : null;
+    setData('shipping_fee', value);
+  }, [shippingFee, shippingFeeAvailable, setData]);
+
+  const computeTotals = (shippingFeeValue: number): { total: number; discount: number; shipping: number; final: number } => {
     const total = cart?.total ?? 0;
     const promo: Promotion | undefined = promotions.find((p: Promotion) => p.id === data.promotion_id);
     let discount = 0;
@@ -85,11 +103,11 @@ export default function Checkout({
         discount = Math.round(total * (promo.value / 100) * 100) / 100;
       }
     }
-    const finalTotal = Math.max(0, total - discount);
-    return { total, discount, final: finalTotal };
+    const finalTotal = Math.max(0, total - discount + shippingFeeValue);
+    return { total, discount, shipping: shippingFeeValue, final: finalTotal };
   };
 
-  const { total, discount, final } = computeTotals();
+  const { total, discount, shipping, final } = computeTotals(shippingFee);
 
   const onPlaceOrder = (e: React.FormEvent) => {
     e.preventDefault();
@@ -101,6 +119,10 @@ export default function Checkout({
     }
     if (!data.payment_method_id) {
         setToastMessage('Vui lòng chọn phương thức thanh toán.');
+        return;
+    }
+    if (!isFreeShipping && data.shipping_address_id && !shippingFeeAvailable) {
+        setToastMessage('Không thể tính phí vận chuyển cho địa chỉ này. Vui lòng cập nhật tọa độ.');
         return;
     }
     
@@ -337,6 +359,21 @@ export default function Checkout({
                     <span className="font-semibold text-red-600">- {formatMoney(discount)}</span>
                   </div>
                 )}
+                <div className="flex justify-between mb-3 text-lg">
+                  <span>Phí vận chuyển</span>
+                  <span className="font-semibold">
+                    {isFreeShipping
+                      ? 'Miễn phí'
+                      : shippingFeeAvailable
+                      ? formatMoney(shipping)
+                      : 'Không thể tính'}
+                  </span>
+                </div>
+                {!isFreeShipping && shippingFeeAvailable && ratePerKm && (
+                  <div className="mt-2 text-xs text-gray-500">
+                    Phí vận chuyển được tính theo {formatMoney(ratePerKm)} mỗi km cho từng cửa hàng.
+                  </div>
+                )}
                 <div className="border-t pt-3 mt-3">
                   <div className="flex justify-between text-2xl font-bold">
                     <span>Tổng thanh toán</span>
@@ -349,7 +386,7 @@ export default function Checkout({
               <form onSubmit={onPlaceOrder}>
                 <button 
                   type="submit" 
-                  disabled={processing || !data.shipping_address_id || !data.payment_method_id}
+                  disabled={processing || !data.shipping_address_id || !data.payment_method_id || (!isFreeShipping && !shippingFeeAvailable)}
                   className="w-full bg-blue-600 hover:bg-blue-700 disabled:bg-gray-400 disabled:cursor-not-allowed text-white py-4 rounded text-xl font-semibold transition flex items-center justify-center gap-2"
                 >
                   {processing ? (
@@ -371,6 +408,13 @@ export default function Checkout({
                   <p className="mt-1">Bạn sẽ được chuyển đến trang thanh toán</p>
                 </div>
               </form>
+
+              {/* Ghi chú về phí vận chuyển */}
+              {!isFreeShipping && data.shipping_address_id && !shippingFeeAvailable && (
+                <div className="mt-2 text-sm text-amber-600">
+                  Cần bổ sung tọa độ cho địa chỉ này để tính phí vận chuyển chính xác.
+                </div>
+              )}
             </aside>
           </div>
         )}

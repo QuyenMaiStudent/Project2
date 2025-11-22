@@ -281,10 +281,90 @@ detail.head = (args: { order: number | { id: number } } | [order: number | { id:
         })
     
     detail.form = detailForm
+/**
+* @see \App\Http\Controllers\Customer\CustomerOrderDeliveryController::confirmReceived
+ * @see app/Http/Controllers/Customer/CustomerOrderDeliveryController.php:13
+ * @route '/customer/orders/{order}/confirm-received'
+ */
+export const confirmReceived = (args: { order: number | { id: number } } | [order: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions): RouteDefinition<'post'> => ({
+    url: confirmReceived.url(args, options),
+    method: 'post',
+})
+
+confirmReceived.definition = {
+    methods: ["post"],
+    url: '/customer/orders/{order}/confirm-received',
+} satisfies RouteDefinition<["post"]>
+
+/**
+* @see \App\Http\Controllers\Customer\CustomerOrderDeliveryController::confirmReceived
+ * @see app/Http/Controllers/Customer/CustomerOrderDeliveryController.php:13
+ * @route '/customer/orders/{order}/confirm-received'
+ */
+confirmReceived.url = (args: { order: number | { id: number } } | [order: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions) => {
+    if (typeof args === 'string' || typeof args === 'number') {
+        args = { order: args }
+    }
+
+            if (typeof args === 'object' && !Array.isArray(args) && 'id' in args) {
+            args = { order: args.id }
+        }
+    
+    if (Array.isArray(args)) {
+        args = {
+                    order: args[0],
+                }
+    }
+
+    args = applyUrlDefaults(args)
+
+    const parsedArgs = {
+                        order: typeof args.order === 'object'
+                ? args.order.id
+                : args.order,
+                }
+
+    return confirmReceived.definition.url
+            .replace('{order}', parsedArgs.order.toString())
+            .replace(/\/+$/, '') + queryParams(options)
+}
+
+/**
+* @see \App\Http\Controllers\Customer\CustomerOrderDeliveryController::confirmReceived
+ * @see app/Http/Controllers/Customer/CustomerOrderDeliveryController.php:13
+ * @route '/customer/orders/{order}/confirm-received'
+ */
+confirmReceived.post = (args: { order: number | { id: number } } | [order: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions): RouteDefinition<'post'> => ({
+    url: confirmReceived.url(args, options),
+    method: 'post',
+})
+
+    /**
+* @see \App\Http\Controllers\Customer\CustomerOrderDeliveryController::confirmReceived
+ * @see app/Http/Controllers/Customer/CustomerOrderDeliveryController.php:13
+ * @route '/customer/orders/{order}/confirm-received'
+ */
+    const confirmReceivedForm = (args: { order: number | { id: number } } | [order: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
+        action: confirmReceived.url(args, options),
+        method: 'post',
+    })
+
+            /**
+* @see \App\Http\Controllers\Customer\CustomerOrderDeliveryController::confirmReceived
+ * @see app/Http/Controllers/Customer/CustomerOrderDeliveryController.php:13
+ * @route '/customer/orders/{order}/confirm-received'
+ */
+        confirmReceivedForm.post = (args: { order: number | { id: number } } | [order: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
+            action: confirmReceived.url(args, options),
+            method: 'post',
+        })
+    
+    confirmReceived.form = confirmReceivedForm
 const orders = {
     index: Object.assign(index, index),
 show: Object.assign(show, show),
 detail: Object.assign(detail, detail),
+confirmReceived: Object.assign(confirmReceived, confirmReceived),
 }
 
 export default orders

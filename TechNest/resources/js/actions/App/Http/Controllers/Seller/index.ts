@@ -5,6 +5,7 @@ import ProductSpecController from './ProductSpecController'
 import ProductVariantController from './ProductVariantController'
 import SellerPromotionController from './SellerPromotionController'
 import SellerStoreController from './SellerStoreController'
+import SellerOrderController from './SellerOrderController'
 import SellerLiveController from './SellerLiveController'
 const Seller = {
     ProductController: Object.assign(ProductController, ProductController),
@@ -14,6 +15,7 @@ ProductSpecController: Object.assign(ProductSpecController, ProductSpecControlle
 ProductVariantController: Object.assign(ProductVariantController, ProductVariantController),
 SellerPromotionController: Object.assign(SellerPromotionController, SellerPromotionController),
 SellerStoreController: Object.assign(SellerStoreController, SellerStoreController),
+SellerOrderController: Object.assign(SellerOrderController, SellerOrderController),
 SellerLiveController: Object.assign(SellerLiveController, SellerLiveController),
 }
 

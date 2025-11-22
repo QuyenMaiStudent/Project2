@@ -4,6 +4,7 @@ use App\Http\Controllers\Seller\ProductImageController;
 use App\Http\Controllers\Seller\ProductSpecController;
 use App\Http\Controllers\Seller\ProductVariantController;
 use App\Http\Controllers\Seller\SellerController;
+use App\Http\Controllers\Seller\SellerOrderController;
 use App\Http\Controllers\Seller\SellerPromotionController;
 use App\Http\Controllers\Seller\SellerStoreController;
 use Illuminate\Support\Facades\Route;
@@ -61,4 +62,8 @@ Route::middleware(['auth', 'seller'])->group(function () {
 
     Route::get('/seller/store', [SellerStoreController::class, 'show'])->name('seller.store.show');
     Route::post('/seller/store/location', [SellerStoreController::class, 'update'])->name('seller.store.update');
+
+    Route::get('/seller/orders', [SellerOrderController::class, 'index'])->name('seller.orders.index');
+    Route::get('/seller/orders/{order}', [SellerOrderController::class, 'show'])->name('seller.orders.show');
+    Route::post('/seller/orders/{order}/request-shipment', [SellerOrderController::class, 'requestShipment'])->name('seller.orders.request-shipment');
 });
