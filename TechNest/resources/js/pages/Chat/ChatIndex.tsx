@@ -2,7 +2,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import { Head, Link, usePage, router } from '@inertiajs/react';
 import AppLayout from '@/layouts/app-layout';
 import { type SharedData } from '@/types';
-import { MessageCircle, Send, User, Clock, Phone, Video, MoreHorizontal, Search } from 'lucide-react';
+import { MessageCircle, Send, User, Clock, Search } from 'lucide-react';
 
 interface Message {
     id: number;
@@ -97,9 +97,13 @@ export default function ChatIndex({ conversations }: Props) {
         }
     };
 
+    // Robust helper to resolve the "other" user (handles buyer/customer aliases)
     const getOtherUser = (conversation: Conversation) => {
-        // Sử dụng buyer (vì trong database vẫn là buyer_id)
-        return conversation.buyer?.id === user?.id ? conversation.seller : conversation.buyer;
+        const buyer = conversation.buyer ?? conversation.customer;
+        const seller = conversation.seller;
+        if (!buyer && !seller) return null;
+        if (buyer && user && buyer.id === user.id) return seller ?? buyer;
+        return buyer ?? seller;
     };
 
     const filteredConversations = conversations.filter(conv => {
@@ -128,7 +132,7 @@ export default function ChatIndex({ conversations }: Props) {
     }
 
     return (
-        <AppLayout>
+        <AppLayout breadcrumbs={[{ title: 'Tin nhắn', href: '/chat' }]}>
             <Head title="Tin nhắn" />
             
             <div className="h-[calc(100vh-4rem)] flex bg-white">
@@ -175,7 +179,7 @@ export default function ChatIndex({ conversations }: Props) {
                                             <div className="flex-1 min-w-0">
                                                 <div className="flex justify-between items-start">
                                                     <h3 className="font-medium text-gray-900 truncate">
-                                                        {otherUser?.name || 'Unknown User'}
+                                                        {otherUser?.name || otherUser?.email || 'Unknown User'}
                                                     </h3>
                                                     <span className="text-xs text-gray-500">
                                                         {formatTime(conversation.last_message_at)}
@@ -214,7 +218,7 @@ export default function ChatIndex({ conversations }: Props) {
                                         </div>
                                         <div>
                                             <h2 className="font-semibold text-gray-900">
-                                                {getOtherUser(selectedConversation)?.name || 'Unknown User'}
+                                                {getOtherUser(selectedConversation)?.name || getOtherUser(selectedConversation)?.email || 'Người dùng'}
                                             </h2>
                                             {selectedConversation.product && (
                                                 <p className="text-sm text-gray-600">
@@ -223,17 +227,7 @@ export default function ChatIndex({ conversations }: Props) {
                                             )}
                                         </div>
                                     </div>
-                                    <div className="flex items-center space-x-2">
-                                        <button className="p-2 text-gray-500 hover:text-gray-700 hover:bg-gray-100 rounded-full">
-                                            <Phone className="w-5 h-5" />
-                                        </button>
-                                        <button className="p-2 text-gray-500 hover:text-gray-700 hover:bg-gray-100 rounded-full">
-                                            <Video className="w-5 h-5" />
-                                        </button>
-                                        <button className="p-2 text-gray-500 hover:text-gray-700 hover:bg-gray-100 rounded-full">
-                                            <MoreHorizontal className="w-5 h-5" />
-                                        </button>
-                                    </div>
+                                    {/* Removed phone/video/more buttons for cleaner UI */}
                                 </div>
                             </div>
 

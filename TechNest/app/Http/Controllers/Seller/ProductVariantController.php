@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\Product;
 use App\Models\ProductImage;
 use App\Models\ProductVariant;
+use App\Models\OrderItem;
 use Cloudinary\Configuration\Configuration;
 use CloudinaryLabs\CloudinaryLaravel\Facades\Cloudinary;
 use Illuminate\Http\Request;
@@ -226,6 +227,7 @@ class ProductVariantController extends Controller
             abort(403);
         }
 
+        DB::beginTransaction();
         try {
             // Xóa ảnh trên Cloudinary trước khi xóa variant
             $image = ProductImage::where('product_variant_id', $variant->id)->first();
@@ -253,12 +255,29 @@ class ProductVariantController extends Controller
                 $image->delete();
             }
 
+            // --- NEW: remove order items for this variant that belong to carts (not completed orders) ---
+            // Assumes OrderItem->order() relation exists and orders have a 'status' field (e.g. 'cart')
+            try {
+                $deletedCount = OrderItem::where('product_variant_id', $variant->id)
+                    ->whereHas('order', function ($q) {
+                        $q->where('status', 'cart'); // adjust status name if different
+                    })
+                    ->delete();
+
+                Log::info('Deleted order items for variant', ['variant_id' => $variant->id, 'deleted' => $deletedCount]);
+            } catch (\Exception $e) {
+                // Log but continue — do not block variant deletion if this non-critical op fails
+                Log::warning('Failed to delete related order items for variant', ['error' => $e->getMessage(), 'variant_id' => $variant->id]);
+            }
+
             $variant->delete();
 
             $this->recalculateProductStock($product);
 
+            DB::commit();
             return back()->with('success', 'Đã xóa biến thể sản phẩm.');
         } catch (\Exception $e) {
+            DB::rollBack();
             Log::error('Failed to delete product variant', [
                 'error' => $e->getMessage(),
                 'variant_id' => $variant->id

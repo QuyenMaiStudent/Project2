@@ -1,63 +1,37 @@
-import { Head, useForm, Link } from '@inertiajs/react';
-import { FormEvent, ChangeEvent, useState } from 'react';
+import React, { FormEvent, ChangeEvent, useState } from 'react';
+import { Head, useForm, Link, usePage } from '@inertiajs/react';
 import AppLayout from '@/layouts/app-layout';
 import { type BreadcrumbItem } from '@/types';
-import categories from '@/routes/admin/categories';
+import { Image, Tag, Info, CreditCard } from 'lucide-react';
 
 const breadcrumbs: BreadcrumbItem[] = [
-    {
-        title: 'Giao diện người bán',
-        href: '/seller/dashboard',
-    },
-    {
-        title: 'Thêm sản phẩm',
-        href: '/seller/products/create',
-    },
+    { title: 'Giao diện người bán', href: '/seller/dashboard' },
+    { title: 'Xem sản phẩm', href: '/seller/products' },
+    { title: 'Thêm sản phẩm', href: '/seller/products/create' },
 ];
 
-interface Brand {
-    id: number;
-    name: string;
-}
-
-interface Warranty {
-    id: number;
-    title: string;
-}
-
-interface Category {
-    id: number;
-    name: string;
-}
+interface Brand { id: number; name: string; }
+interface Warranty { id: number; title: string; }
+interface Category { id: number; name: string; }
 
 interface Props {
-    brands?: Brand[]; // Thêm ? để optional
-    warranties?: Warranty[]; // Thêm ? để optional
-    categories?: Category[]; // <-- added
+    brands?: Brand[];
+    warranties?: Warranty[];
+    categories?: Category[];
 }
 
 export default function AddProduct({ brands = [], warranties = [], categories = [] }: Props) {
+    const page = usePage().props as any;
     const [clientErrors, setClientErrors] = useState<Record<string,string>>({});
-
-    // Đảm bảo brands và warranties và categories là mảng
     const safebrands = Array.isArray(brands) ? brands : [];
     const safeWarranties = Array.isArray(warranties) ? warranties : [];
-    const safeCategories = Array.isArray(categories) ? categories : []; // <-- added
+    const safeCategories = Array.isArray(categories) ? categories : [];
 
     const containsUrlOrPhone = (text?: string) => {
         const t = (text ?? '').trim();
         if (!t) return false;
-
-        // explicit URLs (http(s) or www.) or domain-like (with a dot + tld)
-        if (/(https?:\/\/|www\.)[^\s]+/i.test(t) || /\b[a-z0-9\-]+\.[a-z]{2,63}(\b|\/)/i.test(t)) {
-            return true;
-        }
-
-        // detect a contiguous digit sequence of length >= 7 (phone-like)
-        if (/\b\d{7,}\b/.test(t)) {
-            return true;
-        }
-
+        if (/(https?:\/\/|www\.)[^\s]+/i.test(t) || /\b[a-z0-9\-]+\.[a-z]{2,63}(\b|\/)/i.test(t)) return true;
+        if (/\b\d{7,}\b/.test(t)) return true;
         return false;
     };
 
@@ -75,332 +49,271 @@ export default function AddProduct({ brands = [], warranties = [], categories = 
         name: '',
         description: '',
         price: '',
-        // stock removed — managed by variants
         brand_id: '',
-        category_id: '', // <-- added
+        category_id: '',
         warranty_id: '',
         is_active: true,
         image: null as File | null,
     });
 
-    // Thêm state cho preview ảnh
     const [imagePreview, setImagePreview] = useState<string | null>(null);
 
     const handleImageChange = (e: ChangeEvent<HTMLInputElement>) => {
         const file = e.target.files ? e.target.files[0] : null;
         setData('image', file);
-        
-        // Tạo preview
         if (file) {
             const reader = new FileReader();
-            reader.onload = (e) => {
-                setImagePreview(e.target?.result as string);
-            };
+            reader.onload = (ev) => setImagePreview(ev.target?.result as string);
             reader.readAsDataURL(file);
-
             setClientErrors(prev => { const c = {...prev}; delete c.image; return c;});
         } else {
             setImagePreview(null);
-
             setClientErrors(prev => ({ ...prev, image: 'Vui lòng chọn ảnh sản phẩm.' }));
         }
     };
 
+    const formatCurrency = (v?: string) => {
+        const n = Number(v);
+        if (!Number.isFinite(n)) return '—';
+        return new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(n);
+    };
+
     const handleSubmit = (e: FormEvent) => {
         e.preventDefault();
-        
-        // Debug log
-        console.log('Form submission started', {
-            data,
-            imageSelected: data.image?.name,
-            imageSize: data.image?.size,
-            clientErrors
-        });
-        
-        // client-side validation
+
         const okName = validateField('name', data.name);
         const okDesc = validateField('description', data.description);
-        
-        if (!okName || !okDesc) {
-            console.log('Client validation failed');
-            return;
-        }
+        if (!okName || !okDesc) return;
 
         if (!data.image) {
             setClientErrors(prev => ({ ...prev, image: 'Vui lòng chọn ảnh sản phẩm.' }));
-
             const el = document.getElementById('image');
             if (el) el.scrollIntoView({ behavior: 'smooth', block: 'center' });
             return;
         }
 
-        // use useForm.post so Inertia knows about our form state (useForm supports files)
         post('/seller/products', {
             forceFormData: true,
             preserveScroll: true,
-            onStart: () => {
-                console.log('Request started');
-            },
-            onProgress: (progress) => {
-                console.log('Upload progress:', progress);
-            },
-            onError: (errors) => {
-                console.error('Form submission errors:', errors);
-            },
-            onSuccess: () => {
-                console.log('Form submitted successfully');
-            }
         });
     };
 
+    const breadcrumbsForLayout = page.breadcrumbs ?? breadcrumbs;
+
     return (
-        <AppLayout breadcrumbs={breadcrumbs}>
+        <AppLayout breadcrumbs={breadcrumbsForLayout}>
             <Head title="Thêm sản phẩm" />
-            
-            <div className="max-w-4xl mx-auto p-6">
-                <div className="bg-white rounded-lg shadow-md">
-                    <div className="p-6 border-b border-gray-200">
-                        <h1 className="text-2xl font-semibold text-gray-800">Thêm sản phẩm mới</h1>
-                    </div>
-                    
-                    <div className="p-6">
-                        {Object.keys(errors).length > 0 && (
-                            <div className="mb-6 p-4 bg-red-50 border border-red-200 rounded-md">
-                                <div className="text-red-800">
-                                    <ul className="list-disc list-inside">
-                                        {Object.entries(errors).map(([field, error]) => (
-                                            <li key={field}>
-                                                {typeof error === 'string' ? error : (Array.isArray(error) ? error[0] : String(error))}
-                                            </li>
-                                        ))}
-                                    </ul>
+
+            <div className="max-w-7xl mx-auto p-8 bg-gradient-to-br from-blue-50 to-cyan-50 min-h-screen">
+                <div className="grid lg:grid-cols-3 gap-8">
+                    {/* Main form */}
+                    <div className="lg:col-span-2">
+                        <div className="mb-6 rounded-lg overflow-hidden shadow">
+                            <div className="flex items-center gap-4 p-6 bg-gradient-to-r from-indigo-600 to-cyan-500 text-white">
+                                <div className="p-3 bg-white/10 rounded">
+                                    <Image className="w-6 h-6" />
+                                </div>
+                                <div>
+                                    <h1 className="text-2xl font-semibold">Thêm sản phẩm mới</h1>
+                                    <p className="text-sm opacity-90">Điền thông tin chi tiết để khách hàng dễ tìm thấy sản phẩm.</p>
+                                </div>
+                                <div className="ml-auto">
+                                    <Link href="/seller/products" className="inline-flex items-center gap-2 rounded bg-white/20 px-3 py-2 text-sm">Danh sách</Link>
                                 </div>
                             </div>
-                        )}
 
-                        <form onSubmit={handleSubmit}>
-                            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                                {/* Product Name */}
-                                <div className="md:col-span-2">
-                                    <label htmlFor="name" className="block text-sm font-medium text-gray-700 mb-2">
-                                        Tên sản phẩm *
-                                    </label>
-                                    <input
-                                        type="text"
-                                        id="name"
-                                        value={data.name}
-                                        onChange={(e) => { setData('name', e.target.value); validateField('name', e.target.value); }}
-                                        className={`w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 ${
-                                            errors.name ? 'border-red-300' : 'border-gray-300'
-                                        }`}
-                                        required
-                                    />
-                                    {errors.name && (
-                                        <p className="text-red-600 text-sm mt-1">{errors.name}</p>
-                                    )}
-                                    {clientErrors.name && <p className="text-red-600 text-sm mt-1">{clientErrors.name}</p>}
-                                </div>
+                            <div className="bg-white p-6">
+                                {Object.keys(errors).length > 0 && (
+                                    <div className="mb-6 p-4 bg-red-50 border border-red-200 rounded-md text-red-800">
+                                        <ul className="list-disc list-inside space-y-1">
+                                            {Object.entries(errors).map(([field, error]) => (
+                                                <li key={field}>
+                                                    {typeof error === 'string' ? error : (Array.isArray(error) ? error[0] : String(error))}
+                                                </li>
+                                            ))}
+                                        </ul>
+                                    </div>
+                                )}
 
-                                {/* Description */}
-                                <div className="md:col-span-2">
-                                    <label htmlFor="description" className="block text-sm font-medium text-gray-700 mb-2">
-                                        Mô tả sản phẩm
-                                    </label>
-                                    <textarea
-                                        id="description"
-                                        rows={4}
-                                        value={data.description}
-                                        onChange={(e) => { setData('description', e.target.value); validateField('description', e.target.value); }}
-                                        className={`w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 ${
-                                            errors.description ? 'border-red-300' : 'border-gray-300'
-                                        }`}
-                                    />
-                                    {errors.description && (
-                                        <p className="text-red-600 text-sm mt-1">{errors.description}</p>
-                                    )}
-                                    {clientErrors.description && <p className="text-red-600 text-sm mt-1">{clientErrors.description}</p>}
-                                </div>
-
-                                {/* Price */}
-                                <div>
-                                    <label htmlFor="price" className="block text-sm font-medium text-gray-700 mb-2">
-                                        Giá (VNĐ) *
-                                    </label>
-                                    <input
-                                        type="number"
-                                        id="price"
-                                        min="0"
-                                        step="1000"
-                                        value={data.price}
-                                        onChange={(e) => setData('price', e.target.value)}
-                                        className={`w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 ${
-                                            errors.price ? 'border-red-300' : 'border-gray-300'
-                                        }`}
-                                        required
-                                    />
-                                    {errors.price && (
-                                        <p className="text-red-600 text-sm mt-1">{errors.price}</p>
-                                    )}
-                                </div>
-
-                                {/* Brand */}
-                                <div>
-                                    <label htmlFor="brand_id" className="block text-sm font-medium text-gray-700 mb-2">
-                                        Thương hiệu *
-                                    </label>
-                                    <select
-                                        id="brand_id"
-                                        value={data.brand_id}
-                                        onChange={(e) => setData('brand_id', e.target.value)}
-                                        className={`w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 ${
-                                            errors.brand_id ? 'border-red-300' : 'border-gray-300'
-                                        }`}
-                                        required
-                                    >
-                                        <option value="">-- Chọn thương hiệu --</option>
-                                        {safebrands.map((brand) => (
-                                            <option key={brand.id} value={brand.id}>
-                                                {brand.name}
-                                            </option>
-                                        ))}
-                                    </select>
-                                    {errors.brand_id && (
-                                        <p className="text-red-600 text-sm mt-1">
-                                            {typeof errors.brand_id === 'string' ? errors.brand_id : (Array.isArray(errors.brand_id) ? errors.brand_id[0] : String(errors.brand_id))}
-                                        </p>
-                                    )}
-                                </div>
-
-                                {/* Category (new, replaces stock field) */}
-                                <div>
-                                    <label htmlFor="category_id" className="block text-sm font-medium text-gray-700 mb-2">
-                                        Danh mục *
-                                    </label>
-                                    <select
-                                        id="category_id"
-                                        value={data.category_id}
-                                        onChange={(e) => setData('category_id', e.target.value)}
-                                        className={`w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 ${
-                                            errors.category_id ? 'border-red-300' : 'border-gray-300'
-                                        }`}
-                                        required
-                                    >
-                                        <option value="">-- Chọn danh mục --</option>
-                                        {safeCategories.map((cat) => (
-                                            <option key={cat.id} value={cat.id}>
-                                                {cat.name}
-                                            </option>
-                                        ))}
-                                    </select>
-                                    {errors.category_id && (
-                                        <p className="text-red-600 text-sm mt-1">
-                                            {typeof errors.category_id === 'string' ? errors.category_id : (Array.isArray(errors.category_id) ? errors.category_id[0] : String(errors.category_id))}
-                                        </p>
-                                    )}
-                                </div>
-
-                                {/* Warranty */}
-                                <div>
-                                    <label htmlFor="warranty_id" className="block text-sm font-medium text-gray-700 mb-2">
-                                        Chính sách bảo hành
-                                    </label>
-                                    <select
-                                        id="warranty_id"
-                                        value={data.warranty_id}
-                                        onChange={(e) => setData('warranty_id', e.target.value)}
-                                        className={`w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 ${
-                                            errors.warranty_id ? 'border-red-300' : 'border-gray-300'
-                                        }`}
-                                    >
-                                        <option value="">-- Không có bảo hành --</option>
-                                        {safeWarranties.map((warranty) => (
-                                            <option key={warranty.id} value={warranty.id}>
-                                                {warranty.title}
-                                            </option>
-                                        ))}
-                                    </select>
-                                    {errors.warranty_id && (
-                                        <p className="text-red-600 text-sm mt-1">
-                                            {typeof errors.warranty_id === 'string' ? errors.warranty_id : (Array.isArray(errors.warranty_id) ? errors.warranty_id[0] : String(errors.warranty_id))}
-                                        </p>
-                                    )}
-                                </div>
-
-                                {/* Image */}
-                                <div className="md:col-span-2">
-                                    <label htmlFor="image" className="block text-sm font-medium text-gray-700 mb-2">
-                                        Ảnh sản phẩm *
-                                    </label>
-                                    <input
-                                        type="file"
-                                        id="image"
-                                        accept="image/*"
-                                        onChange={handleImageChange}
-                                        className={`w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 ${
-                                            errors.image || clientErrors.image ? 'border-red-300' : 'border-gray-300'
-                                        }`}
-                                        required
-                                    />
-                                    <p className="text-sm text-gray-500 mt-1">
-                                        Chọn ảnh (JPEG, PNG, JPG, GIF, WebP - Tối đa 4MB)
-                                    </p>
-                                    
-                                    {/* Image Preview */}
-                                    {imagePreview && (
-                                        <div className="mt-3">
-                                            <p className="text-sm font-medium text-gray-700 mb-2">Xem trước:</p>
-                                            <img 
-                                                src={imagePreview} 
-                                                alt="Preview" 
-                                                className="w-32 h-32 object-cover rounded-lg border shadow-sm"
+                                <form onSubmit={handleSubmit}>
+                                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                        <div className="md:col-span-2">
+                                            <label className="block text-sm font-medium text-gray-700 mb-2">Tên sản phẩm *</label>
+                                            <input
+                                                type="text"
+                                                value={data.name}
+                                                onChange={(e) => { setData('name', e.target.value); validateField('name', e.target.value); }}
+                                                className={`w-full px-4 py-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 ${errors.name ? 'border-red-300' : 'border-gray-200'}`}
+                                                placeholder="Nhập tên sản phẩm"
+                                                required
                                             />
+                                            {errors.name && <p className="text-red-600 text-sm mt-2">{errors.name}</p>}
+                                            {clientErrors.name && <p className="text-red-600 text-sm mt-2">{clientErrors.name}</p>}
                                         </div>
-                                    )}
-                                    
-                                    {errors.image && (
-                                        <p className="text-red-600 text-sm mt-1">
-                                            {Array.isArray(errors.image) ? errors.image[0] : errors.image}
-                                        </p>
-                                    )}
-                                    {clientErrors.image && (
-                                        <p className='text-red-600 text-sm mt-1'>{clientErrors.image}</p>
-                                    )}
-                                </div>
 
-                                {/* Active Status */}
-                                <div className="md:col-span-2">
-                                    <label className="flex items-center">
-                                        <input
-                                            type="checkbox"
-                                            checked={data.is_active}
-                                            onChange={(e) => setData('is_active', e.target.checked)}
-                                            className="mr-2 h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
-                                        />
-                                        <span className="text-sm font-medium text-gray-700">
-                                            Kích hoạt sản phẩm
-                                        </span>
-                                    </label>
-                                </div>
-                            </div>
+                                        <div className="md:col-span-2">
+                                            <label className="block text-sm font-medium text-gray-700 mb-2">Mô tả</label>
+                                            <textarea
+                                                rows={5}
+                                                value={data.description}
+                                                onChange={(e) => { setData('description', e.target.value); validateField('description', e.target.value); }}
+                                                className={`w-full px-4 py-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 ${errors.description ? 'border-red-300' : 'border-gray-200'}`}
+                                                placeholder="Mô tả ngắn, không chứa link hoặc số điện thoại"
+                                            />
+                                            {errors.description && <p className="text-red-600 text-sm mt-2">{errors.description}</p>}
+                                            {clientErrors.description && <p className="text-red-600 text-sm mt-2">{clientErrors.description}</p>}
+                                        </div>
 
-                            {/* Submit Buttons */}
-                            <div className="flex justify-end space-x-4 mt-8">
-                                <Link
-                                    href="/seller/dashboard"
-                                    className="px-4 py-2 border border-gray-300 rounded-md text-gray-700 hover:bg-gray-50 transition-colors"
-                                >
-                                    Hủy
-                                </Link>
-                                <button
-                                    type="submit"
-                                    disabled={processing || Object.keys(clientErrors).length > 0}
-                                    className="px-6 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
-                                >
-                                    {processing ? 'Adding...' : 'Add Product'}
-                                </button>
+                                        <div>
+                                            <label className="block text-sm font-medium text-gray-700 mb-2">Giá (VNĐ) *</label>
+                                            <div className="flex items-center gap-2">
+                                                <input
+                                                    type="number"
+                                                    min="0"
+                                                    step="1000"
+                                                    value={data.price}
+                                                    onChange={(e) => setData('price', e.target.value)}
+                                                    className={`flex-1 px-4 py-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 ${errors.price ? 'border-red-300' : 'border-gray-200'}`}
+                                                    required
+                                                />
+                                                <div className="text-sm text-gray-500 px-3">{formatCurrency(data.price)}</div>
+                                            </div>
+                                            {errors.price && <p className="text-red-600 text-sm mt-2">{errors.price}</p>}
+                                        </div>
+
+                                        <div>
+                                            <label className="block text-sm font-medium text-gray-700 mb-2">Thương hiệu *</label>
+                                            <select
+                                                value={data.brand_id}
+                                                onChange={(e) => setData('brand_id', e.target.value)}
+                                                className={`w-full px-4 py-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 ${errors.brand_id ? 'border-red-300' : 'border-gray-200'}`}
+                                                required
+                                            >
+                                                <option value="">-- Chọn thương hiệu --</option>
+                                                {safebrands.map(b => <option key={b.id} value={b.id}>{b.name}</option>)}
+                                            </select>
+                                            {errors.brand_id && <p className="text-red-600 text-sm mt-2">{errors.brand_id}</p>}
+                                        </div>
+
+                                        <div>
+                                            <label className="block text-sm font-medium text-gray-700 mb-2">Danh mục *</label>
+                                            <select
+                                                value={data.category_id}
+                                                onChange={(e) => setData('category_id', e.target.value)}
+                                                className={`w-full px-4 py-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 ${errors.category_id ? 'border-red-300' : 'border-gray-200'}`}
+                                                required
+                                            >
+                                                <option value="">-- Chọn danh mục --</option>
+                                                {safeCategories.map(c => <option key={c.id} value={c.id}>{c.name}</option>)}
+                                            </select>
+                                            {errors.category_id && <p className="text-red-600 text-sm mt-2">{errors.category_id}</p>}
+                                        </div>
+
+                                        <div>
+                                            <label className="block text-sm font-medium text-gray-700 mb-2">Chính sách bảo hành</label>
+                                            <select
+                                                value={data.warranty_id}
+                                                onChange={(e) => setData('warranty_id', e.target.value)}
+                                                className={`w-full px-4 py-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 ${errors.warranty_id ? 'border-red-300' : 'border-gray-200'}`}
+                                            >
+                                                <option value="">-- Không có bảo hành --</option>
+                                                {safeWarranties.map(w => <option key={w.id} value={w.id}>{w.title}</option>)}
+                                            </select>
+                                            {errors.warranty_id && <p className="text-red-600 text-sm mt-2">{errors.warranty_id}</p>}
+                                        </div>
+
+                                        <div className="md:col-span-2">
+                                            <label className="block text-sm font-medium text-gray-700 mb-2">Ảnh sản phẩm *</label>
+                                            <input
+                                                id="image"
+                                                type="file"
+                                                accept="image/*"
+                                                onChange={handleImageChange}
+                                                className={`w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 ${errors.image || clientErrors.image ? 'border-red-300' : 'border-gray-200'}`}
+                                                required
+                                            />
+                                            <p className="text-sm text-gray-500 mt-2">Hỗ trợ: JPEG, PNG, JPG, GIF, WebP — tối đa 4MB</p>
+
+                                            {imagePreview ? (
+                                                <div className="mt-4 flex items-start gap-4">
+                                                    <img src={imagePreview} alt="Preview" className="w-40 h-40 object-cover rounded-lg border shadow-sm" />
+                                                    <div className="flex-1">
+                                                        <p className="font-medium">{data.name || 'Tên sản phẩm'}</p>
+                                                        <p className="text-sm text-gray-500 mt-2">{data.description ? `${data.description.slice(0,120)}${data.description.length>120?'...':''}` : 'Mô tả ngắn sẽ hiển thị ở đây.'}</p>
+                                                    </div>
+                                                </div>
+                                            ) : (
+                                                <div className="mt-4 flex items-center gap-3 text-sm text-gray-500">
+                                                    <div className="w-20 h-20 flex items-center justify-center rounded-lg bg-gray-50 border text-gray-300">
+                                                        <Image className="w-6 h-6" />
+                                                    </div>
+                                                    <div>Chưa có ảnh — thêm ảnh sản phẩm để xem trước.</div>
+                                                </div>
+                                            )}
+
+                                            {errors.image && <p className="text-red-600 text-sm mt-2">{Array.isArray(errors.image) ? errors.image[0] : errors.image}</p>}
+                                            {clientErrors.image && <p className="text-red-600 text-sm mt-2">{clientErrors.image}</p>}
+                                        </div>
+
+                                        <div className="md:col-span-2 flex items-center justify-between mt-4">
+                                            <label className="flex items-center gap-2">
+                                                <input type="checkbox" checked={data.is_active} onChange={e => setData('is_active', e.target.checked)} className="h-4 w-4" />
+                                                <span className="text-sm font-medium text-gray-700">Kích hoạt sản phẩm</span>
+                                            </label>
+
+                                            <div className="flex gap-3">
+                                                <Link href="/seller/dashboard" className="px-4 py-2 border rounded-lg text-sm text-gray-700 hover:bg-gray-50">Hủy</Link>
+                                                <button type="submit" disabled={processing || Object.keys(clientErrors).length>0} className="px-6 py-2 bg-gradient-to-r from-[#0AC1EF] to-[#09b3db] text-white rounded-lg shadow">
+                                                    {processing ? 'Đang gửi...' : 'Thêm sản phẩm'}
+                                                </button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </form>
                             </div>
-                        </form>
+                        </div>
                     </div>
+
+                    {/* Sidebar */}
+                    <aside className="lg:col-span-1 space-y-6">
+                        <div className="rounded-lg border bg-white p-5 shadow-sm">
+                            <div className="flex items-center gap-3">
+                                <div className="p-2 bg-indigo-50 rounded"><Tag className="w-5 h-5 text-indigo-600" /></div>
+                                <div>
+                                    <h4 className="font-semibold">Tóm tắt nhanh</h4>
+                                    <p className="text-sm text-gray-600 mt-1">Xem trước thông tin sản phẩm trước khi tạo.</p>
+                                </div>
+                            </div>
+
+                            <dl className="mt-4 text-sm text-gray-700 space-y-3">
+                                <div className="flex justify-between"><dt className="text-gray-500">Tên</dt><dd className="font-medium">{data.name || '—'}</dd></div>
+                                <div className="flex justify-between"><dt className="text-gray-500">Giá</dt><dd className="font-medium">{formatCurrency(data.price)}</dd></div>
+                                <div className="flex justify-between"><dt className="text-gray-500">Danh mục</dt><dd>{safeCategories.find(c=>String(c.id)===String(data.category_id))?.name ?? '—'}</dd></div>
+                                <div className="flex justify-between"><dt className="text-gray-500">Thương hiệu</dt><dd>{safebrands.find(b=>String(b.id)===String(data.brand_id))?.name ?? '—'}</dd></div>
+                                <div className="flex justify-between"><dt className="text-gray-500">Bảo hành</dt><dd>{safeWarranties.find(w=>String(w.id)===String(data.warranty_id))?.title ?? '—'}</dd></div>
+                            </dl>
+                        </div>
+
+                        <div className="rounded-lg border bg-white p-5 shadow-sm">
+                            <div className="flex items-center gap-3">
+                                <div className="p-2 bg-green-50 rounded"><Info className="w-5 h-5 text-green-600" /></div>
+                                <div>
+                                    <h4 className="font-semibold">Gợi ý</h4>
+                                    <p className="text-sm text-gray-600 mt-1">Viết mô tả ngắn gọn, tránh thông tin liên hệ. Ảnh sắc nét giúp tăng tỉ lệ mua hàng.</p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div className="rounded-lg border bg-white p-5 shadow-sm">
+                            <div className="flex items-center gap-3">
+                                <div className="p-2 bg-yellow-50 rounded"><CreditCard className="w-5 h-5 text-yellow-600" /></div>
+                                <div>
+                                    <h4 className="font-semibold">Thanh toán & phí</h4>
+                                    <p className="text-sm text-gray-600 mt-1">Kiểm tra giá bán, chiết khấu và các lựa chọn vận chuyển sau khi tạo sản phẩm.</p>
+                                </div>
+                            </div>
+                        </div>
+                    </aside>
                 </div>
             </div>
         </AppLayout>

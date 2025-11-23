@@ -1,7 +1,7 @@
 import { queryParams, type RouteQueryOptions, type RouteDefinition, type RouteFormDefinition, applyUrlDefaults } from './../../../../wayfinder'
 /**
 * @see \App\Http\Controllers\Seller\ProductVariantController::index
- * @see app/Http/Controllers/Seller/ProductVariantController.php:20
+ * @see app/Http/Controllers/Seller/ProductVariantController.php:21
  * @route '/seller/products/{product}/variants'
  */
 export const index = (args: { product: number | { id: number } } | [product: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions): RouteDefinition<'get'> => ({
@@ -16,7 +16,7 @@ index.definition = {
 
 /**
 * @see \App\Http\Controllers\Seller\ProductVariantController::index
- * @see app/Http/Controllers/Seller/ProductVariantController.php:20
+ * @see app/Http/Controllers/Seller/ProductVariantController.php:21
  * @route '/seller/products/{product}/variants'
  */
 index.url = (args: { product: number | { id: number } } | [product: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions) => {
@@ -49,7 +49,7 @@ index.url = (args: { product: number | { id: number } } | [product: number | { i
 
 /**
 * @see \App\Http\Controllers\Seller\ProductVariantController::index
- * @see app/Http/Controllers/Seller/ProductVariantController.php:20
+ * @see app/Http/Controllers/Seller/ProductVariantController.php:21
  * @route '/seller/products/{product}/variants'
  */
 index.get = (args: { product: number | { id: number } } | [product: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions): RouteDefinition<'get'> => ({
@@ -58,7 +58,7 @@ index.get = (args: { product: number | { id: number } } | [product: number | { i
 })
 /**
 * @see \App\Http\Controllers\Seller\ProductVariantController::index
- * @see app/Http/Controllers/Seller/ProductVariantController.php:20
+ * @see app/Http/Controllers/Seller/ProductVariantController.php:21
  * @route '/seller/products/{product}/variants'
  */
 index.head = (args: { product: number | { id: number } } | [product: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions): RouteDefinition<'head'> => ({
@@ -68,7 +68,7 @@ index.head = (args: { product: number | { id: number } } | [product: number | { 
 
     /**
 * @see \App\Http\Controllers\Seller\ProductVariantController::index
- * @see app/Http/Controllers/Seller/ProductVariantController.php:20
+ * @see app/Http/Controllers/Seller/ProductVariantController.php:21
  * @route '/seller/products/{product}/variants'
  */
     const indexForm = (args: { product: number | { id: number } } | [product: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
@@ -78,7 +78,7 @@ index.head = (args: { product: number | { id: number } } | [product: number | { 
 
             /**
 * @see \App\Http\Controllers\Seller\ProductVariantController::index
- * @see app/Http/Controllers/Seller/ProductVariantController.php:20
+ * @see app/Http/Controllers/Seller/ProductVariantController.php:21
  * @route '/seller/products/{product}/variants'
  */
         indexForm.get = (args: { product: number | { id: number } } | [product: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
@@ -87,7 +87,7 @@ index.head = (args: { product: number | { id: number } } | [product: number | { 
         })
             /**
 * @see \App\Http\Controllers\Seller\ProductVariantController::index
- * @see app/Http/Controllers/Seller/ProductVariantController.php:20
+ * @see app/Http/Controllers/Seller/ProductVariantController.php:21
  * @route '/seller/products/{product}/variants'
  */
         indexForm.head = (args: { product: number | { id: number } } | [product: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
@@ -103,7 +103,7 @@ index.head = (args: { product: number | { id: number } } | [product: number | { 
     index.form = indexForm
 /**
 * @see \App\Http\Controllers\Seller\ProductVariantController::store
- * @see app/Http/Controllers/Seller/ProductVariantController.php:38
+ * @see app/Http/Controllers/Seller/ProductVariantController.php:39
  * @route '/seller/products/{product}/variants'
  */
 export const store = (args: { product: number | { id: number } } | [product: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions): RouteDefinition<'post'> => ({
@@ -118,7 +118,7 @@ store.definition = {
 
 /**
 * @see \App\Http\Controllers\Seller\ProductVariantController::store
- * @see app/Http/Controllers/Seller/ProductVariantController.php:38
+ * @see app/Http/Controllers/Seller/ProductVariantController.php:39
  * @route '/seller/products/{product}/variants'
  */
 store.url = (args: { product: number | { id: number } } | [product: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions) => {
@@ -151,7 +151,7 @@ store.url = (args: { product: number | { id: number } } | [product: number | { i
 
 /**
 * @see \App\Http\Controllers\Seller\ProductVariantController::store
- * @see app/Http/Controllers/Seller/ProductVariantController.php:38
+ * @see app/Http/Controllers/Seller/ProductVariantController.php:39
  * @route '/seller/products/{product}/variants'
  */
 store.post = (args: { product: number | { id: number } } | [product: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions): RouteDefinition<'post'> => ({
@@ -161,7 +161,7 @@ store.post = (args: { product: number | { id: number } } | [product: number | { 
 
     /**
 * @see \App\Http\Controllers\Seller\ProductVariantController::store
- * @see app/Http/Controllers/Seller/ProductVariantController.php:38
+ * @see app/Http/Controllers/Seller/ProductVariantController.php:39
  * @route '/seller/products/{product}/variants'
  */
     const storeForm = (args: { product: number | { id: number } } | [product: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
@@ -171,7 +171,7 @@ store.post = (args: { product: number | { id: number } } | [product: number | { 
 
             /**
 * @see \App\Http\Controllers\Seller\ProductVariantController::store
- * @see app/Http/Controllers/Seller/ProductVariantController.php:38
+ * @see app/Http/Controllers/Seller/ProductVariantController.php:39
  * @route '/seller/products/{product}/variants'
  */
         storeForm.post = (args: { product: number | { id: number } } | [product: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
@@ -181,112 +181,8 @@ store.post = (args: { product: number | { id: number } } | [product: number | { 
     
     store.form = storeForm
 /**
-* @see \App\Http\Controllers\Seller\ProductVariantController::update
- * @see app/Http/Controllers/Seller/ProductVariantController.php:126
- * @route '/seller/products/{product}/variants/{variant}'
- */
-export const update = (args: { product: number | { id: number }, variant: number | { id: number } } | [product: number | { id: number }, variant: number | { id: number } ], options?: RouteQueryOptions): RouteDefinition<'put'> => ({
-    url: update.url(args, options),
-    method: 'put',
-})
-
-update.definition = {
-    methods: ["put","post"],
-    url: '/seller/products/{product}/variants/{variant}',
-} satisfies RouteDefinition<["put","post"]>
-
-/**
-* @see \App\Http\Controllers\Seller\ProductVariantController::update
- * @see app/Http/Controllers/Seller/ProductVariantController.php:126
- * @route '/seller/products/{product}/variants/{variant}'
- */
-update.url = (args: { product: number | { id: number }, variant: number | { id: number } } | [product: number | { id: number }, variant: number | { id: number } ], options?: RouteQueryOptions) => {
-    if (Array.isArray(args)) {
-        args = {
-                    product: args[0],
-                    variant: args[1],
-                }
-    }
-
-    args = applyUrlDefaults(args)
-
-    const parsedArgs = {
-                        product: typeof args.product === 'object'
-                ? args.product.id
-                : args.product,
-                                variant: typeof args.variant === 'object'
-                ? args.variant.id
-                : args.variant,
-                }
-
-    return update.definition.url
-            .replace('{product}', parsedArgs.product.toString())
-            .replace('{variant}', parsedArgs.variant.toString())
-            .replace(/\/+$/, '') + queryParams(options)
-}
-
-/**
-* @see \App\Http\Controllers\Seller\ProductVariantController::update
- * @see app/Http/Controllers/Seller/ProductVariantController.php:126
- * @route '/seller/products/{product}/variants/{variant}'
- */
-update.put = (args: { product: number | { id: number }, variant: number | { id: number } } | [product: number | { id: number }, variant: number | { id: number } ], options?: RouteQueryOptions): RouteDefinition<'put'> => ({
-    url: update.url(args, options),
-    method: 'put',
-})
-/**
-* @see \App\Http\Controllers\Seller\ProductVariantController::update
- * @see app/Http/Controllers/Seller/ProductVariantController.php:126
- * @route '/seller/products/{product}/variants/{variant}'
- */
-update.post = (args: { product: number | { id: number }, variant: number | { id: number } } | [product: number | { id: number }, variant: number | { id: number } ], options?: RouteQueryOptions): RouteDefinition<'post'> => ({
-    url: update.url(args, options),
-    method: 'post',
-})
-
-    /**
-* @see \App\Http\Controllers\Seller\ProductVariantController::update
- * @see app/Http/Controllers/Seller/ProductVariantController.php:126
- * @route '/seller/products/{product}/variants/{variant}'
- */
-    const updateForm = (args: { product: number | { id: number }, variant: number | { id: number } } | [product: number | { id: number }, variant: number | { id: number } ], options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
-        action: update.url(args, {
-                    [options?.mergeQuery ? 'mergeQuery' : 'query']: {
-                        _method: 'PUT',
-                        ...(options?.query ?? options?.mergeQuery ?? {}),
-                    }
-                }),
-        method: 'post',
-    })
-
-            /**
-* @see \App\Http\Controllers\Seller\ProductVariantController::update
- * @see app/Http/Controllers/Seller/ProductVariantController.php:126
- * @route '/seller/products/{product}/variants/{variant}'
- */
-        updateForm.put = (args: { product: number | { id: number }, variant: number | { id: number } } | [product: number | { id: number }, variant: number | { id: number } ], options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
-            action: update.url(args, {
-                        [options?.mergeQuery ? 'mergeQuery' : 'query']: {
-                            _method: 'PUT',
-                            ...(options?.query ?? options?.mergeQuery ?? {}),
-                        }
-                    }),
-            method: 'post',
-        })
-            /**
-* @see \App\Http\Controllers\Seller\ProductVariantController::update
- * @see app/Http/Controllers/Seller/ProductVariantController.php:126
- * @route '/seller/products/{product}/variants/{variant}'
- */
-        updateForm.post = (args: { product: number | { id: number }, variant: number | { id: number } } | [product: number | { id: number }, variant: number | { id: number } ], options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
-            action: update.url(args, options),
-            method: 'post',
-        })
-    
-    update.form = updateForm
-/**
 * @see \App\Http\Controllers\Seller\ProductVariantController::destroy
- * @see app/Http/Controllers/Seller/ProductVariantController.php:221
+ * @see app/Http/Controllers/Seller/ProductVariantController.php:222
  * @route '/seller/products/{product}/variants/{variant}'
  */
 export const destroy = (args: { product: number | { id: number }, variant: number | { id: number } } | [product: number | { id: number }, variant: number | { id: number } ], options?: RouteQueryOptions): RouteDefinition<'delete'> => ({
@@ -301,7 +197,7 @@ destroy.definition = {
 
 /**
 * @see \App\Http\Controllers\Seller\ProductVariantController::destroy
- * @see app/Http/Controllers/Seller/ProductVariantController.php:221
+ * @see app/Http/Controllers/Seller/ProductVariantController.php:222
  * @route '/seller/products/{product}/variants/{variant}'
  */
 destroy.url = (args: { product: number | { id: number }, variant: number | { id: number } } | [product: number | { id: number }, variant: number | { id: number } ], options?: RouteQueryOptions) => {
@@ -331,7 +227,7 @@ destroy.url = (args: { product: number | { id: number }, variant: number | { id:
 
 /**
 * @see \App\Http\Controllers\Seller\ProductVariantController::destroy
- * @see app/Http/Controllers/Seller/ProductVariantController.php:221
+ * @see app/Http/Controllers/Seller/ProductVariantController.php:222
  * @route '/seller/products/{product}/variants/{variant}'
  */
 destroy.delete = (args: { product: number | { id: number }, variant: number | { id: number } } | [product: number | { id: number }, variant: number | { id: number } ], options?: RouteQueryOptions): RouteDefinition<'delete'> => ({
@@ -341,7 +237,7 @@ destroy.delete = (args: { product: number | { id: number }, variant: number | { 
 
     /**
 * @see \App\Http\Controllers\Seller\ProductVariantController::destroy
- * @see app/Http/Controllers/Seller/ProductVariantController.php:221
+ * @see app/Http/Controllers/Seller/ProductVariantController.php:222
  * @route '/seller/products/{product}/variants/{variant}'
  */
     const destroyForm = (args: { product: number | { id: number }, variant: number | { id: number } } | [product: number | { id: number }, variant: number | { id: number } ], options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
@@ -356,7 +252,7 @@ destroy.delete = (args: { product: number | { id: number }, variant: number | { 
 
             /**
 * @see \App\Http\Controllers\Seller\ProductVariantController::destroy
- * @see app/Http/Controllers/Seller/ProductVariantController.php:221
+ * @see app/Http/Controllers/Seller/ProductVariantController.php:222
  * @route '/seller/products/{product}/variants/{variant}'
  */
         destroyForm.delete = (args: { product: number | { id: number }, variant: number | { id: number } } | [product: number | { id: number }, variant: number | { id: number } ], options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
@@ -373,7 +269,6 @@ destroy.delete = (args: { product: number | { id: number }, variant: number | { 
 const variants = {
     index: Object.assign(index, index),
 store: Object.assign(store, store),
-update: Object.assign(update, update),
 destroy: Object.assign(destroy, destroy),
 }
 

@@ -211,189 +211,8 @@ store.post = (options?: RouteQueryOptions): RouteDefinition<'post'> => ({
     
     store.form = storeForm
 /**
-* @see \App\Http\Controllers\Seller\SellerPromotionController::edit
- * @see app/Http/Controllers/Seller/SellerPromotionController.php:123
- * @route '/seller/promotions/{id}/edit'
- */
-export const edit = (args: { id: string | number } | [id: string | number ] | string | number, options?: RouteQueryOptions): RouteDefinition<'get'> => ({
-    url: edit.url(args, options),
-    method: 'get',
-})
-
-edit.definition = {
-    methods: ["get","head"],
-    url: '/seller/promotions/{id}/edit',
-} satisfies RouteDefinition<["get","head"]>
-
-/**
-* @see \App\Http\Controllers\Seller\SellerPromotionController::edit
- * @see app/Http/Controllers/Seller/SellerPromotionController.php:123
- * @route '/seller/promotions/{id}/edit'
- */
-edit.url = (args: { id: string | number } | [id: string | number ] | string | number, options?: RouteQueryOptions) => {
-    if (typeof args === 'string' || typeof args === 'number') {
-        args = { id: args }
-    }
-
-    
-    if (Array.isArray(args)) {
-        args = {
-                    id: args[0],
-                }
-    }
-
-    args = applyUrlDefaults(args)
-
-    const parsedArgs = {
-                        id: args.id,
-                }
-
-    return edit.definition.url
-            .replace('{id}', parsedArgs.id.toString())
-            .replace(/\/+$/, '') + queryParams(options)
-}
-
-/**
-* @see \App\Http\Controllers\Seller\SellerPromotionController::edit
- * @see app/Http/Controllers/Seller/SellerPromotionController.php:123
- * @route '/seller/promotions/{id}/edit'
- */
-edit.get = (args: { id: string | number } | [id: string | number ] | string | number, options?: RouteQueryOptions): RouteDefinition<'get'> => ({
-    url: edit.url(args, options),
-    method: 'get',
-})
-/**
-* @see \App\Http\Controllers\Seller\SellerPromotionController::edit
- * @see app/Http/Controllers/Seller/SellerPromotionController.php:123
- * @route '/seller/promotions/{id}/edit'
- */
-edit.head = (args: { id: string | number } | [id: string | number ] | string | number, options?: RouteQueryOptions): RouteDefinition<'head'> => ({
-    url: edit.url(args, options),
-    method: 'head',
-})
-
-    /**
-* @see \App\Http\Controllers\Seller\SellerPromotionController::edit
- * @see app/Http/Controllers/Seller/SellerPromotionController.php:123
- * @route '/seller/promotions/{id}/edit'
- */
-    const editForm = (args: { id: string | number } | [id: string | number ] | string | number, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
-        action: edit.url(args, options),
-        method: 'get',
-    })
-
-            /**
-* @see \App\Http\Controllers\Seller\SellerPromotionController::edit
- * @see app/Http/Controllers/Seller/SellerPromotionController.php:123
- * @route '/seller/promotions/{id}/edit'
- */
-        editForm.get = (args: { id: string | number } | [id: string | number ] | string | number, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
-            action: edit.url(args, options),
-            method: 'get',
-        })
-            /**
-* @see \App\Http\Controllers\Seller\SellerPromotionController::edit
- * @see app/Http/Controllers/Seller/SellerPromotionController.php:123
- * @route '/seller/promotions/{id}/edit'
- */
-        editForm.head = (args: { id: string | number } | [id: string | number ] | string | number, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
-            action: edit.url(args, {
-                        [options?.mergeQuery ? 'mergeQuery' : 'query']: {
-                            _method: 'HEAD',
-                            ...(options?.query ?? options?.mergeQuery ?? {}),
-                        }
-                    }),
-            method: 'get',
-        })
-    
-    edit.form = editForm
-/**
-* @see \App\Http\Controllers\Seller\SellerPromotionController::update
- * @see app/Http/Controllers/Seller/SellerPromotionController.php:139
- * @route '/seller/promotions/{id}'
- */
-export const update = (args: { id: string | number } | [id: string | number ] | string | number, options?: RouteQueryOptions): RouteDefinition<'put'> => ({
-    url: update.url(args, options),
-    method: 'put',
-})
-
-update.definition = {
-    methods: ["put"],
-    url: '/seller/promotions/{id}',
-} satisfies RouteDefinition<["put"]>
-
-/**
-* @see \App\Http\Controllers\Seller\SellerPromotionController::update
- * @see app/Http/Controllers/Seller/SellerPromotionController.php:139
- * @route '/seller/promotions/{id}'
- */
-update.url = (args: { id: string | number } | [id: string | number ] | string | number, options?: RouteQueryOptions) => {
-    if (typeof args === 'string' || typeof args === 'number') {
-        args = { id: args }
-    }
-
-    
-    if (Array.isArray(args)) {
-        args = {
-                    id: args[0],
-                }
-    }
-
-    args = applyUrlDefaults(args)
-
-    const parsedArgs = {
-                        id: args.id,
-                }
-
-    return update.definition.url
-            .replace('{id}', parsedArgs.id.toString())
-            .replace(/\/+$/, '') + queryParams(options)
-}
-
-/**
-* @see \App\Http\Controllers\Seller\SellerPromotionController::update
- * @see app/Http/Controllers/Seller/SellerPromotionController.php:139
- * @route '/seller/promotions/{id}'
- */
-update.put = (args: { id: string | number } | [id: string | number ] | string | number, options?: RouteQueryOptions): RouteDefinition<'put'> => ({
-    url: update.url(args, options),
-    method: 'put',
-})
-
-    /**
-* @see \App\Http\Controllers\Seller\SellerPromotionController::update
- * @see app/Http/Controllers/Seller/SellerPromotionController.php:139
- * @route '/seller/promotions/{id}'
- */
-    const updateForm = (args: { id: string | number } | [id: string | number ] | string | number, options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
-        action: update.url(args, {
-                    [options?.mergeQuery ? 'mergeQuery' : 'query']: {
-                        _method: 'PUT',
-                        ...(options?.query ?? options?.mergeQuery ?? {}),
-                    }
-                }),
-        method: 'post',
-    })
-
-            /**
-* @see \App\Http\Controllers\Seller\SellerPromotionController::update
- * @see app/Http/Controllers/Seller/SellerPromotionController.php:139
- * @route '/seller/promotions/{id}'
- */
-        updateForm.put = (args: { id: string | number } | [id: string | number ] | string | number, options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
-            action: update.url(args, {
-                        [options?.mergeQuery ? 'mergeQuery' : 'query']: {
-                            _method: 'PUT',
-                            ...(options?.query ?? options?.mergeQuery ?? {}),
-                        }
-                    }),
-            method: 'post',
-        })
-    
-    update.form = updateForm
-/**
 * @see \App\Http\Controllers\Seller\SellerPromotionController::destroy
- * @see app/Http/Controllers/Seller/SellerPromotionController.php:203
+ * @see app/Http/Controllers/Seller/SellerPromotionController.php:123
  * @route '/seller/promotions/{id}'
  */
 export const destroy = (args: { id: string | number } | [id: string | number ] | string | number, options?: RouteQueryOptions): RouteDefinition<'delete'> => ({
@@ -408,7 +227,7 @@ destroy.definition = {
 
 /**
 * @see \App\Http\Controllers\Seller\SellerPromotionController::destroy
- * @see app/Http/Controllers/Seller/SellerPromotionController.php:203
+ * @see app/Http/Controllers/Seller/SellerPromotionController.php:123
  * @route '/seller/promotions/{id}'
  */
 destroy.url = (args: { id: string | number } | [id: string | number ] | string | number, options?: RouteQueryOptions) => {
@@ -436,7 +255,7 @@ destroy.url = (args: { id: string | number } | [id: string | number ] | string |
 
 /**
 * @see \App\Http\Controllers\Seller\SellerPromotionController::destroy
- * @see app/Http/Controllers/Seller/SellerPromotionController.php:203
+ * @see app/Http/Controllers/Seller/SellerPromotionController.php:123
  * @route '/seller/promotions/{id}'
  */
 destroy.delete = (args: { id: string | number } | [id: string | number ] | string | number, options?: RouteQueryOptions): RouteDefinition<'delete'> => ({
@@ -446,7 +265,7 @@ destroy.delete = (args: { id: string | number } | [id: string | number ] | strin
 
     /**
 * @see \App\Http\Controllers\Seller\SellerPromotionController::destroy
- * @see app/Http/Controllers/Seller/SellerPromotionController.php:203
+ * @see app/Http/Controllers/Seller/SellerPromotionController.php:123
  * @route '/seller/promotions/{id}'
  */
     const destroyForm = (args: { id: string | number } | [id: string | number ] | string | number, options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
@@ -461,7 +280,7 @@ destroy.delete = (args: { id: string | number } | [id: string | number ] | strin
 
             /**
 * @see \App\Http\Controllers\Seller\SellerPromotionController::destroy
- * @see app/Http/Controllers/Seller/SellerPromotionController.php:203
+ * @see app/Http/Controllers/Seller/SellerPromotionController.php:123
  * @route '/seller/promotions/{id}'
  */
         destroyForm.delete = (args: { id: string | number } | [id: string | number ] | string | number, options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
@@ -477,7 +296,7 @@ destroy.delete = (args: { id: string | number } | [id: string | number ] | strin
     destroy.form = destroyForm
 /**
 * @see \App\Http\Controllers\Seller\SellerPromotionController::toggleStatus
- * @see app/Http/Controllers/Seller/SellerPromotionController.php:217
+ * @see app/Http/Controllers/Seller/SellerPromotionController.php:137
  * @route '/seller/promotions/{id}/toggle-status'
  */
 export const toggleStatus = (args: { id: string | number } | [id: string | number ] | string | number, options?: RouteQueryOptions): RouteDefinition<'post'> => ({
@@ -492,7 +311,7 @@ toggleStatus.definition = {
 
 /**
 * @see \App\Http\Controllers\Seller\SellerPromotionController::toggleStatus
- * @see app/Http/Controllers/Seller/SellerPromotionController.php:217
+ * @see app/Http/Controllers/Seller/SellerPromotionController.php:137
  * @route '/seller/promotions/{id}/toggle-status'
  */
 toggleStatus.url = (args: { id: string | number } | [id: string | number ] | string | number, options?: RouteQueryOptions) => {
@@ -520,7 +339,7 @@ toggleStatus.url = (args: { id: string | number } | [id: string | number ] | str
 
 /**
 * @see \App\Http\Controllers\Seller\SellerPromotionController::toggleStatus
- * @see app/Http/Controllers/Seller/SellerPromotionController.php:217
+ * @see app/Http/Controllers/Seller/SellerPromotionController.php:137
  * @route '/seller/promotions/{id}/toggle-status'
  */
 toggleStatus.post = (args: { id: string | number } | [id: string | number ] | string | number, options?: RouteQueryOptions): RouteDefinition<'post'> => ({
@@ -530,7 +349,7 @@ toggleStatus.post = (args: { id: string | number } | [id: string | number ] | st
 
     /**
 * @see \App\Http\Controllers\Seller\SellerPromotionController::toggleStatus
- * @see app/Http/Controllers/Seller/SellerPromotionController.php:217
+ * @see app/Http/Controllers/Seller/SellerPromotionController.php:137
  * @route '/seller/promotions/{id}/toggle-status'
  */
     const toggleStatusForm = (args: { id: string | number } | [id: string | number ] | string | number, options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
@@ -540,7 +359,7 @@ toggleStatus.post = (args: { id: string | number } | [id: string | number ] | st
 
             /**
 * @see \App\Http\Controllers\Seller\SellerPromotionController::toggleStatus
- * @see app/Http/Controllers/Seller/SellerPromotionController.php:217
+ * @see app/Http/Controllers/Seller/SellerPromotionController.php:137
  * @route '/seller/promotions/{id}/toggle-status'
  */
         toggleStatusForm.post = (args: { id: string | number } | [id: string | number ] | string | number, options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
@@ -551,7 +370,7 @@ toggleStatus.post = (args: { id: string | number } | [id: string | number ] | st
     toggleStatus.form = toggleStatusForm
 /**
 * @see \App\Http\Controllers\Seller\SellerPromotionController::usageStats
- * @see app/Http/Controllers/Seller/SellerPromotionController.php:229
+ * @see app/Http/Controllers/Seller/SellerPromotionController.php:149
  * @route '/seller/promotions/{id}/usage'
  */
 export const usageStats = (args: { id: string | number } | [id: string | number ] | string | number, options?: RouteQueryOptions): RouteDefinition<'get'> => ({
@@ -566,7 +385,7 @@ usageStats.definition = {
 
 /**
 * @see \App\Http\Controllers\Seller\SellerPromotionController::usageStats
- * @see app/Http/Controllers/Seller/SellerPromotionController.php:229
+ * @see app/Http/Controllers/Seller/SellerPromotionController.php:149
  * @route '/seller/promotions/{id}/usage'
  */
 usageStats.url = (args: { id: string | number } | [id: string | number ] | string | number, options?: RouteQueryOptions) => {
@@ -594,7 +413,7 @@ usageStats.url = (args: { id: string | number } | [id: string | number ] | strin
 
 /**
 * @see \App\Http\Controllers\Seller\SellerPromotionController::usageStats
- * @see app/Http/Controllers/Seller/SellerPromotionController.php:229
+ * @see app/Http/Controllers/Seller/SellerPromotionController.php:149
  * @route '/seller/promotions/{id}/usage'
  */
 usageStats.get = (args: { id: string | number } | [id: string | number ] | string | number, options?: RouteQueryOptions): RouteDefinition<'get'> => ({
@@ -603,7 +422,7 @@ usageStats.get = (args: { id: string | number } | [id: string | number ] | strin
 })
 /**
 * @see \App\Http\Controllers\Seller\SellerPromotionController::usageStats
- * @see app/Http/Controllers/Seller/SellerPromotionController.php:229
+ * @see app/Http/Controllers/Seller/SellerPromotionController.php:149
  * @route '/seller/promotions/{id}/usage'
  */
 usageStats.head = (args: { id: string | number } | [id: string | number ] | string | number, options?: RouteQueryOptions): RouteDefinition<'head'> => ({
@@ -613,7 +432,7 @@ usageStats.head = (args: { id: string | number } | [id: string | number ] | stri
 
     /**
 * @see \App\Http\Controllers\Seller\SellerPromotionController::usageStats
- * @see app/Http/Controllers/Seller/SellerPromotionController.php:229
+ * @see app/Http/Controllers/Seller/SellerPromotionController.php:149
  * @route '/seller/promotions/{id}/usage'
  */
     const usageStatsForm = (args: { id: string | number } | [id: string | number ] | string | number, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
@@ -623,7 +442,7 @@ usageStats.head = (args: { id: string | number } | [id: string | number ] | stri
 
             /**
 * @see \App\Http\Controllers\Seller\SellerPromotionController::usageStats
- * @see app/Http/Controllers/Seller/SellerPromotionController.php:229
+ * @see app/Http/Controllers/Seller/SellerPromotionController.php:149
  * @route '/seller/promotions/{id}/usage'
  */
         usageStatsForm.get = (args: { id: string | number } | [id: string | number ] | string | number, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
@@ -632,7 +451,7 @@ usageStats.head = (args: { id: string | number } | [id: string | number ] | stri
         })
             /**
 * @see \App\Http\Controllers\Seller\SellerPromotionController::usageStats
- * @see app/Http/Controllers/Seller/SellerPromotionController.php:229
+ * @see app/Http/Controllers/Seller/SellerPromotionController.php:149
  * @route '/seller/promotions/{id}/usage'
  */
         usageStatsForm.head = (args: { id: string | number } | [id: string | number ] | string | number, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
@@ -646,6 +465,6 @@ usageStats.head = (args: { id: string | number } | [id: string | number ] | stri
         })
     
     usageStats.form = usageStatsForm
-const SellerPromotionController = { index, create, store, edit, update, destroy, toggleStatus, usageStats }
+const SellerPromotionController = { index, create, store, destroy, toggleStatus, usageStats }
 
 export default SellerPromotionController

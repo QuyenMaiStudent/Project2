@@ -1,8 +1,20 @@
 // @ts-nocheck
 import React, { useState, FormEvent, ChangeEvent, useEffect } from 'react';
-import { Head, useForm } from '@inertiajs/react';
+import { Head, useForm, Link, usePage } from '@inertiajs/react';
 import AppLayout from '@/layouts/app-layout';
 import { type BreadcrumbItem } from '@/types';
+import {
+  Image,
+  Info,
+  Tag,
+  CreditCard,
+  Save,
+  X as XIcon,
+  DollarSign,
+  Layers,
+  Star,
+  Clock
+} from 'lucide-react';
 
 const breadcrumbs: BreadcrumbItem[] = [
     {
@@ -10,7 +22,7 @@ const breadcrumbs: BreadcrumbItem[] = [
         href: '/seller/dashboard',
     },
     {
-        title: 'Danh sách sản phẩm',
+        title: 'Xem sản phẩm',
         href: '/seller/products',
     },
     {
@@ -73,40 +85,34 @@ interface ExtendedErrors {
 }
 
 export default function EditProduct({ product, brands = [], warranties = [], categories = [], has_cart_items }: Props) {
+    const page = usePage().props as any;
     const [clientErrors, setClientErrors] = useState<Record<string, string>>({});
     const [imagePreview, setImagePreview] = useState<string | null>(
         product.primary_image?.url || null
     );
-    const [showConfirmModal, setShowConfirmModal] = useState(false); // Thêm state cho modal xác nhận
+    const [showConfirmModal, setShowConfirmModal] = useState(false);
 
-    // Đảm bảo brands, warranties, categories là mảng
     const safeBrands = Array.isArray(brands) ? brands : [];
     const safeWarranties = Array.isArray(warranties) ? warranties : [];
     const safeCategories = Array.isArray(categories) ? categories : [];
 
-    // Hàm kiểm tra URL hoặc số điện thoại - giống AddProduct
     const containsUrlOrPhone = (text?: string) => {
         const t = (text ?? '').trim();
         if (!t) return false;
-
-        // Phát hiện URL: http(s)://... hoặc www.... hoặc domain.tld
         if (/(https?:\/\/|www\.)[^\s]+/i.test(t) || /\b[a-z0-9\-]+\.[a-z]{2,63}(\b|\/)/i.test(t)) {
             return true;
         }
-
-        // Phát hiện số điện thoại (chuỗi số >= 7 chữ số liên tiếp)
         if (/(?<!\d)\d{7,}(?!\d)/.test(t)) {
             return true;
         }
-
         return false;
     };
 
     const validateField = (field: string, value: string) => {
         if (containsUrlOrPhone(value)) {
-            setClientErrors(prev => ({ 
-                ...prev, 
-                [field]: 'Trường này không được chứa đường link hoặc số điện thoại.' 
+            setClientErrors(prev => ({
+                ...prev,
+                [field]: 'Trường này không được chứa đường link hoặc số điện thoại.'
             }));
             return false;
         } else {
@@ -119,7 +125,6 @@ export default function EditProduct({ product, brands = [], warranties = [], cat
         }
     };
 
-    // useForm: thay stock bằng category_id
     const { data, setData, put, processing, errors } = useForm<{
         name: string;
         description: string;
@@ -142,18 +147,15 @@ export default function EditProduct({ product, brands = [], warranties = [], cat
         confirmed: false,
     });
 
-    // Cast errors to extended type
     const extendedErrors = errors as ExtendedErrors;
 
     const handleImageChange = (e: ChangeEvent<HTMLInputElement>) => {
         const file = e.target.files ? e.target.files[0] : null;
         setData('image', file);
-
-        // Tạo preview
         if (file) {
             const reader = new FileReader();
-            reader.onload = (e) => {
-                setImagePreview(e.target?.result as string);
+            reader.onload = (ev) => {
+                setImagePreview(ev.target?.result as string);
             };
             reader.readAsDataURL(file);
         } else {
@@ -161,27 +163,25 @@ export default function EditProduct({ product, brands = [], warranties = [], cat
         }
     };
 
+    const formatCurrency = (v: string | number) => {
+        const n = Number(v);
+        if (!Number.isFinite(n)) return '—';
+        return new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(n);
+    };
+
     const handleSubmit = (e: FormEvent) => {
         e.preventDefault();
 
-        console.log('Form data before submit:', data);
-
-        // Client-side validation cho URL/Phone
         const okName = validateField('name', data.name);
         const okDesc = validateField('description', data.description || '');
 
-        if (!okName || !okDesc) {
-            console.log('Client validation failed');
-            return;
-        }
+        if (!okName || !okDesc) return;
 
-        // Kiểm tra các trường bắt buộc
         if (!data.name?.trim()) {
             setClientErrors(prev => ({ ...prev, name: 'Tên sản phẩm không được để trống.' }));
             return;
         }
 
-        // Chuyển đổi và validate số
         const price = parseFloat(data.price);
         const brandId = parseInt(data.brand_id);
         const categoryId = data.category_id ? parseInt(data.category_id) : null;
@@ -202,50 +202,32 @@ export default function EditProduct({ product, brands = [], warranties = [], cat
             return;
         }
 
-        // Nếu có cart items và chưa confirm, hiển thị modal
         if (has_cart_items && !data.confirmed) {
             setShowConfirmModal(true);
             return;
         }
 
-        console.log('Final submit data:', data);
-
-        // Tạo object với kiểu dữ liệu đúng
         const submitData = {
             name: data.name.trim(),
             description: data.description || '',
-            price: price,  // number
-            brand_id: brandId,  // number
-            category_id: categoryId,  // number hoặc null
-            warranty_id: warrantyId,  // number hoặc null
-            is_active: data.is_active ? 1 : 0,  // Convert boolean thành 1/0
+            price: price,
+            brand_id: brandId,
+            category_id: categoryId,
+            warranty_id: warrantyId,
+            is_active: data.is_active ? 1 : 0,
             confirmed: data.confirmed ? 1 : 0,
-            image: data.image,  // File hoặc null
+            image: data.image,
         };
 
-        console.log('Submit data with correct types:', submitData);
-
-        // Submit với forceFormData
         put(`/seller/products/${product.id}`, submitData, {
             forceFormData: true,
             preserveScroll: true,
-            onSuccess: () => {
-                console.log('Product updated successfully');
-            },
-            onError: (err) => {
-                console.error('Validation errors:', err);
-                const typedErr = err as ExtendedErrors;
-                if (typedErr.confirm) {
-                    setShowConfirmModal(true);
-                }
-            }
         });
     };
 
     const handleConfirmSubmit = () => {
         setData('confirmed', true);
         setShowConfirmModal(false);
-        // Submit lại
         const fakeEvent = { preventDefault: () => {} } as FormEvent;
         handleSubmit(fakeEvent);
     };
@@ -255,7 +237,6 @@ export default function EditProduct({ product, brands = [], warranties = [], cat
         setData('confirmed', false);
     };
 
-    // Hàm kiểm tra có thay đổi gì không (loại bỏ stock, thêm category_id)
     const checkForChanges = () => {
         return (
             data.name !== String(product.name || '') ||
@@ -269,301 +250,281 @@ export default function EditProduct({ product, brands = [], warranties = [], cat
         );
     };
 
-    // Thêm useEffect để debug data
     useEffect(() => {
-        console.log('Current form data:', data);
-        console.log('Original product:', product);
+        // keep minimal logging for debug
     }, [data]);
 
     return (
         <AppLayout breadcrumbs={breadcrumbs}>
             <Head title={`Chỉnh sửa - ${product.name}`} />
-            
-            <div className="max-w-4xl mx-auto p-6">
-                <div className="bg-white rounded-lg shadow-md">
-                    <div className="p-6 border-b border-gray-200">
-                        <h1 className="text-2xl font-semibold text-gray-800">Chỉnh sửa sản phẩm</h1>
-                        <p className="text-gray-600 mt-1">Cập nhật thông tin sản phẩm của bạn</p>
-                        
-                        {/* Hiển thị trạng thái thay đổi */}
-                        {checkForChanges() && (
-                            <div className="mt-2 p-2 bg-yellow-50 border border-yellow-200 rounded text-yellow-800 text-sm">
-                                <i className="fas fa-exclamation-triangle mr-1"></i>
-                                Bạn có thay đổi chưa được lưu
-                            </div>
-                        )}
-                    </div>
-                    
-                    <div className="p-6">
-                        {/* Error Messages */}
-                        {(Object.keys(errors).length > 0 || Object.keys(clientErrors).length > 0) && (
-                            <div className="mb-6 p-4 bg-red-50 border border-red-200 rounded-md">
-                                <div className="text-red-800">
-                                    <ul className="list-disc list-inside">
-                                        {Object.entries({ ...errors, ...clientErrors }).map(([field, error]) => (
-                                            <li key={field}>
-                                                {typeof error === 'string' ? error : (Array.isArray(error) ? error[0] : String(error))}
-                                            </li>
-                                        ))}
-                                    </ul>
-                                </div>
-                            </div>
-                        )}
 
-                        <form onSubmit={handleSubmit} className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                            {/* Product Name */}
-                            <div className="md:col-span-2">
-                                <label htmlFor="name" className="block text-sm font-medium text-gray-700 mb-2">
-                                    Tên sản phẩm *
-                                </label>
-                                <input
-                                    type="text"
-                                    id="name"
-                                    value={data.name}
-                                    onChange={(e) => {
-                                        setData('name', e.target.value);
-                                        validateField('name', e.target.value);
-                                    }}
-                                    className={`w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 ${
-                                        errors.name || clientErrors.name ? 'border-red-300' : 'border-gray-300'
-                                    }`}
-                                    required
-                                />
-                                {(errors.name || clientErrors.name) && (
-                                    <p className="text-red-600 text-sm mt-1">
-                                        {errors.name || clientErrors.name}
-                                    </p>
-                                )}
-                            </div>
-
-                            {/* Description */}
-                            <div className="md:col-span-2">
-                                <label htmlFor="description" className="block text-sm font-medium text-gray-700 mb-2">
-                                    Mô tả sản phẩm
-                                </label>
-                                <textarea
-                                    id="description"
-                                    rows={4}
-                                    value={data.description}
-                                    onChange={(e) => {
-                                        setData('description', e.target.value);
-                                        validateField('description', e.target.value);
-                                    }}
-                                    className={`w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 ${
-                                        errors.description || clientErrors.description ? 'border-red-300' : 'border-gray-300'
-                                    }`}
-                                    placeholder="Enter product description..."
-                                />
-                                {(errors.description || clientErrors.description) && (
-                                    <p className="text-red-600 text-sm mt-1">
-                                        {errors.description || clientErrors.description}
-                                    </p>
-                                )}
-                            </div>
-
-                            {/* Price */}
+            <div className="max-w-7xl mx-auto p-8 bg-gradient-to-br from-blue-50 to-cyan-50 min-h-screen">
+                <div className="rounded-lg overflow-hidden shadow grid lg:grid-cols-3 bg-white">
+                    <main className="lg:col-span-2 p-8">
+                        <div className="flex items-start justify-between mb-6">
                             <div>
-                                <label htmlFor="price" className="block text-sm font-medium text-gray-700 mb-2">
-                                    Giá (VND) *
-                                </label>
-                                <input
-                                    type="number"
-                                    id="price"
-                                    value={data.price}
-                                    onChange={(e) => setData('price', e.target.value)} // Giữ string
-                                    min="0"
-                                    step="1000"
-                                    className={`w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 ${
-                                        errors.price || clientErrors.price ? 'border-red-300' : 'border-gray-300'
-                                    }`}
-                                    required
-                                />
-                                {(errors.price || clientErrors.price) && (
-                                    <p className="text-red-600 text-sm mt-1">
-                                        {errors.price || clientErrors.price}
-                                    </p>
-                                )}
+                                <h1 className="text-2xl font-bold flex items-center gap-3">
+                                  <span className="inline-flex items-center justify-center w-9 h-9 rounded bg-gradient-to-br from-indigo-600 to-cyan-500 text-white shadow">
+                                    <Star className="w-4 h-4" />
+                                  </span>
+                                  Chỉnh sửa sản phẩm
+                                </h1>
+                                <p className="text-sm text-gray-500 mt-1">Cập nhật thông tin sản phẩm của bạn — giao diện đã được nâng cấp để thuận tiện hơn.</p>
                             </div>
-
-                            {/* Category (thay stock) */}
-                            <div>
-                                <label htmlFor="category_id" className="block text-sm font-medium text-gray-700 mb-2">
-                                    Danh mục *
-                                </label>
-                                <select
-                                    id="category_id"
-                                    value={data.category_id}
-                                    onChange={(e) => setData('category_id', e.target.value)} // Giữ string
-                                    className={`w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 ${
-                                        errors.category_id || clientErrors.category_id ? 'border-red-300' : 'border-gray-300'
-                                    }`}
-                                    required
-                                >
-                                    <option value="">-- Chọn danh mục --</option>
-                                    {safeCategories.map((cat) => (
-                                        <option key={cat.id} value={cat.id}>
-                                            {cat.name}
-                                        </option>
-                                    ))}
-                                </select>
-                                {(errors.category_id || clientErrors.category_id) && (
-                                    <p className="text-red-600 text-sm mt-1">
-                                        {errors.category_id || clientErrors.category_id}
-                                    </p>
-                                )}
-                            </div>
-
-                            {/* Brand */}
-                            <div>
-                                <label htmlFor="brand_id" className="block text-sm font-medium text-gray-700 mb-2">
-                                    Thương hiệu *
-                                </label>
-                                <select
-                                    id="brand_id"
-                                    value={data.brand_id}
-                                    onChange={(e) => setData('brand_id', e.target.value)} // Giữ string
-                                    className={`w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 ${
-                                        errors.brand_id || clientErrors.brand_id ? 'border-red-300' : 'border-gray-300'
-                                    }`}
-                                    required
-                                >
-                                    <option value="">-- Chọn thương hiệu --</option>
-                                    {safeBrands.map((brand) => (
-                                        <option key={brand.id} value={brand.id}>
-                                            {brand.name}
-                                        </option>
-                                    ))}
-                                </select>
-                                {(errors.brand_id || clientErrors.brand_id) && (
-                                    <p className="text-red-600 text-sm mt-1">
-                                        {errors.brand_id || clientErrors.brand_id}
-                                    </p>
-                                )}
-                            </div>
-
-                            {/* Warranty */}
-                            <div>
-                                <label htmlFor="warranty_id" className="block text-sm font-medium text-gray-700 mb-2">
-                                    Chính sách bảo hành
-                                </label>
-                                <select
-                                    id="warranty_id"
-                                    value={data.warranty_id}
-                                    onChange={(e) => setData('warranty_id', e.target.value)} // Giữ string
-                                    className={`w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 ${
-                                        errors.warranty_id ? 'border-red-300' : 'border-gray-300'
-                                    }`}
-                                >
-                                    <option value="">-- Không có bảo hành --</option>
-                                    {safeWarranties.map((warranty) => (
-                                        <option key={warranty.id} value={warranty.id}>
-                                            {warranty.title}
-                                        </option>
-                                    ))}
-                                </select>
-                                {errors.warranty_id && (
-                                    <p className="text-red-600 text-sm mt-1">
-                                        {typeof errors.warranty_id === 'string' ? errors.warranty_id : (Array.isArray(errors.warranty_id) ? errors.warranty_id[0] : String(errors.warranty_id))}
-                                    </p>
-                                )}
-                            </div>
-
-                            {/* Product Image */}
-                            <div className="md:col-span-2">
-                                <label htmlFor="image" className="block text-sm font-medium text-gray-700 mb-2">
-                                    Ảnh sản phẩm
-                                </label>
-                                
-                                {/* Current Image Preview */}
-                                {imagePreview && (
-                                    <div className="mb-3">
-                                        <p className="text-sm text-gray-600 mb-2">Ảnh hiện tại:</p>
-                                        <img 
-                                            src={imagePreview} 
-                                            alt="Current product image" 
-                                            className="w-32 h-32 object-cover rounded-lg border shadow-sm"
-                                        />
-                                    </div>
-                                )}
-                                
-                                <input
-                                    type="file"
-                                    id="image"
-                                    accept="image/*"
-                                    onChange={handleImageChange}
-                                    className={`w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 ${
-                                        errors.image ? 'border-red-300' : 'border-gray-300'
-                                    }`}
-                                />
-                                <p className="text-sm text-gray-500 mt-1">
-                                    Để trống để giữ ảnh hiện tại (JPEG, PNG, JPG, GIF, WebP - Tối đa 4MB)
-                                </p>
-                                
-                                {errors.image && (
-                                    <p className="text-red-600 text-sm mt-1">
-                                        {Array.isArray(errors.image) ? errors.image[0] : errors.image}
-                                    </p>
-                                )}
-                            </div>
-
-                            {/* Active Status */}
-                            <div className="md:col-span-2">
-                                <label className="flex items-center">
-                                    <input
-                                        type="checkbox"
-                                        checked={data.is_active}
-                                        onChange={(e) => setData('is_active', e.target.checked)}
-                                        className="rounded border-gray-300 text-blue-600 shadow-sm focus:border-blue-300 focus:ring focus:ring-blue-200 focus:ring-opacity-50"
-                                    />
-                                    <span className="ml-2 text-sm text-gray-700">Kích hoạt sản phẩm</span>
-                                </label>
-                            </div>
-
-                            {/* Submit Buttons */}
-                            <div className="md:col-span-2 flex gap-4 pt-4">
-                                <button
-                                    type="submit"
-                                    disabled={processing || Object.keys(clientErrors).length > 0}
-                                    className="px-6 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 disabled:opacity-50 disabled:cursor-not-allowed"
-                                >
-                                    {processing ? 'Đang cập nhật...' : 'Cập nhật sản phẩm'}
-                                </button>
-                                
-                                <a
-                                    href="/seller/products"
-                                    className="px-6 py-2 bg-gray-300 text-gray-700 rounded-md hover:bg-gray-400 focus:outline-none focus:ring-2 focus:ring-gray-500 text-center"
-                                >
-                                    Hủy
-                                </a>
-                            </div>
-                        </form>
-                    </div>
-                </div>
-
-                {/* Modal xác nhận */}
-                {showConfirmModal && (
-                    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-                        <div className="bg-white p-6 rounded shadow-lg max-w-md w-full">
-                            <h2 className="text-lg font-semibold mb-4">Xác nhận cập nhật</h2>
-                            <p className="mb-4">
-                                {extendedErrors.confirm || 'Sản phẩm hiện tại có trong giỏ hàng của một số khách hàng. Thao tác này sẽ loại bỏ các sản phẩm trong giỏ hàng của khách hàng. Bạn có chắc muốn thực hiện thao tác này?'}
-                            </p>
-                            <div className="flex justify-end gap-2">
-                                <button
-                                    onClick={handleCancelConfirm}
-                                    className="bg-gray-300 text-gray-700 px-4 py-2 rounded hover:bg-gray-400"
-                                >
-                                    Hủy
-                                </button>
-                                <button
-                                    onClick={handleConfirmSubmit}
-                                    className="bg-red-600 text-white px-4 py-2 rounded hover:bg-red-500"
-                                >
-                                    Xác nhận
-                                </button>
+                            <div className="flex items-center gap-3">
+                                <Link href="/seller/products" className="px-3 py-2 rounded bg-gray-100 text-sm hover:bg-gray-200">Danh sách</Link>
                             </div>
                         </div>
+
+                        {(Object.keys(errors).length > 0 || Object.keys(clientErrors).length > 0) && (
+                          <div className="mb-6 p-4 bg-red-50 border border-red-200 rounded-md text-red-800">
+                            <ul className="list-disc list-inside space-y-1">
+                              {Object.entries({ ...errors, ...clientErrors }).map(([field, error]) => (
+                                <li key={field} className="text-sm">
+                                  {typeof error === 'string' ? error : (Array.isArray(error) ? error[0] : String(error))}
+                                </li>
+                              ))}
+                            </ul>
+                          </div>
+                        )}
+
+                        <form onSubmit={handleSubmit} className="space-y-6">
+                          {/* Product basics card */}
+                          <section className="rounded-lg border bg-white p-6 shadow-sm">
+                            <div className="flex items-center justify-between mb-4">
+                              <div className="flex items-center gap-3">
+                                <div className="p-2 bg-indigo-50 rounded"><Tag className="w-5 h-5 text-indigo-600" /></div>
+                                <div>
+                                  <h3 className="text-lg font-semibold">Thông tin cơ bản</h3>
+                                  <p className="text-xs text-gray-500 mt-1">Tên, mô tả và giá — phần hiển thị chính cho khách hàng.</p>
+                                </div>
+                              </div>
+                              <div className="text-sm text-gray-500">Cập nhật nhanh</div>
+                            </div>
+
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                              <div className="md:col-span-2">
+                                <label className="block text-xs font-semibold text-gray-500 uppercase mb-2">Tên sản phẩm *</label>
+                                <div className="flex items-center gap-2">
+                                  <div className="inline-flex items-center justify-center w-10 h-10 bg-gray-50 rounded border">
+                                    <Star className="w-4 h-4 text-indigo-500" />
+                                  </div>
+                                  <input
+                                    type="text"
+                                    value={data.name}
+                                    onChange={(e) => { setData('name', e.target.value); validateField('name', e.target.value); }}
+                                    className={`flex-1 px-4 py-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-300 ${errors.name || clientErrors.name ? 'border-red-300' : 'border-gray-200'}`}
+                                    placeholder="Nhập tên sản phẩm"
+                                    required
+                                  />
+                                </div>
+                                {(errors.name || clientErrors.name) && <p className="text-red-600 text-sm mt-2">{errors.name || clientErrors.name}</p>}
+                              </div>
+
+                              <div className="md:col-span-2">
+                                <label className="block text-xs font-semibold text-gray-500 uppercase mb-2">Mô tả</label>
+                                <div className="flex items-start gap-2">
+                                  <div className="inline-flex items-center justify-center w-10 h-10 bg-gray-50 rounded border pt-1">
+                                    <Info className="w-4 h-4 text-green-500" />
+                                  </div>
+                                  <textarea
+                                    rows={4}
+                                    value={data.description}
+                                    onChange={(e) => { setData('description', e.target.value); validateField('description', e.target.value); }}
+                                    className={`flex-1 px-4 py-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-300 ${errors.description || clientErrors.description ? 'border-red-300' : 'border-gray-200'}`}
+                                    placeholder="Mô tả ngắn, ví dụ: đặc điểm nổi bật, thông số cơ bản..."
+                                  />
+                                </div>
+                                {(errors.description || clientErrors.description) && <p className="text-red-600 text-sm mt-2">{errors.description || clientErrors.description}</p>}
+                              </div>
+
+                              <div>
+                                <label className="block text-xs font-semibold text-gray-500 uppercase mb-2">Giá (VND) *</label>
+                                <div className="flex items-center gap-2">
+                                  <div className="inline-flex items-center justify-center w-10 h-10 bg-gray-50 rounded border">
+                                    <DollarSign className="w-4 h-4 text-yellow-600" />
+                                  </div>
+                                  <input
+                                    type="number"
+                                    value={data.price}
+                                    onChange={(e) => setData('price', e.target.value)}
+                                    min="0"
+                                    step="1000"
+                                    className={`flex-1 px-4 py-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-300 ${errors.price || clientErrors.price ? 'border-red-300' : 'border-gray-200'}`}
+                                    required
+                                  />
+                                </div>
+                                <div className="text-sm text-gray-500 mt-2">{formatCurrency(data.price)}</div>
+                                {(errors.price || clientErrors.price) && <p className="text-red-600 text-sm mt-2">{errors.price || clientErrors.price}</p>}
+                              </div>
+
+                              <div>
+                                <label className="block text-xs font-semibold text-gray-500 uppercase mb-2">Danh mục *</label>
+                                <div className="flex items-center gap-2">
+                                  <div className="inline-flex items-center justify-center w-10 h-10 bg-gray-50 rounded border">
+                                    <Layers className="w-4 h-4 text-indigo-500" />
+                                  </div>
+                                  <select
+                                    value={data.category_id}
+                                    onChange={(e) => setData('category_id', e.target.value)}
+                                    className={`flex-1 px-4 py-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-300 ${errors.category_id || clientErrors.category_id ? 'border-red-300' : 'border-gray-200'}`}
+                                    required
+                                  >
+                                    <option value="">-- Chọn danh mục --</option>
+                                    {safeCategories.map((cat) => <option key={cat.id} value={cat.id}>{cat.name}</option>)}
+                                  </select>
+                                </div>
+                                {(errors.category_id || clientErrors.category_id) && <p className="text-red-600 text-sm mt-2">{errors.category_id || clientErrors.category_id}</p>}
+                              </div>
+
+                              <div>
+                                <label className="block text-xs font-semibold text-gray-500 uppercase mb-2">Thương hiệu *</label>
+                                <div className="flex items-center gap-2">
+                                  <div className="inline-flex items-center justify-center w-10 h-10 bg-gray-50 rounded border">
+                                    <Tag className="w-4 h-4 text-indigo-600" />
+                                  </div>
+                                  <select
+                                    value={data.brand_id}
+                                    onChange={(e) => setData('brand_id', e.target.value)}
+                                    className={`flex-1 px-4 py-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-300 ${errors.brand_id || clientErrors.brand_id ? 'border-red-300' : 'border-gray-200'}`}
+                                    required
+                                  >
+                                    <option value="">-- Chọn thương hiệu --</option>
+                                    {safeBrands.map((b) => <option key={b.id} value={b.id}>{b.name}</option>)}
+                                  </select>
+                                </div>
+                                {(errors.brand_id || clientErrors.brand_id) && <p className="text-red-600 text-sm mt-2">{errors.brand_id || clientErrors.brand_id}</p>}
+                              </div>
+
+                              <div>
+                                <label className="block text-xs font-semibold text-gray-500 uppercase mb-2">Bảo hành</label>
+                                <select
+                                  value={data.warranty_id}
+                                  onChange={(e) => setData('warranty_id', e.target.value)}
+                                  className={`w-full px-4 py-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-300 ${errors.warranty_id ? 'border-red-300' : 'border-gray-200'}`}
+                                >
+                                  <option value="">-- Không có bảo hành --</option>
+                                  {safeWarranties.map((w) => <option key={w.id} value={w.id}>{w.title}</option>)}
+                                </select>
+                                {errors.warranty_id && <p className="text-red-600 text-sm mt-2">{Array.isArray(errors.warranty_id) ? errors.warranty_id[0] : errors.warranty_id}</p>}
+                              </div>
+                            </div>
+                          </section>
+
+                          {/* Image & Visibility card */}
+                          <section className="rounded-lg border bg-white p-6 shadow-sm">
+                            <div className="flex items-center justify-between mb-4">
+                              <div className="flex items-center gap-3">
+                                <div className="p-2 bg-indigo-50 rounded"><Image className="w-5 h-5 text-indigo-600" /></div>
+                                <div>
+                                  <h3 className="text-lg font-semibold">Ảnh & Trạng thái</h3>
+                                  <p className="text-xs text-gray-500 mt-1">Ảnh chính sẽ hiển thị trên danh sách sản phẩm.</p>
+                                </div>
+                              </div>
+                              <div className="text-sm text-gray-500">Preview</div>
+                            </div>
+
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 items-start">
+                              <div>
+                                {imagePreview ? (
+                                  <div className="mb-3 flex items-center gap-4">
+                                    <img src={imagePreview} alt="Preview" className="w-36 h-36 object-cover rounded-lg border shadow-sm" />
+                                    <div>
+                                      <p className="font-medium">{data.name || product.name}</p>
+                                      <p className="text-sm text-gray-500 mt-2">{data.description ? `${data.description.slice(0,120)}${data.description.length>120?'...':''}` : 'Mô tả ngắn sẽ hiển thị ở đây.'}</p>
+                                    </div>
+                                  </div>
+                                ) : (
+                                  <div className="mb-3 flex items-center gap-4 text-sm text-gray-500">
+                                    <div className="w-28 h-28 flex items-center justify-center rounded-lg bg-gray-50 border text-gray-300">
+                                      <Image className="w-6 h-6" />
+                                    </div>
+                                    <div>Chưa có ảnh — thêm ảnh sản phẩm để xem trước.</div>
+                                  </div>
+                                )}
+
+                                <input type="file" accept="image/*" onChange={handleImageChange} className={`w-full px-4 py-2 border rounded-lg ${errors.image ? 'border-red-300' : 'border-gray-200'}`} />
+                                <p className="text-sm text-gray-500 mt-2">Để trống để giữ ảnh hiện tại. Hỗ trợ JPEG, PNG, JPG, GIF, WebP — tối đa 4MB</p>
+                                {errors.image && <p className="text-red-600 text-sm mt-2">{Array.isArray(errors.image) ? errors.image[0] : errors.image}</p>}
+                              </div>
+
+                              <div className="flex flex-col justify-between">
+                                <div>
+                                  <label className="block text-xs font-semibold text-gray-500 uppercase mb-2">Hiển thị</label>
+                                  <div className="flex items-center gap-3">
+                                    <label className="inline-flex items-center gap-2 cursor-pointer">
+                                      <input type="checkbox" checked={data.is_active} onChange={(e) => setData('is_active', e.target.checked)} className="h-4 w-4" />
+                                      <span className="text-sm font-medium text-gray-700">Kích hoạt sản phẩm</span>
+                                    </label>
+                                    <span className={`ml-2 px-2 py-1 text-xs rounded ${data.is_active ? 'bg-green-100 text-green-800' : 'bg-gray-100 text-gray-700'}`}>{data.is_active ? 'Đang kích hoạt' : 'Đã tắt'}</span>
+                                  </div>
+
+                                  <div className="mt-6 text-sm text-gray-600 flex items-center gap-2">
+                                    <Clock className="w-4 h-4 text-gray-400" />
+                                    <div>Thay đổi sẽ áp dụng ngay sau khi lưu</div>
+                                  </div>
+                                </div>
+
+                                <div className="mt-4 flex gap-3 justify-end">
+                                  <Link href="/seller/products" className="px-4 py-2 rounded border bg-white text-gray-700 hover:bg-gray-50 inline-flex items-center gap-2">
+                                    <XIcon className="w-4 h-4" /> Hủy
+                                  </Link>
+                                  <button type="submit" disabled={processing || Object.keys(clientErrors).length > 0} className="px-6 py-3 rounded bg-gradient-to-r from-[#0AC1EF] to-[#09b3db] text-white inline-flex items-center gap-2 shadow">
+                                    <Save className="w-4 h-4" /> {processing ? 'Đang cập nhật...' : 'Cập nhật sản phẩm'}
+                                  </button>
+                                </div>
+                              </div>
+                            </div>
+                          </section>
+                        </form>
+                    </main>
+
+                    <aside className="lg:col-span-1 border-l bg-gray-50 p-6">
+                        <div className="flex items-start gap-3">
+                            <div className="p-2 bg-indigo-50 rounded"><Tag className="w-5 h-5 text-indigo-600" /></div>
+                            <div>
+                                <h4 className="font-semibold">Tóm tắt</h4>
+                                <p className="text-sm text-gray-600 mt-1">Xem nhanh thông tin hiển thị trước khi lưu thay đổi.</p>
+                            </div>
+                        </div>
+
+                        <dl className="mt-4 text-sm text-gray-700 space-y-3">
+                            <div className="flex justify-between"><dt className="text-gray-500">Tên</dt><dd className="font-medium">{data.name || '—'}</dd></div>
+                            <div className="flex justify-between"><dt className="text-gray-500">Giá</dt><dd className="font-medium">{formatCurrency(data.price)}</dd></div>
+                            <div className="flex justify-between"><dt className="text-gray-500">Danh mục</dt><dd>{safeCategories.find(c => String(c.id) === String(data.category_id))?.name ?? '—'}</dd></div>
+                            <div className="flex justify-between"><dt className="text-gray-500">Thương hiệu</dt><dd>{safeBrands.find(b => String(b.id) === String(data.brand_id))?.name ?? '—'}</dd></div>
+                            <div className="flex justify-between"><dt className="text-gray-500">Bảo hành</dt><dd>{safeWarranties.find(w => String(w.id) === String(data.warranty_id))?.title ?? '—'}</dd></div>
+                            <div className="flex justify-between"><dt className="text-gray-500">Trạng thái</dt><dd>{data.is_active ? 'Đang kích hoạt' : 'Đã tắt'}</dd></div>
+                        </dl>
+
+                        <div className="mt-6 rounded-lg border bg-white p-4 shadow-sm">
+                            <div className="flex items-center gap-3">
+                                <div className="p-2 bg-green-50 rounded"><Info className="w-5 h-5 text-green-600" /></div>
+                                <div>
+                                    <h5 className="font-semibold">Gợi ý</h5>
+                                    <p className="text-sm text-gray-600 mt-1">Thay đổi giá hoặc hình ảnh có thể ảnh hưởng đến giỏ hàng khách. Nếu cần, xác nhận thao tác khi được yêu cầu.</p>
+                                </div>
+                            </div>
+                        </div>
+                    </aside>
+                </div>
+
+                {showConfirmModal && (
+                  <div className="fixed inset-0 z-50 flex items-center justify-center">
+                    <div className="absolute inset-0 bg-black/40" />
+                    <div className="relative bg-white rounded-lg shadow-lg w-full max-w-lg mx-4">
+                      <div className="p-6">
+                        <h2 className="text-lg font-semibold mb-2">Xác nhận cập nhật</h2>
+                        <p className="text-sm text-gray-700 mb-4">
+                          Sản phẩm hiện có trong giỏ hàng của một số khách hàng. Thao tác này sẽ loại bỏ các sản phẩm đó khỏi giỏ hàng của họ. Bạn có chắc muốn tiếp tục?
+                        </p>
+                        <div className="flex justify-end gap-3">
+                          <button onClick={handleCancelConfirm} className="px-4 py-2 rounded bg-gray-100">Hủy</button>
+                          <button onClick={handleConfirmSubmit} className="px-4 py-2 rounded bg-red-600 text-white">{processing ? 'Đang xử lý...' : 'Xác nhận và cập nhật'}</button>
+                        </div>
+                      </div>
                     </div>
+                  </div>
                 )}
             </div>
         </AppLayout>

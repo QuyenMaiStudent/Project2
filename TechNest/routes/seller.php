@@ -39,7 +39,6 @@ Route::middleware(['auth', 'seller'])->group(function () {
     Route::get('/seller/products/{product}/variants', [ProductVariantController::class, 'index'])->name('seller.products.variants.index');
     Route::post('/seller/products/{product}/variants', [ProductVariantController::class, 'store'])->name('seller.products.variants.store');
     // Accept both PUT (API) and POST (frontend FormData via router.post)
-    Route::match(['put', 'post'], '/seller/products/{product}/variants/{variant}', [ProductVariantController::class, 'update'])->name('seller.products.variants.update');
     Route::delete('/seller/products/{product}/variants/{variant}', [ProductVariantController::class, 'destroy'])->name('seller.products.variants.destroy');
 
     // Toggle product visibility
@@ -54,8 +53,6 @@ Route::middleware(['auth', 'seller'])->group(function () {
     Route::get('/seller/promotions', [SellerPromotionController::class, 'index'])->name('seller.promotions.index');
     Route::get('/seller/promotions/create', [SellerPromotionController::class, 'create'])->name('seller.promotions.create');
     Route::post('/seller/promotions', [SellerPromotionController::class, 'store'])->name('seller.promotions.store');
-    Route::get('/seller/promotions/{id}/edit', [SellerPromotionController::class, 'edit'])->name('seller.promotions.edit');
-    Route::put('/seller/promotions/{id}', [SellerPromotionController::class, 'update'])->name('seller.promotions.update');
     Route::delete('/seller/promotions/{id}', [SellerPromotionController::class, 'destroy'])->name('seller.promotions.destroy');
     Route::post('/seller/promotions/{id}/toggle-status', [SellerPromotionController::class, 'toggleStatus'])->name('seller.promotions.toggleStatus');
     Route::get('/seller/promotions/{id}/usage', [SellerPromotionController::class, 'usageStats'])->name('seller.promotions.usageStats');
