@@ -7,6 +7,7 @@ use App\Http\Controllers\Admin\ManageUserController;
 use App\Http\Controllers\Admin\AdminPromotionController;
 use App\Http\Controllers\Admin\BrandController;
 use App\Http\Controllers\Admin\ManageLocationController;
+use App\Http\Controllers\Admin\ManageShipperController;
 use App\Http\Controllers\Subscription\PackageController as AdminPackageController;
 use App\Http\Controllers\Subscription\RenewalController;
 use Illuminate\Support\Facades\Route;
@@ -49,8 +50,7 @@ Route::middleware(['auth', 'admin'])->group(function () {
     Route::get('/admin/promotions', [AdminPromotionController::class, 'index'])->name('admin.promotions.index');
     Route::get('/admin/promotions/create', [AdminPromotionController::class, 'create'])->name('admin.promotions.create');
     Route::post('/admin/promotions', [AdminPromotionController::class, 'store'])->name('admin.promotions.store');
-    Route::get('/admin/promotions/{id}/edit', [AdminPromotionController::class, 'edit'])->name('admin.promotions.edit');
-    Route::put('/admin/promotions/{id}', [AdminPromotionController::class, 'update'])->name('admin.promotions.update');
+    // EDIT/UPDATE removed — editing promotions is disabled
     Route::delete('/admin/promotions/{id}', [AdminPromotionController::class, 'destroy'])->name('admin.promotions.destroy');
     Route::post('/admin/promotions/{id}/toggle-status', [AdminPromotionController::class, 'toggleStatus'])->name('admin.promotions.toggleStatus');
     Route::post('/admin/promotions/{id}/assign-targets', [AdminPromotionController::class, 'assignTargets'])->name('admin.promotions.assignTargets');
@@ -64,34 +64,17 @@ Route::middleware(['auth', 'admin'])->group(function () {
     Route::put('/admin/brands/{id}', [BrandController::class, 'update'])->name('admin.brands.update');
     Route::delete('/admin/brands/{id}', [BrandController::class, 'destroy'])->name('admin.brands.destroy');
 
-    // Manage locations (view + API)
-    Route::get('/admin/locations', [ManageLocationController::class, 'index'])->name('admin.locations.index');
-
-    // API for frontend
-    Route::prefix('admin/api')->group(function () {
-        Route::get('/locations/tree', [ManageLocationController::class, 'tree']);
-
-        Route::post('/provinces', [ManageLocationController::class, 'storeProvince']);
-        Route::put('/provinces/{province}', [ManageLocationController::class, 'updateProvince']);
-        Route::delete('/provinces/{province}', [ManageLocationController::class, 'destroyProvince']);
-        
-        Route::post('/districts', [ManageLocationController::class, 'storeDistrict']);
-        Route::put('/districts/{district}', [ManageLocationController::class, 'updateDistrict']);
-        Route::delete('/districts/{district}', [ManageLocationController::class, 'destroyDistrict']);
-
-        Route::post('/wards', [ManageLocationController::class, 'storeWard']);
-        Route::put('/wards/{ward}', [ManageLocationController::class, 'updateWard']);
-        Route::delete('/wards/{ward}', [ManageLocationController::class, 'destroyWard']);
-    });
-
     Route::prefix('/admin/packages')->name('admin.packages.')->group(function () {
         Route::get('/', [AdminPackageController::class, 'adminIndex'])->name('index');
         Route::post('/', [AdminPackageController::class, 'store'])->name('store');
-        Route::get('/{package}', [AdminPackageController::class, 'show'])->name('show');
-        Route::put('/{package}', [AdminPackageController::class, 'update'])->name('update');
-        Route::delete('/{package}', [AdminPackageController::class, 'destroy'])->name('destroy');
         Route::post('/{package}/toggle', [AdminPackageController::class, 'toggleStatus'])->name('toggle');
         Route::post('/renewals/run', [RenewalController::class, 'run'])->name('renewals.run');
+    });
+
+    // Manage shippers routes - CHỈ XEM, KHÔNG TẠO/SỬA/XÓA
+    Route::prefix('admin/shippers')->name('admin.shippers.')->group(function () {
+        Route::get('/', [ManageShipperController::class, 'index'])->name('index');
+        Route::get('/{shipper}', [ManageShipperController::class, 'show'])->name('show');
     });
 });
 ?>

@@ -212,7 +212,6 @@ export default function Index() {
                           {openMenu[p.id] && (
                             <PortalMenu rect={menuAnchor.rect} onClose={() => closeMenu(p.id)}>
                               <div className="py-2 bg-white rounded-lg shadow-xl border border-gray-200">
-                                <Link href={`/admin/promotions/${p.id}/edit`} className="block px-4 py-3 text-sm text-gray-700 hover:bg-[#0AC1EF] hover:text-white transition duration-200" onClick={() => closeMenu(p.id)}>Sửa</Link>
                                 <Link href={`/admin/promotions/${p.id}/usage`} className="block px-4 py-3 text-sm text-gray-700 hover:bg-[#0AC1EF] hover:text-white transition duration-200" onClick={() => closeMenu(p.id)}>Lượt</Link>
                                 <button onClick={() => { toggle(p.id); closeMenu(p.id); }} className="w-full text-left px-4 py-3 text-sm text-gray-700 hover:bg-[#0AC1EF] hover:text-white transition duration-200">
                                   {p.is_active ? 'Tắt' : 'Bật'}

@@ -46,11 +46,6 @@ export function AppSidebar() {
                 icon: Package,
             },
             {
-                title: 'Quản lý địa điểm',
-                href: '/admin/locations',
-                icon: MapPin,
-            },
-            {
                 title: 'Quản lý khuyến mãi',
                 href: '/admin/promotions',
                 icon: Tag,
@@ -59,6 +54,11 @@ export function AppSidebar() {
                 title: 'Quản lý thương hiệu',
                 href: '/admin/brands',
                 icon: Tag,
+            },
+            {
+                title: 'Quản lý shipper',
+                href: '/admin/shippers',
+                icon: Truck,
             },
             {
                 title: "Quản lý gói dịch vụ",

@@ -26,6 +26,12 @@ class Shipper extends Authenticatable
         $this->attributes['password'] = Hash::needsRehash($value) ? Hash::make($value) : $value;
     }
     
+    // Thêm relationship
+    public function orders()
+    {
+        return $this->hasMany(Order::class);
+    }
+    
     public function isAdmin(): bool { return false; }
     public function isSuperAdmin(): bool { return false; }
     public function isSeller(): bool { return false; }

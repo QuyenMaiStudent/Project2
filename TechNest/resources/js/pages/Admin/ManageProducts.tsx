@@ -170,11 +170,20 @@ export default function ManageProducts() {
           />
           <div className="relative">
             <Filter className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-gray-400" />
-            <select name="status" defaultValue={filters.status || ''} className="pl-10 pr-3 py-2 w-full sm:w-40 border border-gray-300 rounded-md focus:ring-2 focus:ring-[#0AC1EF] focus:border-transparent">
+            <select
+              name="status"
+              defaultValue={filters.status || ''}
+              className="appearance-none pl-10 pr-8 py-2 w-full sm:w-44 border border-gray-300 rounded-md bg-white text-sm focus:ring-2 focus:ring-[#0AC1EF] focus:border-transparent"
+              aria-label="Lọc theo trạng thái"
+            >
               <option value="">Tất cả trạng thái</option>
-              <option value="draft">draft</option>
-              <option value="approved">approved</option>
+              <option value="approved">Đang bán</option>
+              <option value="draft">Bản nháp</option>
             </select>
+            {/* caret */}
+            <svg className="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden>
+              <path d="M6 8l4 4 4-4" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+            </svg>
           </div>
           <div className="flex gap-2">
             <button type="submit" className="px-4 py-2 bg-[#0AC1EF] text-white rounded-md hover:bg-[#09b3db] transition-colors flex items-center space-x-2">

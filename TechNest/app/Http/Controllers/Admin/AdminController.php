@@ -7,6 +7,7 @@ use App\Http\Controllers\Controller;
 use App\Models\User;
 use App\Models\Product;
 use App\Models\Order;
+use App\Models\Package;
 use Illuminate\Support\Facades\Auth;
 use Inertia\Inertia;
 
@@ -32,12 +33,27 @@ class AdminController extends Controller
         $totalOrders = Order::count();
         $totalRevenue = Order::where('status', 'completed')->sum('total_amount');
 
+        // Thông tin về packages
+        $totalPackages = Package::count();
+        $activePackages = Package::where('is_active', true)->count();
+        $recentPackages = Package::query()
+            ->orderByDesc('updated_at')
+            ->limit(5)
+            ->get(['id', 'name', 'price', 'duration_days', 'is_active', 'updated_at']);
+
+        // Thông tin admin (hiển thị tên, email, role)
+        $admin = Auth::user()->loadMissing(['role', 'roles']);
+
         return Inertia::render('AdminDashboard', [
             'totalUsers' => $totalUsers,
             'totalSellers' => $totalSellers,
             'totalProducts' => $totalProducts,
             'totalOrders' => $totalOrders,
             'totalRevenue' => $totalRevenue,
+            'totalPackages' => $totalPackages,
+            'activePackages' => $activePackages,
+            'recentPackages' => $recentPackages,
+            'admin' => $admin,
         ]);
     }
 }

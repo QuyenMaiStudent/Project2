@@ -28,7 +28,7 @@ const splitFeatures = (features: string) =>
         .filter((item) => item.length > 0);
 
 const ManagePackages = ({ packages }: Props) => {
-    const [editingId, setEditingId] = useState<number | null>(null);
+    // editing removed — only allow creating new package
     const [featuresInput, setFeaturesInput] = useState<string>("");
 
     const defaultValues: PackageForm = {
@@ -40,23 +40,12 @@ const ManagePackages = ({ packages }: Props) => {
         features: [],
     };
 
-    const { data, setData, post, put, reset, processing, errors, clearErrors } = useForm<PackageForm>(defaultValues);
+    const { data, setData, post, reset, processing, errors } = useForm<PackageForm>(defaultValues);
 
     const submit = (event: FormEvent<HTMLFormElement>) => {
         event.preventDefault();
 
-        if (editingId) {
-            put(`/admin/packages/${editingId}`, {
-                preserveScroll: true,
-                onSuccess: () => {
-                    reset();
-                    setFeaturesInput("");
-                    setEditingId(null);
-                },
-            });
-            return;
-        }
-
+        // only create
         post("/admin/packages", {
             preserveScroll: true,
             onSuccess: () => {
@@ -75,16 +64,14 @@ const ManagePackages = ({ packages }: Props) => {
                     <div>
                         <h1 className="text-2xl font-semibold text-slate-800">Quản lý gói dịch vụ</h1>
                         <p className="text-sm text-slate-500">
-                            Tạo, chỉnh sửa, bật/tắt và theo dõi các gói dịch vụ dành cho khách hàng.
+                            Tạo, bật/tắt và theo dõi các gói dịch vụ dành cho khách hàng.
                         </p>
                     </div>
 
                     <div className="grid gap-6 lg:grid-cols-[2fr_3fr]">
                         <div className="rounded-lg border border-slate-200 bg-white shadow-lg">
                             <div className="border-b border-slate-200 px-6 py-4">
-                                <h2 className="text-lg font-semibold">
-                                    {editingId ? "Chỉnh sửa gói" : "Tạo gói mới"}
-                                </h2>
+                                <h2 className="text-lg font-semibold">Tạo gói mới</h2>
                             </div>
                             <div className="px-6 py-5">
                                 <form onSubmit={submit} className="space-y-4">
@@ -206,23 +193,8 @@ const ManagePackages = ({ packages }: Props) => {
                                         disabled={processing}
                                         className="w-full rounded bg-[#0AC1EF] px-4 py-2 text-sm font-medium text-white hover:bg-[#09b3db] disabled:cursor-not-allowed disabled:opacity-70 transition-colors"
                                     >
-                                        {editingId ? "Cập nhật gói" : "Tạo gói mới"}
+                                        Tạo gói mới
                                     </button>
-
-                                    {editingId && (
-                                        <button
-                                            type="button"
-                                            className="w-full rounded border border-slate-300 px-4 py-2 text-sm font-medium text-slate-700 hover:bg-slate-50 transition-colors"
-                                            onClick={() => {
-                                                reset();
-                                                setFeaturesInput("");
-                                                setEditingId(null);
-                                                clearErrors();
-                                            }}
-                                        >
-                                            Hủy chỉnh sửa
-                                        </button>
-                                    )}
                                 </form>
                             </div>
                         </div>
@@ -261,54 +233,13 @@ const ManagePackages = ({ packages }: Props) => {
                                         </div>
 
                                         <div className="mt-4 flex flex-wrap gap-2">
-                                            <button
-                                                className="rounded bg-yellow-500 px-3 py-1 text-sm text-white hover:bg-yellow-600 transition-colors"
-                                                onClick={() => {
-                                                    setEditingId(pkg.id);
-                                                    setData("name", pkg.name);
-                                                    setData("description", pkg.description ?? "");
-                                                    setData("price", Number(pkg.price));
-                                                    setData("duration_days", pkg.duration_days);
-                                                    setData("is_active", pkg.is_active);
-                                                    setData("features", pkg.features ?? []);
-                                                    setFeaturesInput((pkg.features ?? []).join("\n"));
-                                                    clearErrors();
-                                                }}
-                                            >
-                                                Sửa
-                                            </button>
+                                            {/* Edit removed */}
                                             <button
                                                 className="rounded border border-slate-300 px-3 py-1 text-sm text-slate-700 hover:bg-slate-50 transition-colors"
                                                 onClick={() => router.post(`/admin/packages/${pkg.id}/toggle`)}
                                             >
                                                 {pkg.is_active ? "Vô hiệu hóa" : "Kích hoạt"}
                                             </button>
-                                            <button
-                                                className="rounded bg-red-600 px-3 py-1 text-sm text-white hover:bg-red-700 transition-colors"
-                                                onClick={() => {
-                                                    if (confirm(`Xóa gói "${pkg.name}"?`)) {
-                                                        router.delete(`/admin/packages/${pkg.id}`, {
-                                                            preserveScroll: true,
-                                                            onSuccess: () => {
-                                                                if (editingId === pkg.id) {
-                                                                    reset();
-                                                                    setFeaturesInput("");
-                                                                    setEditingId(null);
-                                                                    clearErrors();
-                                                                }
-                                                            },
-                                                        });
-                                                    }
-                                                }}
-                                            >
-                                                Xóa
-                                            </button>
-                                            <a
-                                                href={`/admin/packages/${pkg.id}`}
-                                                className="rounded border border-slate-300 px-3 py-1 text-sm text-slate-700 hover:bg-slate-50 transition-colors"
-                                            >
-                                                Chi tiết
-                                            </a>
                                         </div>
                                     </div>
                                 ))}

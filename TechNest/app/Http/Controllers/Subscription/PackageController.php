@@ -36,15 +36,6 @@ class PackageController extends Controller
         return back()->with('success', __('Package created successfully.'));
     }
 
-    public function update(PackageRequest $request, Package $package): RedirectResponse
-    {
-        $this->authorize('manage', Package::class);
-
-        $package->update($request->validated());
-
-        return back()->with('success', __('Package updated successfully.'));
-    }
-
     public function toggleStatus(Package $package): RedirectResponse
     {
         $this->authorize('manage', Package::class);
@@ -127,29 +118,5 @@ class PackageController extends Controller
         ]);
 
         return back()->with('success', __('Auto renew preference updated.'));
-    }
-
-    public function show(Package $package): Response
-    {
-        $this->authorize('manage', Package::class);
-
-        $package->load([
-            'subscriptions' => fn ($q) => $q->with('user')->latest()->limit(20),
-        ])->loadCount([
-            'subscriptions as active_subscriptions_count' => fn ($q) => $q->active(),
-        ]);
-
-        return Inertia::render('Packages/Show', [
-            'package' => $package,
-        ]);
-    }
-
-    public function destroy(Package $package): RedirectResponse
-    {
-        $this->authorize('manage', Package::class);
-
-        $package->delete();
-
-        return back()->with('success', __('Package deleted successfully.'));
     }
 }
