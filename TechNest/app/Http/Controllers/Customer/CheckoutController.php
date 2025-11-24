@@ -69,9 +69,8 @@ class CheckoutController extends Controller
 
         $total = $items->sum('subtotal');
 
-        // Load shipping addresses với đầy đủ thông tin
+        // Load shipping addresses (frontend chỉ cần address_line / minimal fields)
         $addresses = ShippingAddress::where('user_id', Auth::id())
-            ->with(['province', 'ward'])
             ->get()
             ->map(function ($a) {
                 return [
@@ -79,14 +78,11 @@ class CheckoutController extends Controller
                     'recipient_name' => $a->recipient_name,
                     'phone' => $a->phone,
                     'address_line' => $a->address_line,
-                    'province_code' => $a->province_code,
-                    'province_name' => optional($a->province)->name,
-                    'ward_code' => $a->ward_code,
-                    'ward_name' => optional($a->ward)->name,
                     'is_default' => (bool) $a->is_default,
                     'latitude' => $a->latitude,
                     'longitude' => $a->longitude,
-                    'full_address' => $this->formatFullAddress($a),
+                    // frontend expects full_address; set same as address_line to keep compatibility
+                    'full_address' => $a->address_line,
                 ];
             });
 
@@ -120,9 +116,7 @@ class CheckoutController extends Controller
             ->all();
 
         // Địa chỉ
-        $addressesCollection = ShippingAddress::where('user_id', Auth::id())
-            ->with(['province', 'ward'])
-            ->get();
+        $addressesCollection = ShippingAddress::where('user_id', Auth::id())->get();
 
         $addresses = $addressesCollection->map(function ($a) {
             return [
@@ -130,14 +124,10 @@ class CheckoutController extends Controller
                 'recipient_name' => $a->recipient_name,
                 'phone' => $a->phone,
                 'address_line' => $a->address_line,
-                'province_code' => $a->province_code,
-                'province_name' => optional($a->province)->name,
-                'ward_code' => $a->ward_code,
-                'ward_name' => optional($a->ward)->name,
                 'is_default' => (bool) $a->is_default,
                 'latitude' => $a->latitude,
                 'longitude' => $a->longitude,
-                'full_address' => $this->formatFullAddress($a),
+                'full_address' => $a->address_line,
             ];
         });
 

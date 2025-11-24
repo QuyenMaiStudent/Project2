@@ -79,7 +79,7 @@ index.head = (options?: RouteQueryOptions): RouteDefinition<'head'> => ({
     index.form = indexForm
 /**
 * @see \App\Http\Controllers\Customer\OrderController::show
- * @see app/Http/Controllers/Customer/OrderController.php:226
+ * @see app/Http/Controllers/Customer/OrderController.php:227
  * @route '/orders/{order}'
  */
 export const show = (args: { order: number | { id: number } } | [order: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions): RouteDefinition<'get'> => ({
@@ -94,7 +94,7 @@ show.definition = {
 
 /**
 * @see \App\Http\Controllers\Customer\OrderController::show
- * @see app/Http/Controllers/Customer/OrderController.php:226
+ * @see app/Http/Controllers/Customer/OrderController.php:227
  * @route '/orders/{order}'
  */
 show.url = (args: { order: number | { id: number } } | [order: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions) => {
@@ -127,7 +127,7 @@ show.url = (args: { order: number | { id: number } } | [order: number | { id: nu
 
 /**
 * @see \App\Http\Controllers\Customer\OrderController::show
- * @see app/Http/Controllers/Customer/OrderController.php:226
+ * @see app/Http/Controllers/Customer/OrderController.php:227
  * @route '/orders/{order}'
  */
 show.get = (args: { order: number | { id: number } } | [order: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions): RouteDefinition<'get'> => ({
@@ -136,7 +136,7 @@ show.get = (args: { order: number | { id: number } } | [order: number | { id: nu
 })
 /**
 * @see \App\Http\Controllers\Customer\OrderController::show
- * @see app/Http/Controllers/Customer/OrderController.php:226
+ * @see app/Http/Controllers/Customer/OrderController.php:227
  * @route '/orders/{order}'
  */
 show.head = (args: { order: number | { id: number } } | [order: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions): RouteDefinition<'head'> => ({
@@ -146,7 +146,7 @@ show.head = (args: { order: number | { id: number } } | [order: number | { id: n
 
     /**
 * @see \App\Http\Controllers\Customer\OrderController::show
- * @see app/Http/Controllers/Customer/OrderController.php:226
+ * @see app/Http/Controllers/Customer/OrderController.php:227
  * @route '/orders/{order}'
  */
     const showForm = (args: { order: number | { id: number } } | [order: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
@@ -156,7 +156,7 @@ show.head = (args: { order: number | { id: number } } | [order: number | { id: n
 
             /**
 * @see \App\Http\Controllers\Customer\OrderController::show
- * @see app/Http/Controllers/Customer/OrderController.php:226
+ * @see app/Http/Controllers/Customer/OrderController.php:227
  * @route '/orders/{order}'
  */
         showForm.get = (args: { order: number | { id: number } } | [order: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
@@ -165,7 +165,7 @@ show.head = (args: { order: number | { id: number } } | [order: number | { id: n
         })
             /**
 * @see \App\Http\Controllers\Customer\OrderController::show
- * @see app/Http/Controllers/Customer/OrderController.php:226
+ * @see app/Http/Controllers/Customer/OrderController.php:227
  * @route '/orders/{order}'
  */
         showForm.head = (args: { order: number | { id: number } } | [order: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
@@ -181,7 +181,7 @@ show.head = (args: { order: number | { id: number } } | [order: number | { id: n
     show.form = showForm
 /**
 * @see \App\Http\Controllers\Customer\OrderController::detail
- * @see app/Http/Controllers/Customer/OrderController.php:226
+ * @see app/Http/Controllers/Customer/OrderController.php:227
  * @route '/customer/orders/{order}'
  */
 export const detail = (args: { order: number | { id: number } } | [order: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions): RouteDefinition<'get'> => ({
@@ -196,7 +196,7 @@ detail.definition = {
 
 /**
 * @see \App\Http\Controllers\Customer\OrderController::detail
- * @see app/Http/Controllers/Customer/OrderController.php:226
+ * @see app/Http/Controllers/Customer/OrderController.php:227
  * @route '/customer/orders/{order}'
  */
 detail.url = (args: { order: number | { id: number } } | [order: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions) => {
@@ -229,7 +229,7 @@ detail.url = (args: { order: number | { id: number } } | [order: number | { id: 
 
 /**
 * @see \App\Http\Controllers\Customer\OrderController::detail
- * @see app/Http/Controllers/Customer/OrderController.php:226
+ * @see app/Http/Controllers/Customer/OrderController.php:227
  * @route '/customer/orders/{order}'
  */
 detail.get = (args: { order: number | { id: number } } | [order: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions): RouteDefinition<'get'> => ({
@@ -238,7 +238,7 @@ detail.get = (args: { order: number | { id: number } } | [order: number | { id: 
 })
 /**
 * @see \App\Http\Controllers\Customer\OrderController::detail
- * @see app/Http/Controllers/Customer/OrderController.php:226
+ * @see app/Http/Controllers/Customer/OrderController.php:227
  * @route '/customer/orders/{order}'
  */
 detail.head = (args: { order: number | { id: number } } | [order: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions): RouteDefinition<'head'> => ({
@@ -248,7 +248,7 @@ detail.head = (args: { order: number | { id: number } } | [order: number | { id:
 
     /**
 * @see \App\Http\Controllers\Customer\OrderController::detail
- * @see app/Http/Controllers/Customer/OrderController.php:226
+ * @see app/Http/Controllers/Customer/OrderController.php:227
  * @route '/customer/orders/{order}'
  */
     const detailForm = (args: { order: number | { id: number } } | [order: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
@@ -258,7 +258,7 @@ detail.head = (args: { order: number | { id: number } } | [order: number | { id:
 
             /**
 * @see \App\Http\Controllers\Customer\OrderController::detail
- * @see app/Http/Controllers/Customer/OrderController.php:226
+ * @see app/Http/Controllers/Customer/OrderController.php:227
  * @route '/customer/orders/{order}'
  */
         detailForm.get = (args: { order: number | { id: number } } | [order: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
@@ -267,7 +267,7 @@ detail.head = (args: { order: number | { id: number } } | [order: number | { id:
         })
             /**
 * @see \App\Http\Controllers\Customer\OrderController::detail
- * @see app/Http/Controllers/Customer/OrderController.php:226
+ * @see app/Http/Controllers/Customer/OrderController.php:227
  * @route '/customer/orders/{order}'
  */
         detailForm.head = (args: { order: number | { id: number } } | [order: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({

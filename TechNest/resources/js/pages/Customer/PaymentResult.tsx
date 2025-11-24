@@ -23,58 +23,46 @@ export default function PaymentResult({ provider, status, message, order }: Paym
             case 'succeeded':
                 return {
                     icon: CheckCircle,
-                    color: 'green',
+                    bg: 'bg-emerald-50',
+                    border: 'border-emerald-100',
+                    titleColor: 'text-emerald-700',
+                    iconColor: 'text-emerald-600',
                     title: 'Thanh toán thành công!',
-                    description: 'Đơn hàng của bạn đã được xác nhận và đang được xử lý.',
-                    bgColor: 'bg-green-50',
-                    borderColor: 'border-green-200',
-                    textColor: 'text-green-800',
-                    iconColor: 'text-green-600',
+                    desc: 'Đơn hàng của bạn đã được xác nhận và đang được xử lý.',
                 };
             case 'canceled':
                 return {
                     icon: XCircle,
-                    color: 'orange',
+                    bg: 'bg-amber-50',
+                    border: 'border-amber-100',
+                    titleColor: 'text-amber-700',
+                    iconColor: 'text-amber-600',
                     title: 'Thanh toán đã bị hủy',
-                    description: 'Bạn đã hủy giao dịch thanh toán.',
-                    bgColor: 'bg-orange-50',
-                    borderColor: 'border-orange-200',
-                    textColor: 'text-orange-800',
-                    iconColor: 'text-orange-600',
+                    desc: 'Giao dịch thanh toán đã bị hủy.',
                 };
             case 'failed':
             default:
                 return {
                     icon: AlertCircle,
-                    color: 'red',
+                    bg: 'bg-rose-50',
+                    border: 'border-rose-100',
+                    titleColor: 'text-rose-700',
+                    iconColor: 'text-rose-600',
                     title: 'Thanh toán thất bại',
-                    description: 'Đã có lỗi xảy ra trong quá trình thanh toán.',
-                    bgColor: 'bg-red-50',
-                    borderColor: 'border-red-200',
-                    textColor: 'text-red-800',
-                    iconColor: 'text-red-600',
+                    desc: 'Đã có lỗi xảy ra trong quá trình thanh toán.',
                 };
         }
     };
 
-    const config = getStatusConfig();
-    const StatusIcon = config.icon;
+    const cfg = getStatusConfig();
+    const StatusIcon = cfg.icon;
 
-    const formatCurrency = (amount: number) => {
-        return new Intl.NumberFormat('vi-VN', {
-            style: 'currency',
-            currency: 'VND',
-        }).format(amount);
-    };
+    const formatCurrency = (amount: number) =>
+        new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(amount);
 
-    const getProviderName = (provider: string) => {
-        const providers: Record<string, string> = {
-            stripe: 'Stripe',
-            momo: 'MoMo',
-            vnpay: 'VNPay',
-            paypal: 'PayPal',
-        };
-        return providers[provider] || provider;
+    const providerName = (p: string) => {
+        const map: Record<string, string> = { stripe: 'Stripe', momo: 'MoMo', vnpay: 'VNPay', paypal: 'PayPal' };
+        return map[p] || p;
     };
 
     return (
@@ -85,107 +73,126 @@ export default function PaymentResult({ provider, status, message, order }: Paym
             ]}
         >
             <Head title="Kết quả thanh toán" />
-            
-            <div className="max-w-3xl mx-auto p-6">
-                {/* Status Card */}
-                <div className={`${config.bgColor} border ${config.borderColor} rounded-lg p-8 mb-6`}>
-                    <div className="flex flex-col items-center text-center">
-                        <StatusIcon className={`h-16 w-16 ${config.iconColor} mb-4`} />
-                        <h1 className={`text-2xl font-bold ${config.textColor} mb-2`}>
-                            {config.title}
-                        </h1>
-                        <p className={`${config.textColor} mb-4`}>
-                            {config.description}
-                        </p>
-                        <p className="text-sm text-gray-600">
-                            Phương thức: <span className="font-semibold">{getProviderName(provider)}</span>
-                        </p>
-                        {message && (
-                            <p className="text-sm text-gray-500 mt-2">
-                                {message}
-                            </p>
-                        )}
-                    </div>
-                </div>
 
-                {/* Order Details */}
-                {order && status === 'succeeded' && (
-                    <div className="bg-white border border-gray-200 rounded-lg p-6 mb-6">
-                        <h2 className="text-lg font-semibold mb-4 flex items-center">
-                            <ShoppingBag className="h-5 w-5 mr-2" />
-                            Thông tin đơn hàng
-                        </h2>
-                        <div className="space-y-3">
-                            <div className="flex justify-between">
-                                <span className="text-gray-600">Mã đơn hàng:</span>
-                                <span className="font-semibold">#{order.id}</span>
-                            </div>
-                            <div className="flex justify-between">
-                                <span className="text-gray-600">Số lượng sản phẩm:</span>
-                                <span className="font-semibold">{order.items_count}</span>
-                            </div>
-                            <div className="flex justify-between">
-                                <span className="text-gray-600">Thời gian đặt hàng:</span>
-                                <span className="font-semibold">{order.placed_at}</span>
-                            </div>
-                            {order.discount_amount > 0 && (
-                                <div className="flex justify-between text-green-600">
-                                    <span>Giảm giá:</span>
-                                    <span className="font-semibold">
-                                        -{formatCurrency(order.discount_amount)}
-                                    </span>
-                                </div>
-                            )}
-                            <div className="flex justify-between pt-3 border-t">
-                                <span className="text-lg font-semibold">Tổng cộng:</span>
-                                <span className="text-lg font-bold text-green-600">
-                                    {formatCurrency(order.total_amount)}
-                                </span>
-                            </div>
+            <div className="p-6 bg-gradient-to-br from-blue-50 to-cyan-50 min-h-screen">
+                <div className="max-w-4xl mx-auto space-y-6">
+                    {/* Header card (match checkout style) */}
+                    <div className="bg-white rounded-lg p-5 border border-slate-200 flex items-center justify-between shadow-sm">
+                        <div>
+                            <h1 className="text-2xl font-semibold">Kết quả thanh toán</h1>
+                            <p className="text-sm text-slate-500 mt-1">Thông tin về giao dịch và đơn hàng của bạn.</p>
+                        </div>
+
+                        <div className="text-right">
+                            <div className="text-sm text-slate-500">Phương thức</div>
+                            <div className="text-lg font-extrabold">{providerName(provider)}</div>
                         </div>
                     </div>
-                )}
 
-                {/* Action Buttons */}
-                <div className="flex flex-col sm:flex-row gap-4">
-                    {status === 'succeeded' && order ? (
-                        <>
-                            <Link
-                                href={`/customer/orders/${order.id}`}
-                                className="flex-1 bg-blue-600 hover:bg-blue-700 text-white font-semibold py-3 px-6 rounded-lg transition-colors flex items-center justify-center"
-                            >
-                                Xem chi tiết đơn hàng
-                                <ArrowRight className="ml-2 h-5 w-5" />
-                            </Link>
-                            <Link
-                                href="/customer/dashboard"
-                                className="flex-1 bg-gray-100 hover:bg-gray-200 text-gray-800 font-semibold py-3 px-6 rounded-lg transition-colors text-center"
-                            >
-                                Về dashboard
-                            </Link>
-                        </>
-                    ) : (
-                        <>
-                            <Link
-                                href="/checkout"
-                                className="flex-1 bg-blue-600 hover:bg-blue-700 text-white font-semibold py-3 px-6 rounded-lg transition-colors text-center"
-                            >
-                                Thử lại
-                            </Link>
-                            <Link
-                                href="/cart"
-                                className="flex-1 bg-gray-100 hover:bg-gray-200 text-gray-800 font-semibold py-3 px-6 rounded-lg transition-colors text-center"
-                            >
-                                Quay lại giỏ hàng
-                            </Link>
-                        </>
+                    {/* Status card */}
+                    <div className={`rounded-lg ${cfg.bg} border ${cfg.border} p-6 shadow-sm flex gap-6 items-center`}>
+                        <div className="p-3 rounded-lg bg-white/60 flex items-center justify-center">
+                            <StatusIcon className={`h-12 w-12 ${cfg.iconColor}`} />
+                        </div>
+
+                        <div className="flex-1">
+                            <h2 className={`text-2xl font-semibold ${cfg.titleColor}`}>{cfg.title}</h2>
+                            <p className="text-sm text-slate-600 mt-2">{cfg.desc}</p>
+
+                            {message && (
+                                <div className="mt-3 text-sm text-slate-500">
+                                    <strong className="font-medium">Chi tiết:</strong> {message}
+                                </div>
+                            )}
+
+                            <div className="mt-4 flex items-center gap-3">
+                                <Link
+                                    href="/"
+                                    className="inline-flex items-center rounded bg-[#0AC1EF] px-4 py-2 text-sm font-medium text-white hover:bg-[#09b3db]"
+                                >
+                                    Quay về trang chủ
+                                </Link>
+
+                                {status === 'succeeded' && order && (
+                                    <Link
+                                        href={`/customer/orders/${order.id}`}
+                                        className="inline-flex items-center rounded border px-4 py-2 text-sm font-medium bg-white hover:bg-slate-50"
+                                    >
+                                        Xem chi tiết đơn hàng
+                                    </Link>
+                                )}
+                            </div>
+                        </div>
+
+                        {/* Right summary box */}
+                        <div className="w-44 bg-white border border-slate-100 rounded-lg p-4 text-sm">
+                            <div className="text-slate-500">Trạng thái giao dịch</div>
+                            <div className={`mt-2 font-semibold ${cfg.titleColor}`}>{status === 'succeeded' ? 'Thành công' : status === 'canceled' ? 'Đã huỷ' : 'Thất bại'}</div>
+
+                            {order && (
+                                <>
+                                    <div className="mt-3 text-slate-500">Mã đơn</div>
+                                    <div className="font-medium mt-1">#{order.id}</div>
+
+                                    <div className="mt-3 text-slate-500">Tổng</div>
+                                    <div className="font-semibold mt-1 text-green-600">{formatCurrency(order.total_amount)}</div>
+                                </>
+                            )}
+                        </div>
+                    </div>
+
+                    {/* Order details card (if available) */}
+                    {order && (
+                        <div className="bg-white border border-slate-200 rounded-lg p-6 shadow-sm">
+                            <h3 className="text-lg font-medium mb-4 flex items-center">
+                                <ShoppingBag className="h-5 w-5 mr-2" />
+                                Thông tin đơn hàng
+                            </h3>
+
+                            <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 text-sm text-slate-700">
+                                <div>
+                                    <div className="text-slate-500">Số sản phẩm</div>
+                                    <div className="font-medium mt-1">{order.items_count}</div>
+                                </div>
+
+                                <div>
+                                    <div className="text-slate-500">Thời gian</div>
+                                    <div className="font-medium mt-1">{order.placed_at}</div>
+                                </div>
+
+                                <div>
+                                    <div className="text-slate-500">Trạng thái đơn</div>
+                                    <div className="font-medium mt-1 capitalize">{order.status}</div>
+                                </div>
+                            </div>
+
+                            <div className="mt-6 border-t pt-4 flex flex-col sm:flex-row items-center justify-between gap-3">
+                                <div className="text-sm text-slate-500">Chi tiết thêm sẽ được gửi tới email và trang quản lý đơn hàng.</div>
+
+                                <div className="flex items-center gap-3">
+                                    <Link
+                                        href={`/customer/orders/${order.id}`}
+                                        className="inline-flex items-center px-4 py-2 rounded bg-blue-600 text-white hover:bg-blue-700"
+                                    >
+                                        Xem đơn hàng
+                                        <ArrowRight className="ml-2 h-4 w-4" />
+                                    </Link>
+
+                                    <Link
+                                        href="/customer/dashboard"
+                                        className="inline-flex items-center px-4 py-2 rounded border bg-white hover:bg-slate-50 text-sm"
+                                    >
+                                        Về dashboard
+                                    </Link>
+                                </div>
+                            </div>
+                        </div>
                     )}
-                </div>
 
-                {/* Support Info */}
-                <div className="mt-8 text-center text-sm text-gray-500">
-                    <p>Cần hỗ trợ? Liên hệ với chúng tôi qua email: support@technest.com</p>
-                    <p className="mt-1">hoặc hotline: 1900-xxxx</p>
+                    {/* Support */}
+                    <div className="text-center text-sm text-slate-500">
+                        <p>Nếu cần hỗ trợ, vui lòng liên hệ: <a className="text-blue-600" href="mailto:support@technest.com">support@technest.com</a> hoặc hotline: 1900-xxxx</p>
+                    </div>
                 </div>
             </div>
         </AppLayout>

@@ -18,7 +18,8 @@ class OrderTrackingController extends Controller
                 Order::STATUS_IN_DELIVERY,
                 Order::STATUS_DELIVERED_AWAITING_CONFIRMATION,
             ])
-            ->with(['items.product.primaryImage', 'shipper'])
+            // load variant image as well so we can prefer variant image when present
+            ->with(['items.product.primaryImage', 'items.variant.image', 'shipper'])
             ->orderByDesc('placed_at')
             ->paginate(15)
             ->through(function (Order $order) {
@@ -28,7 +29,9 @@ class OrderTrackingController extends Controller
                     'status_label' => $this->getStatusLabel($order->status),
                     'placed_at' => $order->placed_at?->format('d/m/Y H:i'),
                     'items_count' => $order->items->count(),
-                    'first_product_image' => $order->items->first()?->product?->primaryImage?->url,
+                    // ưu tiên ảnh variant, nếu không có thì dùng product primary image
+                    'first_product_image' => optional($order->items->first()?->variant?->image)?->url
+                                            ?? optional($order->items->first()?->product?->primaryImage)?->url,
                     'shipper_name' => $order->shipper?->name,
                 ];
             });
@@ -45,8 +48,9 @@ class OrderTrackingController extends Controller
         }
 
         $order->load([
+            // ensure variant image is loaded
             'items.product.primaryImage',
-            'items.variant',
+            'items.variant.image',
             'shippingAddress.province',
             'shippingAddress.ward',
             'shipper',
@@ -76,7 +80,8 @@ class OrderTrackingController extends Controller
                     return [
                         'id' => $item->id,
                         'product_name' => $item->product?->name,
-                        'product_image' => $item->product?->primaryImage?->url,
+                        // ưu tiên ảnh của variant khi có
+                        'product_image' => $item->variant?->image?->url ?? $item->product?->primaryImage?->url,
                         'variant_name' => $item->variant?->variant_name,
                         'quantity' => $item->quantity,
                     ];

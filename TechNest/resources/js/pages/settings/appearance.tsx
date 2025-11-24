@@ -16,13 +16,19 @@ const breadcrumbs: BreadcrumbItem[] = [
 ];
 
 export default function Appearance() {
+    const primaryColor = '#0AC1EF';
+
     return (
         <AppLayout breadcrumbs={breadcrumbs}>
             <Head title="Cài đặt giao diện" />
 
             <SettingsLayout>
                 <div className="space-y-6">
-                    <HeadingSmall title="Cài đặt giao diện" description="Cập nhật cài đặt giao diện của bạn" />
+                    <div className="flex items-start gap-4">
+                        <div style={{ width: 6, height: 40, borderRadius: 6, background: primaryColor }} />
+                        <HeadingSmall title="Cài đặt giao diện" description="Cập nhật cài đặt giao diện của bạn" />
+                    </div>
+
                     <AppearanceTabs />
                 </div>
             </SettingsLayout>

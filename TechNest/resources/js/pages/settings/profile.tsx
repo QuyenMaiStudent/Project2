@@ -23,6 +23,7 @@ const breadcrumbs: BreadcrumbItem[] = [
 
 export default function Profile({ mustVerifyEmail, status }: { mustVerifyEmail: boolean; status?: string }) {
     const { auth } = usePage<SharedData>().props;
+    const primaryColor = '#0AC1EF';
 
     return (
         <AppLayout breadcrumbs={breadcrumbs}>
@@ -32,7 +33,10 @@ export default function Profile({ mustVerifyEmail, status }: { mustVerifyEmail: 
                 {/* Quick links removed as requested */}
 
                 <div className="space-y-6">
-                    <HeadingSmall title="Thông tin hồ sơ" description="Cập nhật tên và địa chỉ email của bạn" />
+                    <div className="flex items-start gap-4">
+                        <div style={{ width: 6, height: 40, borderRadius: 6, background: primaryColor }} />
+                        <HeadingSmall title="Thông tin hồ sơ" description="Cập nhật tên và địa chỉ email của bạn" />
+                    </div>
 
                     <Form
                         {...ProfileController.update.form()}
@@ -83,7 +87,7 @@ export default function Profile({ mustVerifyEmail, status }: { mustVerifyEmail: 
                                             <Link
                                                 href={send()}
                                                 as="button"
-                                                className="text-foreground underline decoration-neutral-300 underline-offset-4 transition-colors duration-300 ease-out hover:decoration-current! dark:decoration-neutral-500"
+                                                style={{ color: primaryColor, textDecoration: 'underline' }}
                                             >
                                                 Nhấp vào đây để gửi lại email xác thực.
                                             </Link>
@@ -98,7 +102,13 @@ export default function Profile({ mustVerifyEmail, status }: { mustVerifyEmail: 
                                 )}
 
                                 <div className="flex items-center gap-4">
-                                    <Button disabled={processing} data-test="update-profile-button">Lưu</Button>
+                                    <Button
+                                        disabled={processing}
+                                        data-test="update-profile-button"
+                                        style={{ backgroundColor: primaryColor, borderColor: primaryColor, color: '#fff' }}
+                                    >
+                                        Lưu
+                                    </Button>
 
                                     <Transition
                                         show={recentlySuccessful}

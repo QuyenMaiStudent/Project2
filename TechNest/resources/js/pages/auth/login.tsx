@@ -1,14 +1,12 @@
-import AuthenticatedSessionController from '@/actions/App/Http/Controllers/Auth/AuthenticatedSessionController';
+import { Head, Form } from '@inertiajs/react';
+import AuthLayout from '@/layouts/auth-layout';
 import InputError from '@/components/input-error';
 import TextLink from '@/components/text-link';
 import { Button } from '@/components/ui/button';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import AuthLayout from '@/layouts/auth-layout';
-import { register } from '@/routes';
-import { request } from '@/routes/password';
-import { Form, Head } from '@inertiajs/react';
+import AuthenticatedSessionController from '@/actions/App/Http/Controllers/Auth/AuthenticatedSessionController';
 import { LoaderCircle } from 'lucide-react';
 
 interface LoginProps {
@@ -18,99 +16,164 @@ interface LoginProps {
 
 export default function Login({ status, canResetPassword }: LoginProps) {
     return (
-        <AuthLayout title="Log in to your account" description="Enter your email and password below to log in">
-            <Head title="Log in" />
+        <AuthLayout title="Đăng nhập tài khoản" description="">
+            <Head title="Đăng nhập" />
 
-            <Form {...AuthenticatedSessionController.store.form()} resetOnSuccess={['password']} className="flex flex-col gap-6">
-                {({ processing, errors }) => (
-                    <>
-                        <div className="grid gap-6">
-                            <div className="grid gap-2">
-                                <Label htmlFor="email">Địa chỉ Email</Label>
-                                <Input
-                                    id="email"
-                                    type="email"
-                                    name="email"
-                                    required
-                                    autoFocus
-                                    tabIndex={1}
-                                    autoComplete="email"
-                                    placeholder="Email của bạn"
-                                />
-                                <InputError message={errors.email} />
-                            </div>
+            <section
+                className="absolute top-0 left-0 w-full h-screen bg-cover bg-center flex items-center justify-center"
+                style={{ backgroundImage: "url('/images/banner_bg.jpg')" }}
+            >
+                <div className="w-full max-w-sm rounded-2xl border-2 border-[#0AC1EF] bg-white p-6 shadow-xl mx-6 flex flex-col items-center">
+                    
+                    {/* Logo */}
+                    <img src="/images/logo.png" alt="Logo TechNest" className="mb-3 h-16 w-auto" />
 
-                            <div className="grid gap-2">
-                                <div className="flex items-center">
-                                    <Label htmlFor="password">Mật khẩu</Label>
-                                    {canResetPassword && (
-                                        <TextLink href={request()} className="ml-auto text-sm" tabIndex={5}>
-                                            Quên mật khẩu?
-                                        </TextLink>
-                                    )}
+                    {/* Tiêu đề trang trí */}
+                    <h1 className="mb-3 text-2xl font-extrabold text-[#0AC1EF] text-center tracking-wide">
+                        Đăng nhập tài khoản của bạn
+                    </h1>
+
+                    <Form
+                        {...AuthenticatedSessionController.store.form()}
+                        resetOnSuccess={['password']}
+                        className="flex flex-col gap-3 w-full"
+                    >
+                        {({ processing, errors }) => (
+                            <>
+                                <div className="flex flex-col gap-2">
+                                    <Label htmlFor="email">Địa chỉ email</Label>
+                                    <Input
+                                        id="email"
+                                        name="email"
+                                        type="email"
+                                        required
+                                        placeholder="email@gmail.com"
+                                        autoComplete="email"
+                                        className="border-[#0AC1EF] focus:ring-2 focus:ring-[#0AC1EF]"
+                                    />
+                                    <InputError message={errors.email} />
                                 </div>
-                                <Input
-                                    id="password"
-                                    type="password"
-                                    name="password"
-                                    required
-                                    tabIndex={2}
-                                    autoComplete="current-password"
-                                    placeholder="Mật khẩu của bạn"
-                                />
-                                <InputError message={errors.password} />
-                            </div>
 
-                            <div className="flex items-center space-x-3">
-                                <Checkbox id="remember" name="remember" tabIndex={3} />
-                                <Label htmlFor="remember">Ghi nhớ đăng nhập</Label>
-                            </div>
+                                <div className="flex flex-col gap-2">
+                                    <div className="flex items-center justify-between">
+                                        <Label htmlFor="password">Mật khẩu</Label>
+                                        {canResetPassword && (
+                                            <TextLink
+                                                href="/forgot-password"
+                                                className="text-sm text-[#0AC1EF]"
+                                            >
+                                                Quên mật khẩu?
+                                            </TextLink>
+                                        )}
+                                    </div>
+                                    <Input
+                                        id="password"
+                                        name="password"
+                                        type="password"
+                                        required
+                                        placeholder="Nhập mật khẩu"
+                                        autoComplete="current-password"
+                                        className="border-[#0AC1EF] focus:ring-2 focus:ring-[#0AC1EF]"
+                                    />
+                                    <InputError message={errors.password} />
+                                </div>
 
-                            <Button type="submit" className="mt-4 w-full" tabIndex={4} disabled={processing} data-test="login-button">
-                                {processing && <LoaderCircle className="h-4 w-4 animate-spin" />}
-                                Đăng nhập
-                            </Button>
+                                <div className="flex items-center gap-2">
+                                    <Checkbox id="remember" name="remember" />
+                                    <Label htmlFor="remember">Ghi nhớ đăng nhập</Label>
+                                </div>
+
+                                <Button
+                                    type="submit"
+                                    disabled={processing}
+                                    className="mt-1 w-full rounded-lg bg-[#0AC1EF] text-white hover:bg-[#0999c2] flex items-center justify-center"
+                                >
+                                    {processing && (
+                                        <LoaderCircle className="mr-2 h-4 w-4 animate-spin" />
+                                    )}
+                                    <span>{processing ? 'Đang đăng nhập...' : 'Đăng nhập'}</span>
+                                </Button>
+
+                                <div className="flex justify-center mt-3">
+                                    <a
+                                        href="/auth/google"
+                                        className="flex items-center gap-2 justify-center rounded-lg border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-700 shadow hover:bg-gray-100 w-auto"
+                                    >
+                                        {/* Inline Google icon to ensure visibility */}
+                                        <svg className="h-5 w-5" viewBox="0 0 533.5 544.3" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+                                            <path fill="#4285F4" d="M533.5 278.4c0-17.6-1.5-34.6-4.3-51.1H272v96.7h147.7c-6.4 34.6-25.2 63.9-53.9 83.6v69.5h87c51.2-47.1 82.7-116.7 82.7-198.7z"/>
+                                            <path fill="#34A853" d="M272 544.3c73.6 0 135.4-24.4 180.6-66.2l-87-69.5c-24.1 16.2-55 25.8-93.6 25.8-71.9 0-132.8-48.5-154.6-113.8H28.1v71.4C73.1 490.7 167.2 544.3 272 544.3z"/>
+                                            <path fill="#FBBC05" d="M117.4 328.6c-10.9-32.6-10.9-67.8 0-100.4V156.8H28.1c-39.6 78.2-39.6 170.1 0 248.3l89.3-76.5z"/>
+                                            <path fill="#EA4335" d="M272 107.2c39.9 0 75.9 13.7 104.2 40.6l78.1-78.1C407.3 24.3 345.5 0 272 0 167.2 0 73.1 53.6 28.1 137.5l89.3 71.4C139.2 155.7 200.1 107.2 272 107.2z"/>
+                                        </svg>
+                                        <span>Đăng nhập bằng Google</span>
+                                    </a>
+                                </div>
+
+                                <div className="mt-2 text-center text-sm">
+                                    Bạn chưa có tài khoản?{' '}
+                                    <TextLink
+                                        href="/register"
+                                        className="text-[#0AC1EF] font-semibold"
+                                    >
+                                        Đăng ký ngay
+                                    </TextLink>
+                                </div>
+
+                                {/* Shipper section (improved, compact) */}
+                                <div className="w-full mt-4 pt-3 border-t border-gray-100">
+                                    <div className="flex flex-col items-center gap-2">
+                                        <div className="flex items-center gap-2">
+                                            <svg className="h-5 w-5 text-[#0AC1EF]" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+                                                <path d="M3 7h13v6H3z" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
+                                                <path d="M16 13h2l2 3v3" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
+                                                <circle cx="7" cy="17" r="1.5" fill="currentColor"/>
+                                                <circle cx="18" cy="17" r="1.5" fill="currentColor"/>
+                                            </svg>
+                                            <h3 className="text-sm font-semibold text-gray-700">Bạn là Shipper?</h3>
+                                        </div>
+
+                                        <p className="text-xs text-gray-500 text-center px-2">
+                                            Giao diện Shipper — nhận đơn, quản lý tài xế và theo dõi lộ trình.
+                                        </p>
+
+                                        <div className="flex gap-2 w-full justify-center">
+                                            <a
+                                                href="/shipper/login"
+                                                className="flex items-center gap-2 px-3 py-2 rounded-lg bg-[#0AC1EF] text-white shadow-sm hover:bg-[#0999c2] transition text-sm"
+                                            >
+                                                <svg className="h-4 w-4" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+                                                    <path d="M12 11v6" stroke="white" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
+                                                    <path d="M9 14h6" stroke="white" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
+                                                    <rect x="3" y="4" width="18" height="12" rx="2" stroke="white" strokeWidth="1.5"/>
+                                                </svg>
+                                                Đăng nhập Shipper
+                                            </a>
+
+                                            <a
+                                                href="/shipper/register"
+                                                className="flex items-center gap-2 px-3 py-2 rounded-lg border border-[#0AC1EF] text-[#0AC1EF] bg-white hover:bg-[#f0fbfd] transition text-sm"
+                                            >
+                                                <svg className="h-4 w-4" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+                                                    <path d="M12 5v14" stroke="#0AC1EF" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
+                                                    <path d="M5 12h14" stroke="#0AC1EF" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
+                                                </svg>
+                                                Đăng ký Shipper
+                                            </a>
+                                        </div>
+                                    </div>
+                                </div>
+                            </>
+                        )}
+                    </Form>
+
+                    {status && (
+                        <div className="mt-3 text-center text-sm font-medium text-green-600">
+                            {status}
                         </div>
-
-                        <div className="text-center text-sm text-muted-foreground">
-                            Bạn chưa có tài khoản?{' '}
-                            <TextLink href={register()} tabIndex={5}>
-                                Đăng ký
-                            </TextLink>
-                        </div>
-
-                        <div className="mt-4 text-center space-y-2">
-                            <a
-                                href="/auth/google"
-                                className="bg-black text-white px-4 py-2 rounded flex items-center justify-center mt-4"
-                            >
-                                {/* Google icon */}
-                                <svg className="h-5 w-5 mr-2" viewBox="0 0 48 48">
-                                    <g>
-                                        <path fill="#4285F4" d="M44.5,20H24v8.5h11.7C34.7,33.1,29.8,36,24,36c-6.6,0-12-5.4-12-12s5.4-12,12-12c3.1,0,5.9,1.1,8.1,2.9l6.4-6.4C34.5,5.1,29.5,3,24,3C12.9,3,4,11.9,4,23s8.9,20,20,20c11,0,19.8-8,19.8-20C44,21.3,44.3,20.6,44.5,20z"/>
-                                        <path fill="#34A853" d="M6.3,14.7l7,5.1C15.2,17.1,19.2,14,24,14c3.1,0,5.9,1.1,8.1,2.9l6.4-6.4C34.5,5.1,29.5,3,24,3C16.1,3,9.1,7.9,6.3,14.7z"/>
-                                        <path fill="#FBBC05" d="M24,44c5.5,0,10.5-2.1,14.3-5.7l-6.6-5.4C29.7,35.1,27,36,24,36c-5.8,0-10.7-2.9-13.7-7.5l-7,5.4C9.1,40.1,16.1,44,24,44z"/>
-                                        <path fill="#EA4335" d="M44.5,20H24v8.5h11.7c-1.6,4.1-5.7,7.5-11.7,7.5c-5.8,0-10.7-2.9-13.7-7.5l-7,5.4C9.1,40.1,16.1,44,24,44c11,0,19.8-8,19.8-20C44,21.3,44.3,20.6,44.5,20z"/>
-                                    </g>
-                                </svg>
-                                Đăng nhập bằng Google
-                            </a>
-                            <div className="text-xs text-gray-600">
-                                Bạn là Shipper?{' '}
-                                <a href="/shipper/login" className="font-medium text-indigo-600 hover:text-indigo-500">
-                                    Đăng nhập Shipper
-                                </a>
-                                {' '}|{' '}
-                                <a href="/shipper/register" className="font-medium text-indigo-600 hover:text-indigo-500">
-                                    Đăng ký Shipper
-                                </a>
-                            </div>
-                        </div>
-                    </>
-                )}
-            </Form>
-
-            {status && <div className="mb-4 text-center text-sm font-medium text-green-600">{status}</div>}
+                    )}
+                </div>
+            </section>
         </AuthLayout>
     );
 }

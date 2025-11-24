@@ -12,17 +12,17 @@ import { type PropsWithChildren } from 'react';
 
 const sidebarNavItems: NavItem[] = [
     {
-        title: 'Profile',
+        title: 'Hồ sơ',
         href: edit(),
         icon: null,
     },
     {
-        title: 'Password',
+        title: 'Mật khẩu',
         href: editPassword(),
         icon: null,
     },
     {
-        title: 'Appearance',
+        title: 'Giao diện',
         href: editAppearance(),
         icon: null,
     },
@@ -40,29 +40,38 @@ export default function SettingsLayout({ children }: PropsWithChildren) {
     const { props } = usePage<SharedData>();
     const cartCount = (props.cartCount ?? 0) as number;
 
+    // primary color used for inline styles (keeps change localized)
+    const primaryColor = '#0AC1EF';
+
     return (
-        <div className="px-4 py-6">
-            <Heading title="Settings" description="Manage your profile and account settings" />
+        <div className="px-4 py-6" style={{ ['--site-primary' as any]: primaryColor }}>
+            <Heading title="Cài đặt" description="Quản lý hồ sơ và cài đặt tài khoản của bạn" />
 
             <div className="flex flex-col lg:flex-row lg:space-x-12">
                 <aside className="w-full max-w-xl lg:w-48">
                     <nav className="flex flex-col space-y-1 space-x-0">
-                        {sidebarNavItems.map((item, index) => (
-                            <Button
-                                key={`${typeof item.href === 'string' ? item.href : item.href.url}-${index}`}
-                                size="sm"
-                                variant="ghost"
-                                asChild
-                                className={cn('w-full justify-start', {
-                                    'bg-muted': currentPath === (typeof item.href === 'string' ? item.href : item.href.url),
-                                })}
-                            >
-                                <Link href={item.href} prefetch>
-                                    {item.icon && <item.icon className="h-4 w-4" />}
-                                    {item.title}
-                                </Link>
-                            </Button>
-                        ))}
+                        {sidebarNavItems.map((item, index) => {
+                            const hrefUrl = typeof item.href === 'string' ? item.href : item.href.url;
+                            const isActive = currentPath === hrefUrl;
+
+                            return (
+                                <Button
+                                    key={`${hrefUrl}-${index}`}
+                                    size="sm"
+                                    variant="ghost"
+                                    asChild
+                                    className={cn('w-full justify-start', {
+                                        'rounded-md': true,
+                                    })}
+                                    style={isActive ? { backgroundColor: primaryColor, color: '#fff' } : undefined}
+                                >
+                                    <Link href={item.href} prefetch className="flex items-center gap-2">
+                                        {item.icon && <item.icon className="h-4 w-4" />}
+                                        {item.title}
+                                    </Link>
+                                </Button>
+                            );
+                        })}
                     </nav>
                 </aside>
 

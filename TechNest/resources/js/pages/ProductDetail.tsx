@@ -356,9 +356,6 @@ export default function ProductDetail({ product }: Props) {
                             >
                                 Thêm vào giỏ hàng
                             </button>
-                            <button className="px-8 py-3 bg-[#0AC1EF] text-white rounded font-bold text-lg hover:bg-[#0999c2] transition-colors">
-                                Mua ngay
-                            </button>
                             {/* Thêm nút chat */}
                             {auth.user && auth.user.id !== product.created_by && (
                                 <button

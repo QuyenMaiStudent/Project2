@@ -21,7 +21,8 @@ class SellerOrderController extends Controller
             ->with([
                 'items' => fn ($query) => $query
                     ->whereHas('product', fn ($q) => $q->where('created_by', $sellerId))
-                    ->with(['product.primaryImage', 'variant']),
+                    // eager-load variant.image so we can use variant image when available
+                    ->with(['product.primaryImage', 'variant.image']),
                 'payment',
             ])
             ->orderByDesc('placed_at')
@@ -53,7 +54,8 @@ class SellerOrderController extends Controller
         $order->load([
             'items' => fn ($query) => $query
                 ->whereHas('product', fn ($q) => $q->where('created_by', $sellerId))
-                ->with(['product.primaryImage', 'variant']),
+                // ensure variant.image is loaded
+                ->with(['product.primaryImage', 'variant.image']),
             'payment.method',
             'shippingAddress.province',
             'shippingAddress.ward',
@@ -88,7 +90,8 @@ class SellerOrderController extends Controller
                     return [
                         'id' => $item->id,
                         'product_name' => $item->product?->name,
-                        'product_image' => $item->product?->primaryImage?->url,
+                        // ưu tiên ảnh của variant nếu có, ngược lại dùng primary image của product
+                        'product_image' => $item->variant?->image?->url ?? $item->product?->primaryImage?->url,
                         'variant_name' => $item->variant?->variant_name,
                         'quantity' => $item->quantity,
                         'price' => (float) $item->price,

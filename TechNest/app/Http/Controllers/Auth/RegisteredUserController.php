@@ -41,16 +41,16 @@ class RegisteredUserController extends Controller
                 'email',
                 'max:255',
                 'unique:' . User::class,
-                'regex:/@gmail.com$/i', //Chỉ cho phép email Google
             ],
             'password' => ['required', 'confirmed', Rules\Password::defaults()],
             'role' => 'required|in:customer,seller',
         ], [
             'name.required' => "Vui lòng nhập họ tên",
+            'name.max' => "Họ tên không được vượt quá 255 ký tự",
             'email.required' => "Vui lòng nhập email",
             'email.email' => "Email không đúng định dạng",
             'email.unique' => "Email đã được sử dụng",
-            'email.regex' => "Chỉ chấp nhận đăng ký bằng email Google (@gmail.com)",
+            'email.max' => "Email không được vượt quá 255 ký tự",
             'password.required' => "Vui lòng nhập mật khẩu",
             'password.confirmed' => "Mật khẩu xác nhận không khớp",
             'role.required' => "Vui lòng chọn vai trò",

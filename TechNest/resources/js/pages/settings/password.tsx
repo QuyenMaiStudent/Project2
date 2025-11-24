@@ -23,6 +23,7 @@ const breadcrumbs: BreadcrumbItem[] = [
 export default function Password() {
     const passwordInput = useRef<HTMLInputElement>(null);
     const currentPasswordInput = useRef<HTMLInputElement>(null);
+    const primaryColor = '#0AC1EF';
 
     return (
         <AppLayout breadcrumbs={breadcrumbs}>
@@ -30,7 +31,10 @@ export default function Password() {
 
             <SettingsLayout>
                 <div className="space-y-6">
-                    <HeadingSmall title="Cập nhật mật khẩu" description="Đảm bảo tài khoản của bạn sử dụng mật khẩu dài, ngẫu nhiên để giữ an toàn" />
+                    <div className="flex items-start gap-4">
+                        <div style={{ width: 6, height: 40, borderRadius: 6, background: primaryColor }} />
+                        <HeadingSmall title="Cập nhật mật khẩu" description="Đảm bảo tài khoản của bạn sử dụng mật khẩu dài, ngẫu nhiên để giữ an toàn" />
+                    </div>
                     <Form
                         {...PasswordController.update.form()}
                         options={{
@@ -99,7 +103,13 @@ export default function Password() {
                                 </div>
 
                                 <div className="flex items-center gap-4">
-                                    <Button disabled={processing} data-test="update-password-button">Lưu mật khẩu</Button>
+                                    <Button
+                                        disabled={processing}
+                                        data-test="update-password-button"
+                                        style={{ backgroundColor: primaryColor, borderColor: primaryColor, color: '#fff' }}
+                                    >
+                                        Lưu mật khẩu
+                                    </Button>
 
                                     <Transition
                                         show={recentlySuccessful}

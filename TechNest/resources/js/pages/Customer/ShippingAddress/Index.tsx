@@ -47,6 +47,34 @@ export default function Index({ addresses, provinces, wards }: Props) {
     });
     const [errors, setErrors] = useState<any>({});
 
+    // delete modal state (replace window.confirm)
+    const [showDeleteModal, setShowDeleteModal] = useState(false);
+    const [deletingAddrId, setDeletingAddrId] = useState<number | null>(null);
+    const [processingDelete, setProcessingDelete] = useState(false);
+    const openDeleteModal = (id: number) => {
+        setDeletingAddrId(id);
+        setShowDeleteModal(true);
+    };
+    const cancelDelete = () => {
+        setShowDeleteModal(false);
+        setDeletingAddrId(null);
+    };
+    const confirmDelete = () => {
+        if (deletingAddrId == null) return;
+        setProcessingDelete(true);
+        router.delete(`/shipping-addresses/${deletingAddrId}`, {
+            onSuccess: () => {
+                setProcessingDelete(false);
+                setShowDeleteModal(false);
+                setDeletingAddrId(null);
+            },
+            onError: () => {
+                setProcessingDelete(false);
+                // optional: setErrors or flash handling
+            }
+        });
+    };
+
     const resetForm = () => {
         setForm({
             id: null,
@@ -64,18 +92,23 @@ export default function Index({ addresses, provinces, wards }: Props) {
         setShowForm(false);
     };
 
+    const openCreate = () => {
+        resetForm();
+        setShowForm(true);
+    };
+
     const handleSubmit = (e: React.FormEvent) => {
         e.preventDefault();
         setErrors({});
         if (isEdit && form.id) {
             router.put(`/shipping-addresses/${form.id}`, form, {
                 onSuccess: resetForm,
-                onError: setErrors,
+                onError: (err) => setErrors(err || {}),
             });
         } else {
             router.post('/shipping-addresses', form, {
                 onSuccess: resetForm,
-                onError: setErrors,
+                onError: (err) => setErrors(err || {}),
             });
         }
     };
@@ -94,13 +127,10 @@ export default function Index({ addresses, provinces, wards }: Props) {
         });
         setIsEdit(true);
         setShowForm(true);
+        window.scrollTo({ top: 0, behavior: 'smooth' });
     };
 
-    const handleDelete = (id: number) => {
-        if (confirm('Bạn có chắc muốn xóa địa chỉ này?')) {
-            router.delete(`/shipping-addresses/${id}`);
-        }
-    };
+    // removed direct window.confirm usage; use modal (openDeleteModal) instead
 
     const filteredWards = wards.filter(w => w.province_code == form.province_code);
 
@@ -112,244 +142,283 @@ export default function Index({ addresses, provinces, wards }: Props) {
             ]}
         >
             <Head title="Địa chỉ giao hàng" />
-            <div className="max-w-3xl mx-auto p-6">
-                {flash?.success && (
-                    <div className="mb-4 px-4 py-3 rounded text-white font-semibold bg-green-600">
-                        {flash.success}
+            <div className="p-6 bg-gradient-to-br from-blue-50 to-cyan-50 min-h-screen">
+                <div className="max-w-5xl mx-auto space-y-6">
+                    {flash?.success && (
+                        <div className="rounded-md p-3 text-green-800 bg-green-50 border border-green-100">
+                            {flash.success}
+                        </div>
+                    )}
+
+                    <div className="flex items-center justify-between gap-4">
+                        <div>
+                            <h1 className="text-2xl font-semibold text-slate-900">Địa chỉ giao hàng</h1>
+                            <p className="text-sm text-slate-500">Quản lý địa chỉ giao hàng của bạn — thêm, sửa hoặc đặt mặc định.</p>
+                        </div>
+
+                        <div className="flex items-center gap-2">
+                            {/* Show "Đóng" only when the form is open */}
+                            {showForm ? (
+                                <button
+                                    className="inline-flex items-center gap-2 bg-white border border-slate-200 px-3 py-2 rounded shadow-sm hover:shadow-md"
+                                    onClick={() => setShowForm(false)}
+                                    title="Thu gọn form"
+                                >
+                                    Đóng
+                                </button>
+                            ) : null}
+
+                            <button
+                                className="inline-flex items-center gap-2 bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700"
+                                onClick={openCreate}
+                            >
+                                Thêm địa chỉ
+                            </button>
+                        </div>
                     </div>
-                )}
-                <div className="flex justify-between items-center mb-6">
-                    <h1 className="text-2xl font-bold">Địa chỉ giao hàng</h1>
-                    <button
-                        className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700"
-                        onClick={() => { resetForm(); setShowForm(true); }}
-                    >
-                        Thêm mới
-                    </button>
-                </div>
 
-                {showForm && (
-                    <form
-                        onSubmit={handleSubmit}
-                        className="mb-8 bg-white p-4 rounded shadow flex flex-col gap-3"
-                    >
-                        <div className="flex justify-between items-center">
-                            <span className="font-semibold">{isEdit ? 'Cập nhật địa chỉ' : 'Thêm địa chỉ mới'}</span>
-                            <button
-                                type="button"
-                                className="text-gray-500 hover:text-red-600"
-                                onClick={resetForm}
-                                title="Đóng"
-                            >✕</button>
-                        </div>
-                        
-                        <div>
-                            <label className="block font-medium mb-1">Người nhận</label>
-                            <input
-                                type="text"
-                                className="border rounded px-3 py-2 w-full"
-                                value={form.recipient_name}
-                                onChange={e => setForm(f => ({ ...f, recipient_name: e.target.value }))
-                                }
-                                required
-                            />
-                            {errors.recipient_name && <div className="text-red-600 text-sm">{errors.recipient_name}</div>}
-                        </div>
+                    {/* Improved form UI */}
+                    <div className={`transition-[max-height,opacity] duration-300 overflow-hidden ${showForm ? 'max-h-[1200px] opacity-100' : 'max-h-0 opacity-0'}`}>
+                        <form
+                            onSubmit={handleSubmit}
+                            className="bg-white rounded-lg shadow p-5 grid grid-cols-1 gap-4"
+                        >
+                            <div className="flex items-center justify-between">
+                                <h3 className="text-lg font-medium">{isEdit ? 'Chỉnh sửa địa chỉ' : 'Thêm địa chỉ mới'}</h3>
+                                <div className="flex items-center gap-2">
+                                    <button type="button" className="text-sm px-3 py-1 rounded border" onClick={resetForm}>Hủy</button>
+                                    <button type="submit" className="text-sm px-4 py-2 rounded bg-blue-600 text-white">{isEdit ? 'Cập nhật' : 'Lưu'}</button>
+                                </div>
+                            </div>
 
-                        <div>
-                            <label className="block font-medium mb-1">Số điện thoại</label>
-                            <input
-                                type="text"
-                                className="border rounded px-3 py-2 w-full"
-                                value={form.phone}
-                                onChange={e => setForm(f => ({ ...f, phone: e.target.value }))
-                                }
-                                required
-                            />
-                            {errors.phone && <div className="text-red-600 text-sm">{errors.phone}</div>}
-                        </div>
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                                <div>
+                                    <label className="block text-sm font-medium mb-1">Người nhận</label>
+                                    <input
+                                        type="text"
+                                        className="border rounded px-3 py-2 w-full focus:outline-none focus:ring-2 focus:ring-blue-200"
+                                        value={form.recipient_name}
+                                        onChange={e => setForm(f => ({ ...f, recipient_name: e.target.value }))}
+                                        placeholder="Họ và tên người nhận"
+                                        required
+                                    />
+                                    {errors.recipient_name && <div className="text-red-600 text-sm mt-1">{errors.recipient_name}</div>}
+                                </div>
 
-                        <div>
-                            <label className="block font-medium mb-1">Địa chỉ</label>
-                            <input
-                                type="text"
-                                className="border rounded px-3 py-2 w-full"
-                                value={form.address_line}
-                                onChange={e => setForm(f => ({ ...f, address_line: e.target.value }))
-                                }
-                                required
-                            />
-                            {errors.address_line && <div className="text-red-600 text-sm">{errors.address_line}</div>}
-                        </div>
+                                <div>
+                                    <label className="block text-sm font-medium mb-1">Số điện thoại</label>
+                                    <input
+                                        type="text"
+                                        className="border rounded px-3 py-2 w-full focus:outline-none focus:ring-2 focus:ring-blue-200"
+                                        value={form.phone}
+                                        onChange={e => setForm(f => ({ ...f, phone: e.target.value }))}
+                                        placeholder="09xxxxxxxx"
+                                        required
+                                    />
+                                    {errors.phone && <div className="text-red-600 text-sm mt-1">{errors.phone}</div>}
+                                </div>
 
-                        <div>
-                            <label className="block font-medium mb-1">Tỉnh/Thành phố</label>
-                            <select
-                                className="border rounded px-3 py-2 w-full"
-                                value={form.province_code}
-                                onChange={e => {
-                                    setForm(f => ({
-                                        ...f,
-                                        province_code: e.target.value,
-                                        ward_code: '',
-                                    }));
-                                }}
-                                required
-                            >
-                                <option value="">-- Chọn tỉnh/thành --</option>
-                                {provinces.map(p => (
-                                    <option key={p.code} value={p.code}>{p.name}</option>
-                                ))}
-                            </select>
-                            {errors.province_code && <div className="text-red-600 text-sm">{errors.province_code}</div>}
-                        </div>
+                                <div className="md:col-span-2">
+                                    <label className="block text-sm font-medium mb-1">Địa chỉ</label>
+                                    <input
+                                        type="text"
+                                        className="border rounded px-3 py-2 w-full focus:outline-none focus:ring-2 focus:ring-blue-200"
+                                        value={form.address_line}
+                                        onChange={e => setForm(f => ({ ...f, address_line: e.target.value }))}
+                                        placeholder="Số nhà, ngõ, tên đường..."
+                                        required
+                                    />
+                                    {errors.address_line && <div className="text-red-600 text-sm mt-1">{errors.address_line}</div>}
+                                </div>
 
-                        <div>
-                            <label className="block font-medium mb-1">Phường/Xã</label>
-                            <select
-                                className="border rounded px-3 py-2 w-full"
-                                value={form.ward_code}
-                                onChange={e => setForm(f => ({ ...f, ward_code: e.target.value }))
-                                }
-                                required
-                                disabled={!form.province_code}
-                            >
-                                <option value="">-- Chọn phường/xã --</option>
-                                {filteredWards.map(w => (
-                                    <option key={w.code} value={w.code}>{w.name}</option>
-                                ))}
-                            </select>
-                            {errors.ward_code && <div className="text-red-600 text-sm">{errors.ward_code}</div>}
-                        </div>
+                                <div>
+                                    <label className="block text-sm font-medium mb-1">Tỉnh/Thành phố</label>
+                                    <select
+                                        className="border rounded px-3 py-2 w-full focus:outline-none focus:ring-2 focus:ring-blue-200"
+                                        value={form.province_code}
+                                        onChange={e => {
+                                            setForm(f => ({
+                                                ...f,
+                                                province_code: e.target.value,
+                                                ward_code: '',
+                                            }));
+                                        }}
+                                        required
+                                    >
+                                        <option value="">-- Chọn tỉnh/thành --</option>
+                                        {provinces.map(p => (
+                                            <option key={p.code} value={p.code}>{p.name}</option>
+                                        ))}
+                                    </select>
+                                    {errors.province_code && <div className="text-red-600 text-sm mt-1">{errors.province_code}</div>}
+                                </div>
 
-                        <div>
-                            <label className="block font-medium mb-1">Vị trí trên bản đồ</label>
-                            <MapLibreMapPicker
-                                lat={form.latitude ? Number(form.latitude) : undefined}
-                                lng={form.longitude ? Number(form.longitude) : undefined}
-                                onLocationChange={(lat, lng, formattedAddress) => {
-                                    setForm(f => ({
-                                        ...f,
-                                        latitude: lat.toString(),
-                                        longitude: lng.toString(),
-                                        address_line: formattedAddress ?? f.address_line,
-                                    }));
-                                }}
-                            />
-                        </div>
+                                <div>
+                                    <label className="block text-sm font-medium mb-1">Phường/Xã</label>
+                                    <select
+                                        className="border rounded px-3 py-2 w-full focus:outline-none focus:ring-2 focus:ring-blue-200"
+                                        value={form.ward_code}
+                                        onChange={e => setForm(f => ({ ...f, ward_code: e.target.value }))}
+                                        required
+                                        disabled={!form.province_code}
+                                    >
+                                        <option value="">-- Chọn phường/xã --</option>
+                                        {filteredWards.map(w => (
+                                            <option key={w.code} value={w.code}>{w.name}</option>
+                                        ))}
+                                    </select>
+                                    {errors.ward_code && <div className="text-red-600 text-sm mt-1">{errors.ward_code}</div>}
+                                </div>
+                            </div>
 
-                        <div>
-                            <label className="block font-medium mb-1">Mặc định</label>
-                            <input
-                                type="checkbox"
-                                checked={form.is_default}
-                                onChange={e => setForm(f => ({ ...f, is_default: e.target.checked }))
-                                }
-                            /> Đặt làm địa chỉ mặc định
-                        </div>
+                            <div>
+                                <label className="block text-sm font-medium mb-2">Vị trí trên bản đồ (kéo thả để chính xác)</label>
+                                <div className="h-60 rounded overflow-hidden border">
+                                    <MapLibreMapPicker
+                                        lat={form.latitude ? Number(form.latitude) : undefined}
+                                        lng={form.longitude ? Number(form.longitude) : undefined}
+                                        onLocationChange={(lat, lng, formattedAddress) => {
+                                            setForm(f => ({
+                                                ...f,
+                                                latitude: lat.toString(),
+                                                longitude: lng.toString(),
+                                                address_line: formattedAddress ?? f.address_line,
+                                            }));
+                                        }}
+                                    />
+                                </div>
+                            </div>
 
-                        <div>
-                            <button
-                                type="submit"
-                                className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700"
-                            >
-                                {isEdit ? 'Cập nhật' : 'Lưu'}
-                            </button>
-                            <button
-                                type="button"
-                                className="ml-2 px-4 py-2 rounded bg-gray-300 hover:bg-gray-400"
-                                onClick={resetForm}
-                            >
-                                Hủy
-                            </button>
-                        </div>
-                    </form>
-                )}
+                            <div className="flex items-center gap-3">
+                                <label className="inline-flex items-center gap-2 text-sm">
+                                    <input
+                                        type="checkbox"
+                                        checked={form.is_default}
+                                        onChange={e => setForm(f => ({ ...f, is_default: e.target.checked }))}
+                                    />
+                                    Đặt làm địa chỉ mặc định
+                                </label>
 
-                <div className="bg-white rounded shadow">
-                    <table className="w-full">
-                        <thead>
-                            <tr className="bg-gray-100">
-                                <th className="py-2 px-3 text-left">Người nhận</th>
-                                <th className="py-2 px-3 text-left">Số điện thoại</th>
-                                <th className="py-2 px-3 text-left">Địa chỉ</th>
-                                <th className="py-2 px-3 text-center">Mặc định</th>
-                                <th className="py-2 px-3 text-center">Thao tác</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            {addresses.data.length === 0 ? (
-                                <tr>
-                                    <td colSpan={5} className="text-center py-4 text-gray-500">
-                                        Chưa có địa chỉ nào.
-                                    </td>
-                                </tr>
-                            ) : (
-                                addresses.data.map((addr: Address) => (
-                                    <tr key={addr.id}>
-                                        <td className="py-2 px-3">{addr.recipient_name}</td>
-                                        <td className="py-2 px-3">{addr.phone}</td>
-                                        <td className="py-2 px-3">
+                                <div className="ml-auto text-sm text-slate-500">
+                                    {form.latitude && form.longitude && (
+                                        <a
+                                            href={`https://www.openstreetmap.org/?mlat=${form.latitude}&mlon=${form.longitude}#map=16/${form.latitude}/${form.longitude}`}
+                                            target="_blank"
+                                            rel="noopener noreferrer"
+                                            className="text-blue-600 hover:underline"
+                                        >
+                                            Xem vị trí hiện tại
+                                        </a>
+                                    )}
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        {addresses.data.length === 0 ? (
+                            <div className="md:col-span-2 bg-white rounded-lg p-6 text-center text-slate-600">
+                                Chưa có địa chỉ nào. Nhấn "Thêm địa chỉ" để bắt đầu.
+                            </div>
+                        ) : (
+                            addresses.data.map((addr: Address) => (
+                                <div key={addr.id} className="bg-white rounded-lg p-4 shadow-sm border flex flex-col justify-between">
+                                    <div>
+                                        <div className="flex items-start justify-between gap-4">
+                                            <div>
+                                                <div className="font-medium text-slate-900">{addr.recipient_name}</div>
+                                                <div className="text-sm text-slate-600">{addr.phone}</div>
+                                            </div>
+                                            <div className="text-right">
+                                                {addr.is_default && <span className="inline-block px-2 py-1 text-xs bg-green-100 text-green-800 rounded">Mặc định</span>}
+                                            </div>
+                                        </div>
+
+                                        <div className="mt-3 text-sm text-slate-700">
                                             <div>{addr.address_line}</div>
-                                            <div className="text-sm text-gray-500">
+                                            <div className="text-xs text-slate-500 mt-1">
                                                 {[addr.ward_name, addr.province_name].filter(Boolean).join(', ')}
                                             </div>
                                             {addr.latitude && addr.longitude && (
-                                                <a
-                                                    href={`https://www.openstreetmap.org/?mlat=${addr.latitude}&mlon=${addr.longitude}#map=16/${addr.latitude}/${addr.longitude}`}
-                                                    target="_blank"
-                                                    rel="noopener noreferrer"
-                                                    className="text-blue-600 text-xs"
-                                                >
-                                                    Xem bản đồ
-                                                </a>
+                                                <div className="mt-2">
+                                                    <a
+                                                        href={`https://www.openstreetmap.org/?mlat=${addr.latitude}&mlon=${addr.longitude}#map=16/${addr.latitude}/${addr.longitude}`}
+                                                        target="_blank"
+                                                        rel="noopener noreferrer"
+                                                        className="text-blue-600 text-sm hover:underline"
+                                                    >
+                                                        Xem trên bản đồ
+                                                    </a>
+                                                </div>
                                             )}
-                                        </td>
-                                        <td className="py-2 px-3 text-center">
-                                            {addr.is_default ? (
-                                                <span className="text-green-600 font-semibold">Mặc định</span>
-                                            ) : ''}
-                                        </td>
-                                        <td className="py-2 px-3 text-center">
-                                            <div className="flex items-center justify-center gap-2">
-                                                <button
-                                                    onClick={() => handleEdit(addr)}
-                                                    className="bg-yellow-500 text-white px-3 py-1 rounded hover:bg-yellow-600"
-                                                >
-                                                    Sửa
-                                                </button>
-                                                <button
-                                                    onClick={() => handleDelete(addr.id)}
-                                                    className="bg-red-600 text-white px-3 py-1 rounded hover:bg-red-700"
-                                                >
-                                                    Xóa
-                                                </button>
-                                            </div>
-                                        </td>
-                                    </tr>
-                                ))
-                            )}
-                        </tbody>
-                    </table>
+                                        </div>
+                                    </div>
+
+                                    <div className="mt-4 flex items-center gap-2">
+                                        <button
+                                            onClick={() => handleEdit(addr)}
+                                            className="px-3 py-1 rounded bg-yellow-500 text-white hover:bg-yellow-600 text-sm"
+                                        >
+                                            Sửa
+                                        </button>
+                                        <button
+                                            onClick={() => openDeleteModal(addr.id)}
+                                            className="px-3 py-1 rounded bg-red-600 text-white hover:bg-red-700 text-sm"
+                                        >
+                                            Xóa
+                                        </button>
+
+                                        {!addr.is_default && (
+                                            <button
+                                                onClick={() => router.post(`/shipping-addresses/${addr.id}/set-default`)}
+                                                className="ml-auto px-3 py-1 rounded bg-slate-100 text-slate-700 hover:bg-slate-200 text-sm"
+                                            >
+                                                Đặt mặc định
+                                            </button>
+                                        )}
+                                    </div>
+                                </div>
+                            ))
+                        )}
+                    </div>
 
                     {addresses.links && addresses.links.length > 1 && (
-                        <div className="mt-4 flex justify-center gap-1 pb-4">
+                        <div className="mt-4 flex justify-center gap-2">
                             {addresses.links.map((link, idx) =>
                                 link.url ? (
                                     <button
                                         key={idx}
-                                        className={`px-3 py-1 rounded ${link.active ? 'bg-blue-600 text-white' : 'bg-gray-200 text-gray-700 hover:bg-gray-300'}`}
+                                        className={`px-3 py-1 rounded ${link.active ? 'bg-blue-600 text-white' : 'bg-white border text-slate-700'}`}
                                         dangerouslySetInnerHTML={{ __html: link.label }}
                                         onClick={() => router.visit(link.url!)}
                                     />
                                 ) : (
-                                    <span
-                                        key={idx}
-                                        className="px-3 py-1 text-gray-400"
-                                        dangerouslySetInnerHTML={{ __html: link.label }}
-                                    />
+                                    <span key={idx} className="px-3 py-1 text-gray-400" dangerouslySetInnerHTML={{ __html: link.label }} />
                                 )
                             )}
+                        </div>
+                    )}
+
+                    {/* Delete confirmation modal (UI) */}
+                    {showDeleteModal && (
+                        <div className="fixed inset-0 z-50 flex items-center justify-center">
+                            <div className="absolute inset-0 bg-black opacity-40" onClick={cancelDelete}></div>
+                            <div className="bg-white rounded-lg shadow-lg z-10 max-w-md w-full p-6">
+                                <h3 className="text-lg font-semibold mb-2">Xác nhận xóa địa chỉ</h3>
+                                <p className="text-sm text-slate-600 mb-4">
+                                    Bạn có chắc muốn xóa địa chỉ{' '}
+                                    <span className="font-medium">
+                                        {addresses.data.find(a => a.id === deletingAddrId)?.recipient_name || ''}
+                                    </span>
+                                    ? Hành động này không thể hoàn tác.
+                                </p>
+                                <div className="flex justify-end gap-2">
+                                    <button type="button" className="px-4 py-2 rounded border" onClick={cancelDelete} disabled={processingDelete}>Hủy</button>
+                                    <button type="button" className="px-4 py-2 rounded bg-red-600 text-white" onClick={confirmDelete} disabled={processingDelete}>
+                                        {processingDelete ? 'Đang xóa...' : 'Xóa'}
+                                    </button>
+                                </div>
+                            </div>
                         </div>
                     )}
                 </div>

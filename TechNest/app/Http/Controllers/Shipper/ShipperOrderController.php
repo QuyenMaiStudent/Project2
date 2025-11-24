@@ -20,25 +20,30 @@ class ShipperOrderController extends Controller
         $shipperId = $request->user('shipper')->id;
 
         $orders = Order::query()
-            ->with('shippingAddress')
-            ->where(function ($query) use ($shipperId) {
-                $query->readyForShipper()
-                    ->orWhere('shipper_id', $shipperId);
-            })
-            ->orderByDesc('status')
-            ->orderByDesc('placed_at')
-            ->paginate(15)
-            ->through(function (Order $order) use ($shipperId) {
-                return [
-                    'id' => $order->id,
-                    'status' => $order->status,
-                    'placed_at' => $order->placed_at?->format('d/m/Y H:i'),
+            // eager-load items + product/variant images + shippingAddress (only address_line used)
+            ->with(['shippingAddress', 'items.product.primaryImage', 'items.variant.image'])
+             ->where(function ($query) use ($shipperId) {
+                 $query->readyForShipper()
+                     ->orWhere('shipper_id', $shipperId);
+             })
+             ->orderByDesc('status')
+             ->orderByDesc('placed_at')
+             ->paginate(15)
+             ->through(function (Order $order) use ($shipperId) {
+                 return [
+                     'id' => $order->id,
+                     'status' => $order->status,
+                     'placed_at' => $order->placed_at?->format('d/m/Y H:i'),
+                    // only address_line needed for frontend
                     'shipping_address' => $order->shippingAddress?->address_line,
-                    'is_assigned_to_me' => $order->shipper_id === $shipperId,
-                    'can_accept' => $order->status === Order::STATUS_READY_TO_SHIP,
-                    'can_mark_delivered' => $order->shipper_id === $shipperId && $order->status === Order::STATUS_IN_DELIVERY,
-                ];
-            });
+                    // thumbnail: try variant image first, fallback to product primaryImage
+                    'thumbnail' => optional($order->items->first()?->variant?->image)?->url
+                                   ?? optional($order->items->first()?->product?->primaryImage)?->url,
+                     'is_assigned_to_me' => $order->shipper_id === $shipperId,
+                     'can_accept' => $order->status === Order::STATUS_READY_TO_SHIP,
+                     'can_mark_delivered' => $order->shipper_id === $shipperId && $order->status === Order::STATUS_IN_DELIVERY,
+                 ];
+             });
 
         return Inertia::render('Shipper/Orders/Index', [
             'orders' => $orders,
@@ -53,12 +58,11 @@ class ShipperOrderController extends Controller
             abort(403);
         }
 
+        // load product + variant images and shippingAddress (we only use address_line)
         $order->load([
             'items.product.primaryImage',
-            'items.variant',
-            'shippingAddress.province',
-            'shippingAddress.district',
-            'shippingAddress.ward',
+            'items.variant.image',
+            'shippingAddress',
         ]);
 
         return Inertia::render('Shipper/Orders/Show', [
@@ -69,18 +73,16 @@ class ShipperOrderController extends Controller
                 'shipping_address' => $order->shippingAddress ? [
                     'recipient_name' => $order->shippingAddress->recipient_name,
                     'phone' => $order->shippingAddress->phone,
-                    'full_address' => implode(', ', array_filter([
-                        $order->shippingAddress->address_line,
-                        optional($order->shippingAddress->ward)->name,
-                        optional($order->shippingAddress->district)->name,
-                        optional($order->shippingAddress->province)->name,
-                    ])),
+                    // only address_line required
+                    'full_address' => $order->shippingAddress->address_line,
                 ] : null,
                 'items' => $order->items->map(function ($item) {
                     return [
                         'id' => $item->id,
                         'product_name' => $item->product?->name,
                         'variant_name' => $item->variant?->variant_name,
+                        // product image: prioritize variant image if present
+                        'product_image' => $item->variant?->image?->url ?? $item->product?->primaryImage?->url,
                         'quantity' => $item->quantity,
                         'price' => (float) $item->price,
                     ];

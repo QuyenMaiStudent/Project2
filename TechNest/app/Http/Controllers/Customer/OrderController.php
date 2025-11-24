@@ -209,7 +209,8 @@ class OrderController extends Controller
                     'status' => $order->status,
                     'total_amount' => $order->total_amount,
                     'discount_amount' => $order->discount_amount ?? 0,
-                    'placed_at' => $order->placed_at?->format('d/m/Y H:i'),
+                    // trả ISO để frontend parse reliably
+                    'placed_at' => $order->placed_at?->toIso8601String(),
                     'items_count' => $order->items->count(),
                     'payment_status' => $order->payment?->status ?? 'pending',
                 ];
@@ -233,8 +234,7 @@ class OrderController extends Controller
             'items.product.primaryImage',
             'items.variant.image',
             'payment.method',
-            'shippingAddress.province',
-            'shippingAddress.ward',
+            'shippingAddress', // keep relation loaded but only use address_line
             'promotion',
             'statusLogs'
         ]);
@@ -245,7 +245,7 @@ class OrderController extends Controller
                 'status' => $order->status,
                 'total_amount' => $order->total_amount,
                 'discount_amount' => $order->discount_amount ?? 0,
-                'placed_at' => $order->placed_at?->format('d/m/Y H:i'),
+                'placed_at' => $order->placed_at?->toIso8601String(),
                 'items' => $order->items->map(function ($item) {
                     return [
                         'product' => [
@@ -258,6 +258,8 @@ class OrderController extends Controller
                             'name' => $item->variant->variant_name,
                             'image' => optional($item->variant->image)->url ?? null,
                         ] : null,
+                        // thêm trường image ưu tiên ảnh variant, nếu không có thì lấy ảnh product primary
+                        'image' => $item->variant?->image?->url ?? $item->product->primaryImage->url ?? null,
                         'quantity' => $item->quantity,
                         'price' => $item->price,
                         'subtotal' => $item->price * $item->quantity,
@@ -266,7 +268,8 @@ class OrderController extends Controller
                 'shipping_address' => [
                     'recipient_name' => $order->shippingAddress->recipient_name,
                     'phone' => $order->shippingAddress->phone,
-                    'full_address' => $this->formatFullAddress($order->shippingAddress),
+                    // chỉ trả address_line, không lấy province và ward
+                    'full_address' => $order->shippingAddress->address_line,
                     'latitude' => $order->shippingAddress->latitude,
                     'longitude' => $order->shippingAddress->longitude,
                 ],
@@ -275,7 +278,8 @@ class OrderController extends Controller
                     'method' => $order->payment?->method?->name ?? 'N/A',
                     'provider' => $order->payment?->provider ?? 'N/A',
                     'transaction_id' => $order->payment?->transaction_id ?? null,
-                    'paid_at' => $order->payment?->paid_at?->format('d/m/Y H:i') ?? null,
+                    // trả ISO để frontend hiển thị ngày thanh toán
+                    'paid_at' => $order->payment?->paid_at?->toIso8601String() ?? null,
                 ],
                 'promotion' => $order->promotion ? [
                     'code' => $order->promotion->code,
@@ -300,13 +304,8 @@ class OrderController extends Controller
 
     private function formatFullAddress($address): string
     {
-        $parts = [
-            $address->address_line,
-            optional($address->ward)->name,
-            optional($address->province)->name,
-        ];
-
-        return implode(', ', array_filter($parts));
+        // giữ function nhưng chỉ trả address_line (ward/province không cần)
+        return (string) $address->address_line;
     }
 
     private function validateAndCalculatePromotion($promotionId, $selectedItems, $total): array

@@ -134,7 +134,7 @@ index.head = (options?: RouteQueryOptions): RouteDefinition<'head'> => ({
     index.form = indexForm
 /**
 * @see \App\Http\Controllers\Customer\OrderController::show
- * @see app/Http/Controllers/Customer/OrderController.php:226
+ * @see app/Http/Controllers/Customer/OrderController.php:227
  * @route '/orders/{order}'
  */
 const show5d07ec4e36119df081df6c80b02e8808 = (args: { order: number | { id: number } } | [order: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions): RouteDefinition<'get'> => ({
@@ -149,7 +149,7 @@ show5d07ec4e36119df081df6c80b02e8808.definition = {
 
 /**
 * @see \App\Http\Controllers\Customer\OrderController::show
- * @see app/Http/Controllers/Customer/OrderController.php:226
+ * @see app/Http/Controllers/Customer/OrderController.php:227
  * @route '/orders/{order}'
  */
 show5d07ec4e36119df081df6c80b02e8808.url = (args: { order: number | { id: number } } | [order: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions) => {
@@ -182,7 +182,7 @@ show5d07ec4e36119df081df6c80b02e8808.url = (args: { order: number | { id: number
 
 /**
 * @see \App\Http\Controllers\Customer\OrderController::show
- * @see app/Http/Controllers/Customer/OrderController.php:226
+ * @see app/Http/Controllers/Customer/OrderController.php:227
  * @route '/orders/{order}'
  */
 show5d07ec4e36119df081df6c80b02e8808.get = (args: { order: number | { id: number } } | [order: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions): RouteDefinition<'get'> => ({
@@ -191,7 +191,7 @@ show5d07ec4e36119df081df6c80b02e8808.get = (args: { order: number | { id: number
 })
 /**
 * @see \App\Http\Controllers\Customer\OrderController::show
- * @see app/Http/Controllers/Customer/OrderController.php:226
+ * @see app/Http/Controllers/Customer/OrderController.php:227
  * @route '/orders/{order}'
  */
 show5d07ec4e36119df081df6c80b02e8808.head = (args: { order: number | { id: number } } | [order: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions): RouteDefinition<'head'> => ({
@@ -201,7 +201,7 @@ show5d07ec4e36119df081df6c80b02e8808.head = (args: { order: number | { id: numbe
 
     /**
 * @see \App\Http\Controllers\Customer\OrderController::show
- * @see app/Http/Controllers/Customer/OrderController.php:226
+ * @see app/Http/Controllers/Customer/OrderController.php:227
  * @route '/orders/{order}'
  */
     const show5d07ec4e36119df081df6c80b02e8808Form = (args: { order: number | { id: number } } | [order: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
@@ -211,7 +211,7 @@ show5d07ec4e36119df081df6c80b02e8808.head = (args: { order: number | { id: numbe
 
             /**
 * @see \App\Http\Controllers\Customer\OrderController::show
- * @see app/Http/Controllers/Customer/OrderController.php:226
+ * @see app/Http/Controllers/Customer/OrderController.php:227
  * @route '/orders/{order}'
  */
         show5d07ec4e36119df081df6c80b02e8808Form.get = (args: { order: number | { id: number } } | [order: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
@@ -220,7 +220,7 @@ show5d07ec4e36119df081df6c80b02e8808.head = (args: { order: number | { id: numbe
         })
             /**
 * @see \App\Http\Controllers\Customer\OrderController::show
- * @see app/Http/Controllers/Customer/OrderController.php:226
+ * @see app/Http/Controllers/Customer/OrderController.php:227
  * @route '/orders/{order}'
  */
         show5d07ec4e36119df081df6c80b02e8808Form.head = (args: { order: number | { id: number } } | [order: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
@@ -236,7 +236,7 @@ show5d07ec4e36119df081df6c80b02e8808.head = (args: { order: number | { id: numbe
     show5d07ec4e36119df081df6c80b02e8808.form = show5d07ec4e36119df081df6c80b02e8808Form
     /**
 * @see \App\Http\Controllers\Customer\OrderController::show
- * @see app/Http/Controllers/Customer/OrderController.php:226
+ * @see app/Http/Controllers/Customer/OrderController.php:227
  * @route '/customer/orders/{order}'
  */
 const show05c988c2fb107aab7054465b25591e48 = (args: { order: number | { id: number } } | [order: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions): RouteDefinition<'get'> => ({
@@ -251,7 +251,7 @@ show05c988c2fb107aab7054465b25591e48.definition = {
 
 /**
 * @see \App\Http\Controllers\Customer\OrderController::show
- * @see app/Http/Controllers/Customer/OrderController.php:226
+ * @see app/Http/Controllers/Customer/OrderController.php:227
  * @route '/customer/orders/{order}'
  */
 show05c988c2fb107aab7054465b25591e48.url = (args: { order: number | { id: number } } | [order: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions) => {
@@ -284,7 +284,7 @@ show05c988c2fb107aab7054465b25591e48.url = (args: { order: number | { id: number
 
 /**
 * @see \App\Http\Controllers\Customer\OrderController::show
- * @see app/Http/Controllers/Customer/OrderController.php:226
+ * @see app/Http/Controllers/Customer/OrderController.php:227
  * @route '/customer/orders/{order}'
  */
 show05c988c2fb107aab7054465b25591e48.get = (args: { order: number | { id: number } } | [order: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions): RouteDefinition<'get'> => ({
@@ -293,7 +293,7 @@ show05c988c2fb107aab7054465b25591e48.get = (args: { order: number | { id: number
 })
 /**
 * @see \App\Http\Controllers\Customer\OrderController::show
- * @see app/Http/Controllers/Customer/OrderController.php:226
+ * @see app/Http/Controllers/Customer/OrderController.php:227
  * @route '/customer/orders/{order}'
  */
 show05c988c2fb107aab7054465b25591e48.head = (args: { order: number | { id: number } } | [order: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions): RouteDefinition<'head'> => ({
@@ -303,7 +303,7 @@ show05c988c2fb107aab7054465b25591e48.head = (args: { order: number | { id: numbe
 
     /**
 * @see \App\Http\Controllers\Customer\OrderController::show
- * @see app/Http/Controllers/Customer/OrderController.php:226
+ * @see app/Http/Controllers/Customer/OrderController.php:227
  * @route '/customer/orders/{order}'
  */
     const show05c988c2fb107aab7054465b25591e48Form = (args: { order: number | { id: number } } | [order: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
@@ -313,7 +313,7 @@ show05c988c2fb107aab7054465b25591e48.head = (args: { order: number | { id: numbe
 
             /**
 * @see \App\Http\Controllers\Customer\OrderController::show
- * @see app/Http/Controllers/Customer/OrderController.php:226
+ * @see app/Http/Controllers/Customer/OrderController.php:227
  * @route '/customer/orders/{order}'
  */
         show05c988c2fb107aab7054465b25591e48Form.get = (args: { order: number | { id: number } } | [order: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
@@ -322,7 +322,7 @@ show05c988c2fb107aab7054465b25591e48.head = (args: { order: number | { id: numbe
         })
             /**
 * @see \App\Http\Controllers\Customer\OrderController::show
- * @see app/Http/Controllers/Customer/OrderController.php:226
+ * @see app/Http/Controllers/Customer/OrderController.php:227
  * @route '/customer/orders/{order}'
  */
         show05c988c2fb107aab7054465b25591e48Form.head = (args: { order: number | { id: number } } | [order: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({

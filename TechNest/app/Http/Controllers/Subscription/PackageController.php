@@ -6,6 +6,8 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\Subscription\PackageRequest;
 use App\Models\Package;
 use App\Models\PackageSubscription;
+use App\Models\PackagePayment;
+use Illuminate\Support\Carbon;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
@@ -51,9 +53,55 @@ class PackageController extends Controller
 
         $packages = Package::active()->get();
 
+        // paginated recent package payments for current user
+        $paginated = PackagePayment::with('package')
+            ->where('user_id', $user->id)
+            ->latest()
+            ->paginate(10);
+
+        $collection = $paginated->getCollection()->map(function ($p) {
+            return [
+                'id' => $p->id,
+                'transaction_code' => $p->transaction_code,
+                'package_id' => $p->package_id,
+                'package_name' => $p->package?->name ?? null,
+                'amount' => $p->amount,
+                'currency' => $p->currency,
+                'gateway' => $p->gateway,
+                'status' => $p->status,
+                'paid_at' => $p->paid_at ? Carbon::parse($p->paid_at)->format('d/m/Y H:i') : null,
+                'created_at' => Carbon::parse($p->created_at)->format('d/m/Y H:i'),
+            ];
+        })->toArray();
+
+        $recentPayments = [
+            'data' => $collection,
+            'current_page' => $paginated->currentPage(),
+            'last_page' => $paginated->lastPage(),
+            'prev_page_url' => $paginated->previousPageUrl(),
+            'next_page_url' => $paginated->nextPageUrl(),
+        ];
+
+        // format active subscription dates for frontend (avoid raw ISO with .000000Z)
+        $active = $user?->activePackageSubscription();
+        $activeSubscription = null;
+        if ($active) {
+            $activeSubscription = [
+                'id' => $active->id,
+                'status' => $active->status,
+                'package_id' => $active->package_id,
+                'auto_renew' => (bool) $active->auto_renew,
+                'price' => $active->price ?? null,
+                'started_at' => $active->started_at ? Carbon::parse($active->started_at)->format('d/m/Y H:i') : null,
+                'expires_at' => $active->expires_at ? Carbon::parse($active->expires_at)->format('d/m/Y H:i') : null,
+                'next_renewal_at' => $active->next_renewal_at ? Carbon::parse($active->next_renewal_at)->format('d/m/Y H:i') : null,
+            ];
+        }
+
         return Inertia::render('Packages/Index', [
             'packages' => $packages,
-            'activeSubscription' => $user?->activePackageSubscription(),
+            'activeSubscription' => $activeSubscription,
+            'recentPayments' => $recentPayments,
         ]);
     }
 

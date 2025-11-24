@@ -25,7 +25,9 @@ class ShipperDashboardController extends Controller
         ];
 
         $recent = Order::query()
+            // include item images so dashboard can show a thumbnail
             ->where('shipper_id', $shipper->id)
+            ->with(['items.product.primaryImage', 'items.variant.image'])
             ->orderByDesc('updated_at')
             ->limit(10)
             ->get()
@@ -33,6 +35,8 @@ class ShipperDashboardController extends Controller
                 'id' => $o->id,
                 'status' => $o->status,
                 'updated_at' => $o->updated_at?->format('d/m H:i'),
+                'thumbnail' => optional($o->items->first()?->variant?->image)?->url
+                                ?? optional($o->items->first()?->product?->primaryImage)?->url,
             ]);
 
         return Inertia::render('Shipper/Dashboard', [

@@ -2,11 +2,11 @@
 
 namespace App\Http\Requests\Auth;
 
-use App\Models\User;
 use Illuminate\Auth\Events\Lockout;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\RateLimiter;
+use Illuminate\Support\Str;
 use Illuminate\Validation\ValidationException;
 
 class LoginRequest extends FormRequest
@@ -22,13 +22,25 @@ class LoginRequest extends FormRequest
     /**
      * Get the validation rules that apply to the request.
      *
-     * @return array<string, \Illuminate\Contracts\Validation\ValidationRule|array<mixed>|string>
+     * @return array<string, \Illuminate\Contracts\Validation\Rule|array<string>|string>
      */
     public function rules(): array
     {
         return [
             'email' => ['required', 'string', 'email'],
             'password' => ['required', 'string'],
+        ];
+    }
+
+    /**
+     * Get custom messages for validator errors.
+     */
+    public function messages(): array
+    {
+        return [
+            'email.required' => 'Vui lòng nhập email',
+            'email.email' => 'Email không đúng định dạng',
+            'password.required' => 'Vui lòng nhập mật khẩu',
         ];
     }
 
@@ -41,19 +53,11 @@ class LoginRequest extends FormRequest
     {
         $this->ensureIsNotRateLimited();
 
-        // Nếu tài khoản đã tồn tại nhưng bị khóa thì chặn login và thông báo tiếng Việt
-        $user = User::where('email', $this->input('email'))->first();
-        if ($user && ! $user->is_active) {
-            throw ValidationException::withMessages([
-                'email' => 'Tài khoản đã bị khóa. Vui lòng liên hệ quản trị để mở khóa.',
-            ]);
-        }
-
         if (! Auth::attempt($this->only('email', 'password'), $this->boolean('remember'))) {
             RateLimiter::hit($this->throttleKey());
 
             throw ValidationException::withMessages([
-                'email' => __('auth.failed'),
+                'email' => 'Email hoặc mật khẩu không chính xác',
             ]);
         }
 
@@ -76,10 +80,7 @@ class LoginRequest extends FormRequest
         $seconds = RateLimiter::availableIn($this->throttleKey());
 
         throw ValidationException::withMessages([
-            'email' => __('auth.throttle', [
-                'seconds' => $seconds,
-                'minutes' => ceil($seconds / 60),
-            ]),
+            'email' => "Bạn đã đăng nhập sai quá nhiều lần. Vui lòng thử lại sau {$seconds} giây.",
         ]);
     }
 
@@ -88,10 +89,6 @@ class LoginRequest extends FormRequest
      */
     public function throttleKey(): string
     {
-        return $this->string('email')
-            ->lower()
-            ->append('|'.$this->ip())
-            ->transliterate()
-            ->value();
+        return Str::transliterate(Str::lower($this->string('email')).'|'.$this->ip());
     }
 }
