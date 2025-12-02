@@ -220,6 +220,85 @@ export default function Checkout(props: any) {
                   </div>
                 );
               })}
+
+              <div className="bg-white border border-slate-200 rounded-lg p-5 shadow-sm">
+                <h3 className="font-semibold text-lg mb-3">🎁 Mã khuyến mãi</h3>
+                {promotions.length === 0 ? (
+                  <div className="text-sm text-slate-500 bg-gray-50 p-3 rounded">
+                    Không có khuyến mãi khả dụng cho đơn hàng này
+                  </div>
+                ) : (
+                  <>
+                    <select
+                      value={data.promotion_id ?? ''}
+
+                      onChange={(e) => setData('promotion_id', e.target.value ? Number(e.target.value) : null)}
+                      className="border border-slate-300 p-3 rounded w-full text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                    >
+                      <option value="">-- Chọn mã khuyến mãi (tùy chọn) --</option>
+                      {promotions.map((promo: Promotion) => {
+                        const discountText = promo.type === 'fixed'
+                          ? `Giảm ${formatMoney(promo.value)}`
+                          : `Giảm ${promo.value}%`;
+                        const minOrderText = promo.min_order_amount > 0
+                          ? ` — Đơn tối thiểu ${formatMoney(promo.min_order_amount)}`
+                          : '';
+                        return (
+                          <option key={promo.id} value={promo.id}>
+                            {promo.code} | {discountText}{minOrderText}
+                          </option>
+                        );
+                      })}
+                    </select>
+
+                    {data.promotion_id && (
+                      <div className="mt-3 p-4 bg-gradient-to-r from-green-50 to-emerald-50 border border-green-200 rounded-lg text-sm">
+                        {(() => {
+                          const selectedPromo = promotions.find((p: Promotion) => p.id === data.promotion_id);
+                          if (!selectedPromo) return null;
+                          const canApply = selectedPromo.min_order_amount === 0 || total >= selectedPromo.min_order_amount;
+
+                          return (
+                            <>
+                              <div className="flex items-start justify-between">
+                                <div>
+                                  <div className="font-semibold text-green-700 flex items-center gap-2">
+                                    <span>✓</span>
+                                    <span>{selectedPromo.code}</span>
+                                  </div>
+                                  <div className="text-slate-600 mt-1">
+                                    {selectedPromo.description || 'Mã khuyến mãi đã được áp dụng'}
+                                  </div>
+                                </div>
+                                <button
+                                  type="button"
+                                  onClick={() => setData('promotion_id', null)}
+                                  className="text-slate-400 hover:text-slate-600 text-xs ml-2"
+                                >
+                                  ✕
+                                </button>
+                              </div>
+
+                              {!canApply && (
+                                <div className="mt-3 p-2 bg-red-50 border border-red-200 rounded text-xs text-red-600">
+                                  ⚠ Đơn hàng cần đạt tối thiểu {formatMoney(selectedPromo.min_order_amount)} để áp dụng mã này
+                                </div>
+                              )}
+
+                              {canApply && discount > 0 && (
+                                <div className="mt-3 p-2 bg-white border border-green-200 rounded text-xs">
+                                  Bạn tiết kiệm được:&nbsp;
+                                  <span className="font-semibold text-green-600">{formatMoney(discount)}</span>
+                                </div>
+                              )}
+                            </>
+                          );
+                        })()}
+                      </div>
+                    )}
+                  </>
+                )}
+              </div>
             </div>
 
             {/* Right column (col 2 of 2) — nội dung phân bố đều */}

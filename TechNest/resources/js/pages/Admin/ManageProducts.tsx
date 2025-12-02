@@ -127,7 +127,7 @@ export default function ManageProducts() {
           notification.type === 'success' 
             ? 'bg-green-50 border-green-200 text-green-700' 
             : 'bg-red-50 border-red-200 text-red-700'
-        }`}>
+        } text-base md:text-lg`}>
           <div className="flex items-center">
             <svg className={`w-5 h-5 mr-2 ${notification.type === 'success' ? 'text-green-500' : 'text-red-500'}`} fill="currentColor" viewBox="0 0 20 20">
               {notification.type === 'success' ? (
@@ -149,31 +149,31 @@ export default function ManageProducts() {
 
       <header className="mb-6 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 bg-white p-6 rounded-lg shadow-lg border-l-4 border-[#0AC1EF]">
         <div>
-          <h1 className="text-3xl font-bold text-gray-800">Quản lý sản phẩm</h1>
+          <h1 className="text-4xl md:text-5xl font-extrabold text-gray-800">Quản lý sản phẩm</h1>
         </div>
 
-        <form method="get" action="/admin/products" className="flex flex-col sm:flex-row gap-3 items-center bg-white p-4 rounded-lg shadow-sm border border-gray-200">
+        <form method="get" action="/admin/products" className="flex flex-col sm:flex-row gap-3 items-center bg-white p-5 rounded-lg shadow-sm border border-gray-200 text-base md:text-lg">
           <div className="relative">
             <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-gray-400" />
             <input
               name="q"
               defaultValue={filters.q || ''}
               placeholder="Tìm theo tên sản phẩm..."
-              className="pl-10 pr-3 py-2 w-full sm:w-64 border border-gray-300 rounded-md focus:ring-2 focus:ring-[#0AC1EF] focus:border-transparent"
+              className="pl-10 pr-3 py-3 w-full sm:w-64 border border-gray-300 rounded-md focus:ring-2 focus:ring-[#0AC1EF] focus:border-transparent"
             />
           </div>
           <input
             name="seller"
             defaultValue={filters.seller || ''}
             placeholder="Seller ID"
-            className="px-3 py-2 w-full sm:w-36 border border-gray-300 rounded-md focus:ring-2 focus:ring-[#0AC1EF] focus:border-transparent"
+            className="px-3 py-3 w-full sm:w-36 border border-gray-300 rounded-md focus:ring-2 focus:ring-[#0AC1EF] focus:border-transparent text-base md:text-lg"
           />
           <div className="relative">
             <Filter className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-gray-400" />
             <select
               name="status"
               defaultValue={filters.status || ''}
-              className="appearance-none pl-10 pr-8 py-2 w-full sm:w-44 border border-gray-300 rounded-md bg-white text-sm focus:ring-2 focus:ring-[#0AC1EF] focus:border-transparent"
+              className="appearance-none pl-10 pr-8 py-3 w-full sm:w-44 border border-gray-300 rounded-md bg-white text-base md:text-lg focus:ring-2 focus:ring-[#0AC1EF] focus:border-transparent"
               aria-label="Lọc theo trạng thái"
             >
               <option value="">Tất cả trạng thái</option>
@@ -186,11 +186,11 @@ export default function ManageProducts() {
             </svg>
           </div>
           <div className="flex gap-2">
-            <button type="submit" className="px-4 py-2 bg-[#0AC1EF] text-white rounded-md hover:bg-[#09b3db] transition-colors flex items-center space-x-2">
+            <button type="submit" className="px-6 py-3 bg-[#0AC1EF] text-white rounded-md hover:bg-[#09b3db] transition-colors flex items-center space-x-2 text-base md:text-lg">
               <Search className="w-4 h-4" />
               <span>Lọc</span>
             </button>
-            <a href="/admin/products" className="px-4 py-2 bg-gray-200 text-gray-700 rounded-md hover:bg-gray-300 transition-colors flex items-center space-x-2">
+            <a href="/admin/products" className="px-6 py-3 bg-gray-200 text-gray-700 rounded-md hover:bg-gray-300 transition-colors flex items-center space-x-2 text-base md:text-lg">
               <RefreshCw className="w-4 h-4" />
               <span>Đặt lại</span>
             </a>
@@ -202,19 +202,19 @@ export default function ManageProducts() {
         <table className="min-w-full divide-y divide-gray-200">
           <thead className="bg-gradient-to-r from-[#0AC1EF] to-[#0894c7] text-white">
             <tr>
-              <th className="px-6 py-4 text-left text-sm font-semibold uppercase tracking-wider">#</th>
-              <th className="px-6 py-4 text-left text-sm font-semibold uppercase tracking-wider">Sản phẩm</th>
-              <th className="px-6 py-4 text-left text-sm font-semibold uppercase tracking-wider">Seller</th>
-              <th className="px-6 py-4 text-left text-sm font-semibold uppercase tracking-wider">Thương hiệu</th>
-              <th className="px-6 py-4 text-center text-sm font-semibold uppercase tracking-wider">Ẩn hiện</th>
-              <th className="px-6 py-4 text-left text-sm font-semibold uppercase tracking-wider">Trạng thái</th>
-              <th className="px-6 py-4 text-right text-sm font-semibold uppercase tracking-wider">Hành động</th>
+              <th className="px-6 py-4 text-left text-base md:text-lg font-semibold uppercase tracking-wider">#</th>
+              <th className="px-6 py-4 text-left text-base md:text-lg font-semibold uppercase tracking-wider">Sản phẩm</th>
+              <th className="px-6 py-4 text-left text-base md:text-lg font-semibold uppercase tracking-wider">Seller</th>
+              <th className="px-6 py-4 text-left text-base md:text-lg font-semibold uppercase tracking-wider">Thương hiệu</th>
+              <th className="px-6 py-4 text-center text-base md:text-lg font-semibold uppercase tracking-wider">Ẩn hiện</th>
+              <th className="px-6 py-4 text-left text-base md:text-lg font-semibold uppercase tracking-wider">Trạng thái</th>
+              <th className="px-6 py-4 text-right text-base md:text-lg font-semibold uppercase tracking-wider">Hành động</th>
             </tr>
           </thead>
           <tbody className="bg-white divide-y divide-gray-200">
             {(products.data || []).map((p: Product) => (
               <tr key={p.id} className="hover:bg-gray-50 transition-colors duration-150">
-                <td className="px-6 py-4 text-sm text-gray-700 font-medium">{p.id}</td>
+                <td className="px-6 py-4 text-base md:text-lg text-gray-700 font-medium">{p.id}</td>
 
                 <td className="px-6 py-4">
                   <div className="flex flex-col">
@@ -231,11 +231,11 @@ export default function ManageProducts() {
                         </span>
                       )}
                     </div>
-                    <span className="text-xs text-gray-500">{p.created_at ? new Date(p.created_at).toLocaleString() : ''}</span>
+                    <span className="text-base md:text-lg text-gray-500">{p.created_at ? new Date(p.created_at).toLocaleString() : ''}</span>
                   </div>
                 </td>
 
-                <td className="px-6 py-4 text-sm text-gray-700">
+                <td className="px-6 py-4 text-base md:text-lg text-gray-700">
                   {p.seller?.name ? (
                     <a href={`/admin/users/${p.seller.id}/edit`} className="text-gray-700 hover:text-[#0AC1EF] hover:underline transition-colors">
                       {p.seller.name}
@@ -245,7 +245,7 @@ export default function ManageProducts() {
                   )}
                 </td>
 
-                <td className="px-6 py-4 text-sm text-gray-700">{p.brand?.name ?? '-'}</td>
+                <td className="px-6 py-4 text-base md:text-lg text-gray-700">{p.brand?.name ?? '-'}</td>
                 {/* Cột Ẩn/Hiện với checkbox cải thiện */}
                 <td className='px-6 py-4 text-center'>
                   <label className="relative inline-flex items-center cursor-pointer">
@@ -261,7 +261,7 @@ export default function ManageProducts() {
                 </td>
 
                 <td className="px-6 py-4">
-                  <span className={`inline-flex items-center px-3 py-1 rounded-full text-xs font-semibold ${statusClasses(p.status)}`}>
+                  <span className={`inline-flex items-center px-3 py-1 rounded-full text-sm md:text-base font-semibold ${statusClasses(p.status)}`}>
                     {p.status ?? 'unknown'}
                   </span>
                 </td>
@@ -270,7 +270,7 @@ export default function ManageProducts() {
                   <div className="flex items-center justify-end gap-2">
                     <a
                       href={`/admin/products/${p.id}`}
-                      className="px-3 py-2 bg-[#0AC1EF] text-white rounded-md hover:bg-[#09b3db] transition-colors flex items-center space-x-2 text-sm"
+                      className="px-4 py-3 bg-[#0AC1EF] text-white rounded-md hover:bg-[#09b3db] transition-colors flex items-center space-x-2 text-base md:text-lg"
                     >
                       <Eye className="w-4 h-4" />
                       <span>Xem</span>
@@ -285,7 +285,7 @@ export default function ManageProducts() {
                           e.target.value = ""; // Reset select
                         }
                       }}
-                      className={`px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-[#0AC1EF] focus:border-transparent text-sm ${
+                      className={`px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-[#0AC1EF] focus:border-transparent text-base md:text-lg ${
                         p.is_in_cart ? 'bg-gray-100 text-gray-400 cursor-not-allowed' : 'bg-white'
                       }`}
                       disabled={p.is_in_cart}
@@ -307,8 +307,8 @@ export default function ManageProducts() {
                     <svg className="w-16 h-16 text-gray-400 mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1} d="M20 13V6a2 2 0 00-2-2H6a2 2 0 00-2 2v7m16 0v5a2 2 0 01-2 2H6a2 2 0 01-2-2v-5m16 0h-2.586a1 1 0 00-.707.293l-2.414 2.414a1 1 0 01-.707.293h-3.172a1 1 0 01-.707-.293l-2.414-2.414A1 1 0 006.586 13H4" />
                     </svg>
-                    <h3 className="text-lg font-medium text-gray-900 mb-2">Không có sản phẩm nào</h3>
-                    <p className="text-gray-500">Hãy thử điều chỉnh bộ lọc để tìm sản phẩm.</p>
+                    <h3 className="text-2xl md:text-3xl font-semibold text-gray-900 mb-2">Không có sản phẩm nào</h3>
+                    <p className="text-base md:text-lg text-gray-500">Hãy thử điều chỉnh bộ lọc để tìm sản phẩm.</p>
                   </div>
                 </td>
               </tr>
@@ -318,19 +318,19 @@ export default function ManageProducts() {
       </div>
 
       <div className="mt-6 flex items-center justify-between bg-white p-4 rounded-lg shadow-md">
-        <div className="text-sm text-gray-600">
+        <div className="text-base md:text-lg text-gray-600">
           Hiển thị {(products.data || []).length} sản phẩm
         </div>
 
         <div>
           {Array.isArray(products.links) && (
-            <nav aria-label="Pagination" className="inline-flex gap-1">
+            <nav aria-label="Pagination" className="inline-flex gap-2">
               {products.links!.map((link, idx) => (
                 <span key={idx}>
                   {link.url ? (
                     <a
                       href={link.url}
-                      className={`px-4 py-2 rounded-lg transition-all duration-200 ${
+                      className={`px-4 py-2 rounded-lg transition-all duration-200 text-base md:text-lg ${
                         link.active
                           ? 'bg-[#0AC1EF] text-white shadow-md'
                           : 'bg-gray-200 text-gray-700 hover:bg-gray-300'
@@ -338,7 +338,7 @@ export default function ManageProducts() {
                       dangerouslySetInnerHTML={{ __html: link.label }}
                     />
                   ) : (
-                    <span className="px-4 py-2 rounded-lg bg-gray-100 text-gray-400" dangerouslySetInnerHTML={{ __html: link.label }} />
+                    <span className="px-4 py-2 rounded-lg bg-gray-100 text-gray-400 text-base md:text-lg" dangerouslySetInnerHTML={{ __html: link.label }} />
                   )}
                 </span>
               ))}

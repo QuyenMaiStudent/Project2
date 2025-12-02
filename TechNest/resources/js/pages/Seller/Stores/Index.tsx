@@ -65,15 +65,15 @@ export default function Index({ store, fallback }: Props) {
                     <header className="mb-4 bg-white p-6 rounded-lg shadow-lg border-l-4 border-[#0AC1EF]">
                         <div className="flex items-center justify-between">
                             <div>
-                                <h1 className="text-2xl font-semibold text-slate-800">Vị trí cửa hàng</h1>
-                                <p className="text-sm text-slate-500">
+                                <h1 className="text-3xl md:text-4xl font-bold text-slate-800">Vị trí cửa hàng</h1>
+                                <p className="text-base md:text-lg text-slate-500">
                                     Cập nhật vị trí để khách hàng thấy khoảng cách giao hàng chính xác hơn.
                                 </p>
                             </div>
                             <div className="flex items-center gap-3">
                                 <Link
                                     href="/seller/store"
-                                    className="inline-flex items-center rounded-md border border-gray-200 px-3 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50"
+                                    className="inline-flex items-center rounded-md border border-gray-200 px-4 py-3 text-base font-medium text-gray-700 hover:bg-gray-50"
                                 >
                                     Làm mới
                                 </Link>
@@ -82,7 +82,7 @@ export default function Index({ store, fallback }: Props) {
                     </header>
 
                     {flash?.success && (
-                        <div className="rounded-md bg-green-50 border border-green-100 p-3 text-sm text-green-800">
+                        <div className="rounded-md bg-green-50 border border-green-100 p-4 text-base md:text-lg text-green-800">
                             {flash.success}
                         </div>
                     )}
@@ -90,14 +90,14 @@ export default function Index({ store, fallback }: Props) {
                     <div className="grid gap-6 lg:grid-cols-3">
                         <form
                             onSubmit={submit}
-                            className="lg:col-span-2 space-y-6 rounded-lg border border-gray-200 bg-white p-6 shadow-sm"
+                            className="lg:col-span-2 space-y-6 rounded-lg border border-gray-200 bg-white p-8 shadow-sm"
                         >
                             <div className="grid gap-4 sm:grid-cols-2">
                                 <div className="sm:col-span-2">
                                     <label className="block text-sm font-medium text-gray-700">Tên cửa hàng</label>
                                     <input
                                         type="text"
-                                        className="mt-1 w-full rounded border border-gray-300 px-3 py-2 text-sm focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
+                                        className="mt-2 w-full rounded border border-gray-300 px-4 py-3 text-lg focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-500"
                                         value={data.name}
                                         onChange={(event) => setData('name', event.target.value)}
                                         placeholder="VD: TechNest Hà Nội"
@@ -109,7 +109,7 @@ export default function Index({ store, fallback }: Props) {
                                     <label className="block text-sm font-medium text-gray-700">Địa chỉ hiển thị</label>
                                     <input
                                         type="text"
-                                        className="mt-1 w-full rounded border border-gray-300 px-3 py-2 text-sm focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
+                                        className="mt-2 w-full rounded border border-gray-300 px-4 py-3 text-lg focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-500"
                                         value={data.formatted_address}
                                         onChange={(event) => setData('formatted_address', event.target.value)}
                                         placeholder="Tự động cập nhật khi chọn trên bản đồ"
@@ -123,7 +123,7 @@ export default function Index({ store, fallback }: Props) {
                                     <label className="block text-sm font-medium text-gray-700">Ghi chú thêm (tùy chọn)</label>
                                     <input
                                         type="text"
-                                        className="mt-1 w-full rounded border border-gray-300 px-3 py-2 text-sm focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
+                                        className="mt-2 w-full rounded border border-gray-300 px-4 py-3 text-lg focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-500"
                                         value={data.address_line}
                                         onChange={(event) => setData('address_line', event.target.value)}
                                         placeholder="VD: Tầng 5, tòa nhà ABC"
@@ -134,12 +134,12 @@ export default function Index({ store, fallback }: Props) {
                                 <div className="sm:col-span-2">
                                     <label className="block text-sm font-medium text-gray-700">Tọa độ hiện tại</label>
                                     <div className="mt-1 flex items-center gap-3">
-                                        <div className="rounded border border-gray-200 bg-gray-50 px-3 py-2 text-sm">
+                                        <div className="rounded border border-gray-200 bg-gray-50 px-4 py-3 text-base md:text-lg">
                                             {coords.lat.toFixed(6)}, {coords.lng.toFixed(6)}
                                         </div>
                                         <button
                                             type="button"
-                                            className="rounded bg-white border border-gray-300 px-3 py-2 text-sm hover:bg-gray-50"
+                                            className="rounded bg-white border border-gray-300 px-4 py-3 text-base hover:bg-gray-50"
                                             onClick={() => {
                                                 setData('latitude', fallback.latitude.toString());
                                                 setData('longitude', fallback.longitude.toString());
@@ -155,24 +155,27 @@ export default function Index({ store, fallback }: Props) {
                             </div>
 
                             <div className="space-y-3">
-                                <p className="text-sm text-slate-500">Chọn vị trí trên bản đồ hoặc nhập tọa độ thủ công.</p>
-                                <div className="h-72 rounded overflow-hidden border border-gray-200">
-                                    <MapLibreMapPicker
-                                        lat={coords.lat}
-                                        lng={coords.lng}
-                                        onLocationChange={(lat, lng, formatted) => {
-                                            setData('latitude', lat.toString());
-                                            setData('longitude', lng.toString());
-                                            if (formatted) setData('formatted_address', formatted);
-                                        }}
-                                    />
+                                <p className="text-base md:text-lg text-slate-500">Chọn vị trí trên bản đồ hoặc nhập tọa độ thủ công.</p>
+                                <div className="rounded overflow-hidden border border-gray-200">
+                                    <div className="h-[420px] md:h-[560px] lg:h-[680px]">
+                                        <MapLibreMapPicker
+                                            lat={coords.lat}
+                                            lng={coords.lng}
+                                            height={680} /* pass explicit large height to the picker */
+                                            onLocationChange={(lat, lng, formatted) => {
+                                                setData('latitude', lat.toString());
+                                                setData('longitude', lng.toString());
+                                                if (formatted) setData('formatted_address', formatted);
+                                            }}
+                                        />
+                                    </div>
                                 </div>
                             </div>
 
                             <div className="flex justify-end">
                                 <button
                                     type="submit"
-                                    className="rounded bg-blue-600 px-4 py-2 text-sm font-semibold text-white shadow hover:bg-blue-700 disabled:cursor-not-allowed disabled:opacity-70"
+                                    className="rounded-lg bg-blue-600 px-6 py-3 text-base md:text-lg font-semibold text-white shadow hover:bg-blue-700 disabled:cursor-not-allowed disabled:opacity-70"
                                     disabled={processing}
                                 >
                                     {processing ? 'Đang lưu...' : 'Lưu vị trí'}
@@ -182,8 +185,8 @@ export default function Index({ store, fallback }: Props) {
 
                         <aside className="space-y-6">
                             <div className="rounded-lg border border-gray-200 bg-white p-6 shadow-sm">
-                                <h2 className="text-lg font-semibold">Thông tin hiện tại</h2>
-                                <dl className="mt-3 space-y-3 text-sm text-gray-700">
+                                <h2 className="text-xl md:text-2xl font-semibold">Thông tin hiện tại</h2>
+                                <dl className="mt-4 space-y-3 text-base md:text-lg text-gray-700">
                                     <div className="flex gap-2">
                                         <dt className="w-28 font-medium text-gray-500">Tên</dt>
                                         <dd>{store?.name ?? '—'}</dd>
@@ -207,8 +210,8 @@ export default function Index({ store, fallback }: Props) {
                             </div>
 
                             <div className="rounded-lg border border-gray-200 bg-white p-6 shadow-sm">
-                                <h3 className="text-sm text-gray-500 mb-2">Hướng dẫn</h3>
-                                <ul className="text-sm text-gray-600 space-y-2 list-disc pl-5">
+                                <h3 className="text-base text-gray-500 mb-2">Hướng dẫn</h3>
+                                <ul className="text-base text-gray-600 space-y-3 list-disc pl-6">
                                     <li>Kéo thả hoặc nhấp vào bản đồ để chọn vị trí chính xác.</li>
                                     <li>Địa chỉ hiển thị sẽ tự động điền khi chọn trên bản đồ.</li>
                                     <li>Nhập ghi chú để khách hàng dễ tìm hơn (tầng, cửa, cổng).</li>

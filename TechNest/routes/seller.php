@@ -7,6 +7,7 @@ use App\Http\Controllers\Seller\SellerController;
 use App\Http\Controllers\Seller\SellerOrderController;
 use App\Http\Controllers\Seller\SellerPromotionController;
 use App\Http\Controllers\Seller\SellerStoreController;
+use App\Http\Controllers\Seller\StatisticsController;
 use Illuminate\Support\Facades\Route;
 
 // Seller routes
@@ -63,4 +64,6 @@ Route::middleware(['auth', 'seller'])->group(function () {
     Route::get('/seller/orders', [SellerOrderController::class, 'index'])->name('seller.orders.index');
     Route::get('/seller/orders/{order}', [SellerOrderController::class, 'show'])->name('seller.orders.show');
     Route::post('/seller/orders/{order}/request-shipment', [SellerOrderController::class, 'requestShipment'])->name('seller.orders.request-shipment');
+
+    Route::get('/seller/statistics', [StatisticsController::class, 'index'])->name('seller.statistics.index');
 });

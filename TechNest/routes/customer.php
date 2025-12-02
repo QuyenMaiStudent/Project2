@@ -66,4 +66,11 @@ Route::middleware(['auth', 'customer'])->group(function () {
     // Review routes
     Route::get('/customer/reviews/can-review/{product}', [CustomerReviewController::class, 'canReview'])->name('customer.reviews.canReview');
     Route::post('/customer/reviews', [CustomerReviewController::class, 'store'])->name('customer.reviews.store');
+
+    // Support routes
+    Route::get('/support', [App\Http\Controllers\Customer\SupportController::class, 'index'])->name('customer.support.index');
+    Route::get('/support/create', [App\Http\Controllers\Customer\SupportController::class, 'create'])->name('customer.support.create');
+    Route::post('/support', [App\Http\Controllers\Customer\SupportController::class, 'store'])->name('customer.support.store');
+    Route::get('/support/{ticket}', [App\Http\Controllers\Customer\SupportController::class, 'show'])->name('customer.support.show');
+    Route::post('/support/{ticket}/reply', [App\Http\Controllers\Customer\SupportController::class, 'reply'])->name('customer.support.reply');
 });

@@ -28,7 +28,7 @@ const PackageCard = ({ pkg, onSubscribe, isActive }: Props) => (
         <CardContent className='space-y-4'>
             <div>
                 <span className='text-2xl font-semibold'>
-                    {pkg.price.toLocaleString("vi-VN",)}₫
+                    {new Intl.NumberFormat('vi-VN', { minimumFractionDigits: 0, maximumFractionDigits: 0 }).format(Math.round(pkg.price))}₫
                 </span>
                 <span className='text-xs text-muted-foreground ml-2'>/{pkg.duration_days} ngày</span>
             </div>

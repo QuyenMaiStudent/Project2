@@ -6,6 +6,8 @@ import promotions from './promotions'
 import brands from './brands'
 import packages from './packages'
 import shippers from './shippers'
+import support from './support'
+import statistics from './statistics'
 /**
 * @see \App\Http\Controllers\Admin\AdminController::dashboard
  * @see app/Http/Controllers/Admin/AdminController.php:17
@@ -93,6 +95,8 @@ promotions: Object.assign(promotions, promotions),
 brands: Object.assign(brands, brands),
 packages: Object.assign(packages, packages),
 shippers: Object.assign(shippers, shippers),
+support: Object.assign(support, support),
+statistics: Object.assign(statistics, statistics),
 }
 
 export default admin

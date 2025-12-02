@@ -4,6 +4,7 @@ import orders from './orders'
 import tracking from './tracking'
 import transactions from './transactions'
 import reviews from './reviews'
+import support from './support'
 /**
 * @see \App\Http\Controllers\Customer\CustomerController::dashboard
  * @see app/Http/Controllers/Customer/CustomerController.php:14
@@ -167,6 +168,7 @@ orders: Object.assign(orders, orders),
 tracking: Object.assign(tracking, tracking),
 transactions: Object.assign(transactions, transactions),
 reviews: Object.assign(reviews, reviews),
+support: Object.assign(support, support),
 }
 
 export default customer

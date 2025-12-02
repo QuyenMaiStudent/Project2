@@ -71,6 +71,20 @@ class AdminPromotionController extends Controller
             'conditions.*.target_id' => 'required_with:conditions|integer|min:1',
         ]);
 
+        // Thêm kiểm tra giá trị hợp lý dựa trên type
+        if ($data['type'] === 'percent') {
+            if ($data['value'] > 100) {
+                throw ValidationException::withMessages(['value' => "Giá trị phần trăm không được vượt quá 100%."]);
+            }
+            if ($data['value'] > 20) {
+                throw ValidationException::withMessages(['value' => "Phần trăm giảm giá tối đa cho mỗi mã khuyến mãi là 20%. Vui lòng chọn giá trị thấp hơn."]);
+            }
+        } elseif ($data['type'] === 'fixed') {
+            if ($data['value'] > 1000000) {
+                throw ValidationException::withMessages(['value' => "Giá trị giảm giá cố định không được vượt quá 1.000.000 VNĐ. Vui lòng chọn giá trị thấp hơn."]);
+            }
+        }
+
         // starts_at không được ở quá khứ (phải >= now)
         if (!empty($data['starts_at'])) {
             $starts = Carbon::parse($data['starts_at']);

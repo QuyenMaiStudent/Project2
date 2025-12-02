@@ -97,64 +97,69 @@ export default function Show({ order }: { order: Order }) {
         >
             <Head title={`Theo dõi đơn hàng #${order.id}`} />
 
-            <div className="p-6 bg-gradient-to-br from-blue-50 to-cyan-50 min-h-screen">
+            {/* CHANGED: tăng padding & kích thước khung để tận dụng khoảng trắng */}
+            <div className="p-8 md:p-12 bg-gradient-to-br from-blue-50 to-cyan-50 min-h-screen">
                 <div className="mx-auto max-w-7xl sm:px-6 lg:px-8">
                     {/* Header */}
                     <div className="mb-6 flex items-center justify-between gap-4">
                         <div className="flex items-center gap-4">
                             <Link href="/tracking" className="inline-flex items-center text-slate-600 hover:text-slate-800">
-                                <ArrowLeft className="h-5 w-5 mr-2" /> Quay lại
+                                <ArrowLeft className="h-6 w-6 mr-2" /> <span className="text-base md:text-lg">Quay lại</span>
                             </Link>
                             <div>
-                                <h1 className="text-2xl font-semibold text-slate-900">Theo dõi đơn hàng #{order.id}</h1>
-                                <p className="text-sm text-slate-500">Đặt lúc: {formatDate(order.placed_at)}</p>
+                                <h1 className="text-2xl md:text-3xl lg:text-4xl font-semibold text-slate-900">Theo dõi đơn hàng #{order.id}</h1>
+                                <p className="text-sm md:text-base text-slate-500 mt-1">Đặt lúc: {formatDate(order.placed_at)}</p>
                             </div>
                         </div>
 
                         <div className="text-right">
-                            <div className="text-sm text-slate-500">Trạng thái hiện tại</div>
-                            <div className={`mt-1 inline-flex items-center px-3 py-1 rounded-full ${statusBadgeClass(order.status)} text-sm font-semibold`}>
+                            <div className="text-sm md:text-base text-slate-500">Trạng thái hiện tại</div>
+                            <div className={`mt-2 inline-flex items-center px-4 py-2 rounded-full ${statusBadgeClass(order.status)} text-sm md:text-base font-semibold`}>
                                 {order.status_label}
                             </div>
                         </div>
                     </div>
 
-                    <div className="grid gap-6 lg:grid-cols-3">
+                    <div className="grid gap-8 lg:grid-cols-3">
                         {/* Main column */}
                         <div className="lg:col-span-2 space-y-6">
                             {/* Status + actions */}
-                            <Card>
+                            <Card className="shadow-sm">
                                 <CardHeader>
-                                    <CardTitle>Tiến trình & Thao tác</CardTitle>
+                                    <CardTitle className="text-lg md:text-xl">Tiến trình & Thao tác</CardTitle>
                                 </CardHeader>
-                                <CardContent>
-                                    <div className="flex flex-col md:flex-row md:items-start md:gap-6">
+                                <CardContent className="p-6 md:p-8">
+                                    <div className="flex flex-col md:flex-row md:items-start md:gap-8">
                                         <div className="flex-1">
-                                            <OrderTracking steps={order.tracking} currentStatus={order.status} />
+                                            {/* tăng spacing timeline trong component OrderTracking nếu cần,
+                                                ở đây đảm bảo vùng chứa rộng và padding lớn */}
+                                            <div className="min-h-[260px]">
+                                                <OrderTracking steps={order.tracking} currentStatus={order.status} large />
+                                            </div>
                                         </div>
 
-                                        <div className="mt-4 md:mt-0 w-full md:w-48 flex-shrink-0">
-                                            <div className="bg-slate-50 p-3 rounded-lg border">
-                                                <div className="text-xs text-slate-500">Mốc thời gian</div>
-                                                <div className="mt-2 text-sm text-slate-700 flex items-center gap-2">
-                                                    <Clock className="h-4 w-4 text-slate-400" />
+                                        <div className="mt-4 md:mt-0 w-full md:w-56 flex-shrink-0">
+                                            <div className="bg-slate-50 p-4 md:p-6 rounded-lg border">
+                                                <div className="text-xs md:text-sm text-slate-500">Mốc thời gian</div>
+                                                <div className="mt-3 text-sm md:text-base text-slate-700 flex items-center gap-2">
+                                                    <Clock className="h-5 w-5 text-slate-400" />
                                                     <span>{order.placed_at ? formatDate(order.placed_at) : '-'}</span>
                                                 </div>
 
                                                 {order.shipped_at && (
-                                                    <div className="mt-2 text-sm text-slate-700 flex items-center gap-2">
-                                                        <Truck className="h-4 w-4 text-slate-400" />
+                                                    <div className="mt-3 text-sm md:text-base text-slate-700 flex items-center gap-2">
+                                                        <Truck className="h-5 w-5 text-slate-400" />
                                                         <span>{formatDate(order.shipped_at)}</span>
                                                     </div>
                                                 )}
                                             </div>
 
                                             {order.can_confirm_delivery && (
-                                                <div className="mt-4">
-                                                    <div className="rounded-lg bg-green-50 p-3 text-sm text-slate-700 mb-3">
+                                                <div className="mt-5">
+                                                    <div className="rounded-lg bg-green-50 p-4 text-sm md:text-base text-slate-700 mb-3">
                                                         Đơn đã được giao. Vui lòng xác nhận nếu bạn đã nhận hàng.
                                                     </div>
-                                                    <Button onClick={handleConfirmDelivery} className="w-full">
+                                                    <Button onClick={handleConfirmDelivery} className="w-full py-3 text-sm md:text-base">
                                                         Xác nhận đã nhận hàng
                                                     </Button>
                                                 </div>
@@ -165,34 +170,34 @@ export default function Show({ order }: { order: Order }) {
                             </Card>
 
                             {/* Products list */}
-                            <Card className="mt-6">
+                            <Card className="mt-6 shadow-sm">
                                 <CardHeader>
-                                    <CardTitle>Sản phẩm ({order.items.length})</CardTitle>
+                                    <CardTitle className="text-lg md:text-xl">Sản phẩm ({order.items.length})</CardTitle>
                                 </CardHeader>
-                                <CardContent>
+                                <CardContent className="p-6 md:p-8">
                                     <div className="divide-y">
                                         {order.items.map((item) => (
-                                            <div key={item.id} className="flex gap-4 py-6 items-start">
+                                            <div key={item.id} className="flex gap-6 py-6 items-start">
                                                 <div className="flex-shrink-0">
-                                                    <img src={item.product_image} alt={item.product_name} className="h-28 w-28 rounded-lg object-cover border" />
+                                                    <img src={item.product_image} alt={item.product_name} className="h-32 w-32 md:h-36 md:w-36 rounded-lg object-cover border" />
                                                 </div>
 
                                                 <div className="flex-1 min-w-0">
-                                                    <div className="flex items-start justify-between gap-4">
-                                                        <div className="truncate">
-                                                            <h3 className="font-medium text-lg truncate">{item.product_name}</h3>
-                                                            {item.variant_name && <p className="text-sm text-slate-500 truncate mt-1">{item.variant_name}</p>}
+                                                    <div className="flex items-start justify-between gap-6">
+                                                        <div className="min-w-0">
+                                                            <h3 className="font-medium text-lg md:text-xl">{item.product_name}</h3>
+                                                            {item.variant_name && <p className="text-sm md:text-base text-slate-500 mt-1">{item.variant_name}</p>}
                                                         </div>
 
                                                         <div className="text-right">
-                                                            <div className="font-semibold">{formatCurrency(item.price)}</div>
-                                                            <div className="text-sm text-slate-500 mt-1">Số lượng: {item.quantity}</div>
+                                                            <div className="font-semibold text-base md:text-lg">{formatCurrency(item.price)}</div>
+                                                            <div className="text-sm md:text-base text-slate-500 mt-1">Số lượng: {item.quantity}</div>
                                                         </div>
                                                     </div>
 
-                                                    <div className="mt-3 text-sm text-slate-500 flex items-center gap-3">
-                                                        <Link href={`/products/${item.id}`} className="text-sm text-slate-500 hover:underline">Xem sản phẩm</Link>
-                                                        <span className="text-xs bg-slate-50 px-2 py-1 rounded">Hỗ trợ đổi trả</span>
+                                                    <div className="mt-3 text-sm md:text-base text-slate-500 flex items-center gap-3">
+                                                        <Link href={`/products/${item.id}`} className="text-sm md:text-base text-slate-500 hover:underline">Xem sản phẩm</Link>
+                                                        <span className="text-xs md:text-sm bg-slate-50 px-2 py-1 rounded">Hỗ trợ đổi trả</span>
                                                     </div>
                                                 </div>
                                             </div>
@@ -207,13 +212,13 @@ export default function Show({ order }: { order: Order }) {
                             {order.shipping_address && (
                                 <Card>
                                     <CardHeader>
-                                        <CardTitle className="flex items-center gap-2">
-                                            <MapPin className="h-4 w-4" /> Địa chỉ giao hàng
+                                        <CardTitle className="flex items-center gap-2 text-base md:text-lg">
+                                            <MapPin className="h-5 w-5" /> Địa chỉ giao hàng
                                         </CardTitle>
                                     </CardHeader>
-                                    <CardContent>
-                                        <div className="space-y-3 text-sm">
-                                            <div className="font-medium">{order.shipping_address.recipient_name}</div>
+                                    <CardContent className="p-5 md:p-6">
+                                        <div className="space-y-3 text-sm md:text-base">
+                                            <div className="font-medium text-base md:text-lg">{order.shipping_address.recipient_name}</div>
                                             <div className="text-slate-600">{order.shipping_address.phone}</div>
                                             <div className="text-slate-700">{order.shipping_address.full_address}</div>
                                             <div className="mt-3">
@@ -221,7 +226,7 @@ export default function Show({ order }: { order: Order }) {
                                                     href={`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(order.shipping_address.full_address)}`}
                                                     target="_blank"
                                                     rel="noopener noreferrer"
-                                                    className="text-blue-600 text-sm hover:underline"
+                                                    className="text-blue-600 text-sm md:text-base hover:underline"
                                                 >
                                                     Xem trên Google Maps
                                                 </a>
@@ -234,14 +239,14 @@ export default function Show({ order }: { order: Order }) {
                             {order.shipper && (
                                 <Card>
                                     <CardHeader>
-                                        <CardTitle className="flex items-center gap-2">
-                                            <User className="h-4 w-4" /> Thông tin shipper
+                                        <CardTitle className="flex items-center gap-2 text-base md:text-lg">
+                                            <User className="h-5 w-5" /> Thông tin shipper
                                         </CardTitle>
                                     </CardHeader>
-                                    <CardContent>
-                                        <div className="space-y-3">
-                                            <div className="font-medium">{order.shipper.name}</div>
-                                            <a href={`tel:${order.shipper.phone}`} className="text-sm text-blue-600 hover:underline flex items-center gap-2">
+                                    <CardContent className="p-5 md:p-6">
+                                        <div className="space-y-3 text-sm md:text-base">
+                                            <div className="font-medium text-base md:text-lg">{order.shipper.name}</div>
+                                            <a href={`tel:${order.shipper.phone}`} className="text-sm md:text-base text-blue-600 hover:underline flex items-center gap-2">
                                                 <Phone className="h-4 w-4" /> {order.shipper.phone}
                                             </a>
                                         </div>
@@ -251,10 +256,10 @@ export default function Show({ order }: { order: Order }) {
 
                             <Card>
                                 <CardHeader>
-                                    <CardTitle>Hỗ trợ & Ghi chú</CardTitle>
+                                    <CardTitle className="text-base md:text-lg">Hỗ trợ & Ghi chú</CardTitle>
                                 </CardHeader>
-                                <CardContent>
-                                    <div className="text-sm text-slate-600 space-y-2">
+                                <CardContent className="p-5 md:p-6">
+                                    <div className="text-sm md:text-base text-slate-600 space-y-2">
                                         <div>• Kiểm tra hàng trước khi ký nhận.</div>
                                         <div>• Liên hệ support nếu cần hỗ trợ: <a href="mailto:support@technest.com" className="text-blue-600">support@technest.com</a></div>
                                     </div>

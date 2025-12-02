@@ -1,3 +1,4 @@
+
 import mapboxgl from 'mapbox-gl';
 import 'mapbox-gl/dist/mapbox-gl.css';
 import { useCallback, useEffect, useRef, useState } from 'react';
@@ -18,7 +19,7 @@ const MapLibreMapPicker: React.FC<Props> = ({
     lat,
     lng,
     onLocationChange,
-    height = 320,
+    height = 480, // tăng default height
     zoom = 14,
 }) => {
     const initialPositionRef = useRef<[number, number]>([
@@ -118,7 +119,12 @@ const MapLibreMapPicker: React.FC<Props> = ({
 
         map.addControl(new mapboxgl.NavigationControl(), 'top-right');
         map.addControl(new mapboxgl.ScaleControl({ maxWidth: 110, unit: 'metric' }), 'bottom-left');
-        map.on('load', () => map.resize());
+        // ensure map renders fully after load / idle and when window resizes
+        const doResize = () => map.resize();
+        map.on('load', doResize);
+        map.once('idle', doResize);
+
+        window.addEventListener('resize', doResize);
 
         const marker = new mapboxgl.Marker({ draggable: true })
             .setLngLat([initialLng, initialLat])
@@ -141,6 +147,9 @@ const MapLibreMapPicker: React.FC<Props> = ({
 
         return () => {
             map.off('click', handleMapClick);
+            map.off('load', doResize);
+            map.off('idle', doResize);
+            window.removeEventListener('resize', doResize);
             marker.remove();
             map.remove();
             markerRef.current = null;
@@ -254,7 +263,7 @@ const MapLibreMapPicker: React.FC<Props> = ({
                 )}
             </div>
 
-            <div className="rounded border" style={{ height }}>
+            <div className="rounded border" style={{ height: typeof height === 'number' ? `${height}px` : height }}>
                 <div ref={mapContainerRef} className="h-full w-full" />
             </div>
 

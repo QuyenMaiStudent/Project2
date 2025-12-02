@@ -5,6 +5,8 @@ import ManageUserController from './ManageUserController'
 import AdminPromotionController from './AdminPromotionController'
 import BrandController from './BrandController'
 import ManageShipperController from './ManageShipperController'
+import SupportController from './SupportController'
+import AdminStatisticsController from './AdminStatisticsController'
 const Admin = {
     AdminController: Object.assign(AdminController, AdminController),
 AdminProductController: Object.assign(AdminProductController, AdminProductController),
@@ -13,6 +15,8 @@ ManageUserController: Object.assign(ManageUserController, ManageUserController),
 AdminPromotionController: Object.assign(AdminPromotionController, AdminPromotionController),
 BrandController: Object.assign(BrandController, BrandController),
 ManageShipperController: Object.assign(ManageShipperController, ManageShipperController),
+SupportController: Object.assign(SupportController, SupportController),
+AdminStatisticsController: Object.assign(AdminStatisticsController, AdminStatisticsController),
 }
 
 export default Admin

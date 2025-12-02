@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\Promotion;
 use App\Models\Brand;
 use App\Models\Product;
+use App\Models\PromotionCondition; // thêm import
 use Illuminate\Validation\ValidationException;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -68,13 +69,26 @@ class SellerPromotionController extends Controller
             'usage_limit' => 'nullable|integer|min:1',
             'starts_at' => 'nullable|date',
             'expires_at' => 'nullable|date|after_or_equal:starts_at',
+            'apply_all' => 'required|boolean',
             'conditions' => 'nullable|array',
-            // chỉ cho phép condition theo product cho seller
             'conditions.*.condition_type' => 'required_with:conditions|in:product',
             'conditions.*.target_id' => 'required_with:conditions|integer',
         ]);
 
-        // bắt lỗi: starts_at không được ở quá khứ (phải >= now)
+        // Thêm kiểm tra giá trị hợp lý dựa trên type
+        if ($data['type'] === 'percent') {
+            if ($data['value'] > 100) {
+                throw ValidationException::withMessages(['value' => "Giá trị phần trăm không được vượt quá 100%."]);
+            }
+            if ($data['value'] > 20) {
+                throw ValidationException::withMessages(['value' => "Phần trăm giảm giá tối đa cho mỗi mã khuyến mãi là 20%. Vui lòng chọn giá trị thấp hơn."]);
+            }
+        } elseif ($data['type'] === 'fixed') {
+            if ($data['value'] > 1000000) {
+                throw ValidationException::withMessages(['value' => "Giá trị giảm giá cố định không được vượt quá 1.000.000 VNĐ. Vui lòng chọn giá trị thấp hơn."]);
+            }
+        }
+
         if (!empty($data['starts_at'])) {
             $starts = Carbon::parse($data['starts_at']);
             if ($starts->lt(Carbon::now())) {
@@ -82,11 +96,15 @@ class SellerPromotionController extends Controller
             }
         }
 
-        // xác thực product thuộc seller
         if (!empty($data['conditions'])) {
             foreach ($data['conditions'] as $cond) {
-                if ($cond['condition_type'] !== 'product' || !Product::where('id', $cond['target_id'])->where('created_by', $sellerId)->exists()) {
-                    throw ValidationException::withMessages(['conditions' => 'Bạn chỉ có thể tạo khuyến mãi cho sản phẩm của chính bạn.']);
+                if ($cond['condition_type'] === 'product') {
+                    if (!Product::where('id', $cond['target_id'])
+                        ->where('created_by', $sellerId)->exists()) {
+                        throw ValidationException::withMessages(['conditions' => 'Bạn chỉ có thể tạo khuyến mãi cho sản phẩm của chính bạn.']);
+                    }
+                } else {
+                    throw ValidationException::withMessages(['conditions' => 'Loại condition không hợp lệ.']);
                 }
             }
         }
@@ -106,13 +124,25 @@ class SellerPromotionController extends Controller
                 'seller_id' => $sellerId,
             ]);
 
-            if (!empty($data['conditions'])) {
-                foreach ($data['conditions'] as $cond) {
-                    $promotion->conditions()->create([
-                        'condition_type' => $cond['condition_type'],
-                        'target_id' => $cond['target_id'],
-                    ]);
-                }
+            if ($data['apply_all']) {
+                $productIds = Product::where('created_by', $sellerId)->pluck('id')->all();
+                $rows = array_map(fn($id) => [
+                    'promotion_id' => $promotion->id,
+                    'condition_type' => 'product',
+                    'target_id' => $id,
+                    'created_at' => now(),
+                    'updated_at' => now(),
+                ], $productIds);
+                if ($rows) PromotionCondition::insert($rows);
+            } elseif (!empty($data['conditions'])) {
+                $rows = array_map(fn($c) => [
+                    'promotion_id' => $promotion->id,
+                    'condition_type' => 'product',
+                    'target_id' => $c['target_id'],
+                    'created_at' => now(),
+                    'updated_at' => now(),
+                ], $data['conditions']);
+                PromotionCondition::insert($rows);
             }
         });
 

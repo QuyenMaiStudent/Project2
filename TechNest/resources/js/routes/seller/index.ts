@@ -3,6 +3,7 @@ import products from './products'
 import promotions from './promotions'
 import store from './store'
 import orders from './orders'
+import statistics from './statistics'
 import live from './live'
 /**
 * @see \App\Http\Controllers\Seller\SellerController::dashboard
@@ -88,6 +89,7 @@ dashboard: Object.assign(dashboard, dashboard),
 promotions: Object.assign(promotions, promotions),
 store: Object.assign(store, store),
 orders: Object.assign(orders, orders),
+statistics: Object.assign(statistics, statistics),
 live: Object.assign(live, live),
 }
 

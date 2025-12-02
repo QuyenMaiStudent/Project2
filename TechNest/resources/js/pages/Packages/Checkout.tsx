@@ -63,19 +63,19 @@ export default function Checkout() {
           {/* Top header card */}
           <div className="bg-white rounded-lg p-5 border border-slate-200 flex items-center justify-between shadow-sm">
             <div className="flex items-center gap-4">
-              <div className="p-2 rounded-md bg-[#0AC1EF] text-white">
-                <CreditCard className="h-5 w-5" />
+              <div className="p-3 rounded-md bg-[#0AC1EF] text-white">
+                <CreditCard className="h-6 w-6" />
               </div>
               <div>
-                <h1 className="text-2xl font-semibold">Thanh toán gói: {pkg?.name}</h1>
-                <p className="text-sm text-slate-500 mt-1">{pkg?.duration_days ?? "-"} ngày • {pkg?.features?.length ?? 0} tính năng</p>
+                <h1 className="text-3xl md:text-4xl font-semibold">Thanh toán gói: {pkg?.name}</h1>
+                <p className="text-base md:text-lg text-slate-500 mt-1">{pkg?.duration_days ?? "-"} ngày • {pkg?.features?.length ?? 0} tính năng</p>
               </div>
             </div>
 
             <div className="text-right">
               <div className="text-sm text-gray-500">Tổng phải trả</div>
               <div className="inline-flex items-center gap-3">
-                <div className="text-2xl font-extrabold text-slate-900">{formatCurrency(pkg?.price)}</div>
+                <div className="text-3xl md:text-4xl font-extrabold text-slate-900">{formatCurrency(pkg?.price)}</div>
                 <span className="px-3 py-1 rounded-full bg-[#0AC1EF] text-white text-sm font-semibold">Thanh toán</span>
               </div>
             </div>
@@ -95,8 +95,8 @@ export default function Checkout() {
 
               <ul className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                 {(pkg?.features ?? []).map((f, i) => (
-                  <li key={i} className="text-sm text-slate-700 flex items-start gap-3 bg-slate-50 rounded-md p-3">
-                    <div className="w-2 h-2 mt-1 bg-[#0AC1EF] rounded-full" />
+                  <li key={i} className="text-base text-slate-700 flex items-start gap-3 bg-slate-50 rounded-md p-4">
+                    <div className="w-3 h-3 mt-1 bg-[#0AC1EF] rounded-full" />
                     <div>{f}</div>
                   </li>
                 ))}
@@ -110,7 +110,7 @@ export default function Checkout() {
                     return (
                       <label
                         key={g}
-                        className={`cursor-pointer rounded-lg border px-3 py-3 flex items-center justify-center text-sm font-medium gap-2 ${
+                        className={`cursor-pointer rounded-lg border px-4 py-4 flex items-center justify-center text-base md:text-lg font-medium gap-2 ${
                           selected ? "border-[#0AC1EF] bg-[#f0fbff] shadow-sm" : "bg-white border-slate-200 hover:border-slate-300"
                         }`}
                       >
@@ -122,7 +122,7 @@ export default function Checkout() {
                           onChange={(e) => setData("gateway", e.target.value)}
                           className="sr-only"
                         />
-                        <div className="uppercase tracking-wider text-xs">{g.replace(/_/g, " ")}</div>
+                        <div className="uppercase tracking-wider text-sm md:text-base">{g.replace(/_/g, " ")}</div>
                       </label>
                     );
                   })}
@@ -136,8 +136,8 @@ export default function Checkout() {
                 </div>
 
                 <div className="flex items-center space-x-3">
-                  <Button type="submit" disabled={processing} className="inline-flex items-center bg-[#0AC1EF] hover:bg-[#09b3db] text-white">
-                    <CreditCard className="mr-2 h-4 w-4" />
+                  <Button type="submit" disabled={processing} className="inline-flex items-center bg-[#0AC1EF] hover:bg-[#09b3db] text-white px-4 py-2 text-lg md:text-xl">
+                    <CreditCard className="mr-3 h-5 w-5" />
                     {processing ? "Đang xử lý..." : "Thanh toán ngay"}
                   </Button>
                 </div>
@@ -146,26 +146,26 @@ export default function Checkout() {
 
             <aside className="bg-white rounded-lg border border-slate-200 p-6 shadow-sm">
               <div className="flex items-center justify-between mb-4">
-                <h3 className="text-sm font-medium">Tóm tắt đơn</h3>
-                <div className="text-sm text-slate-500">{pkg?.duration_days ?? "-"} ngày</div>
+                <h3 className="text-base md:text-lg font-medium">Tóm tắt đơn</h3>
+                <div className="text-base text-slate-500">{pkg?.duration_days ?? "-"} ngày</div>
               </div>
 
               <div className="space-y-3 text-sm text-slate-700">
                 <div className="flex justify-between">
                   <span>Gói</span>
-                  <span className="font-medium">{pkg?.name}</span>
+                  <span className="font-medium text-base md:text-lg">{pkg?.name}</span>
                 </div>
 
                 <div className="flex justify-between">
                   <span>Giá</span>
-                  <span className="font-medium">{formatCurrency(pkg?.price)}</span>
+                  <span className="font-medium text-base md:text-lg">{formatCurrency(pkg?.price)}</span>
                 </div>
 
                 {/* removed discount row per request */}
 
                 <div className="border-t pt-3 flex justify-between items-center">
-                  <span className="text-sm font-medium">Tổng thanh toán</span>
-                  <div className="text-lg font-bold text-[#0AC1EF]">{formatCurrency(pkg?.price)}</div>
+                  <span className="text-base md:text-lg font-medium">Tổng thanh toán</span>
+                  <div className="text-2xl md:text-3xl font-extrabold text-[#0AC1EF]">{formatCurrency(pkg?.price)}</div>
                 </div>
               </div>
 

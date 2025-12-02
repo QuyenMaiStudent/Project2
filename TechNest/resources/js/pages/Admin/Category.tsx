@@ -78,9 +78,9 @@ export default function CategoryPage({ categories }: Props) {
             <div className="p-6 bg-gradient-to-br from-blue-50 to-cyan-50 min-h-screen">
                 {/* Notification cải thiện */}
                 {(success || error) && (
-                    <div className={`mb-4 p-4 rounded-lg shadow-sm border ${
+                    <div className={`mb-4 p-5 rounded-lg shadow-sm border ${
                         success ? 'bg-green-50 border-green-200 text-green-700' : 'bg-red-50 border-red-200 text-red-700'
-                    }`}>
+                    } text-base md:text-lg`}>
                         <div className="flex items-center">
                             <svg className={`w-5 h-5 mr-2 ${success ? 'text-green-500' : 'text-red-500'}`} fill="currentColor" viewBox="0 0 20 20">
                                 {success ? (
@@ -111,29 +111,29 @@ export default function CategoryPage({ categories }: Props) {
                 )}
 
                 <header className="mb-6 bg-white p-6 rounded-lg shadow-lg border-l-4 border-[#0AC1EF]">
-                    <h1 className="text-3xl font-bold text-gray-800">Quản lý danh mục sản phẩm</h1>
+                    <h1 className="text-4xl md:text-5xl font-extrabold text-gray-800">Quản lý danh mục sản phẩm</h1>
                 </header>
 
                 <form
                     ref={formRef}
                     onSubmit={handleSubmit}
-                    className="mb-8 bg-white p-6 rounded-lg shadow-lg border border-gray-200"
+                    className="mb-8 bg-white p-6 md:p-8 rounded-lg shadow-lg border border-gray-200 text-base md:text-lg"
                 >
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                         <div>
-                            <label className="block font-medium mb-1 text-gray-700">Tên danh mục</label>
+                            <label className="block font-semibold mb-2 text-gray-700 text-base md:text-lg">Tên danh mục</label>
                             <input
                                 type="text"
-                                className="border border-gray-300 rounded px-3 py-2 w-full focus:ring-2 focus:ring-[#0AC1EF] focus:border-transparent"
+                                className="border border-gray-300 rounded px-4 py-3 w-full text-base md:text-lg focus:ring-2 focus:ring-[#0AC1EF] focus:border-transparent"
                                 value={form.name}
                                 onChange={e => setForm(f => ({ ...f, name: e.target.value }))}
                                 required
                             />
                         </div>
                         <div>
-                            <label className="block font-medium mb-1 text-gray-700">Mô tả</label>
+                            <label className="block font-semibold mb-2 text-gray-700 text-base md:text-lg">Mô tả</label>
                             <textarea
-                                className="border border-gray-300 rounded px-3 py-2 w-full focus:ring-2 focus:ring-[#0AC1EF] focus:border-transparent"
+                                className="border border-gray-300 rounded px-4 py-3 w-full text-base md:text-lg focus:ring-2 focus:ring-[#0AC1EF] focus:border-transparent"
                                 value={form.description}
                                 onChange={e => setForm(f => ({ ...f, description: e.target.value }))}
                             />
@@ -142,14 +142,14 @@ export default function CategoryPage({ categories }: Props) {
                     <div className="mt-4 flex gap-2">
                         <button
                             type="submit"
-                            className="bg-[#0AC1EF] text-white px-4 py-2 rounded hover:bg-[#09b3db] transition-colors"
+                            className="bg-[#0AC1EF] text-white px-6 py-3 rounded-lg hover:bg-[#09b3db] transition-colors text-base md:text-lg"
                         >
                             {isEdit ? 'Cập nhật' : 'Thêm mới'}
                         </button>
                         {isEdit && (
                             <button
                                 type="button"
-                                className="px-4 py-2 rounded bg-gray-300 hover:bg-gray-400 transition-colors"
+                                className="px-5 py-3 rounded-lg bg-gray-300 hover:bg-gray-400 transition-colors text-base md:text-lg"
                                 onClick={() => {
                                     setForm({ name: '', description: '', id: null });
                                     setIsEdit(false);
@@ -165,10 +165,10 @@ export default function CategoryPage({ categories }: Props) {
                     <table className="w-full">
                         <thead className="bg-gradient-to-r from-[#0AC1EF] to-[#0894c7] text-white">
                             <tr>
-                                <th className="py-3 px-4 text-left text-sm font-semibold uppercase tracking-wider">Tên danh mục</th>
-                                <th className="py-3 px-4 text-left text-sm font-semibold uppercase tracking-wider">Mô tả</th>
-                                <th className="py-3 px-4 text-center text-sm font-semibold uppercase tracking-wider">Sản phẩm liên quan</th>
-                                <th className="py-3 px-4 text-center text-sm font-semibold uppercase tracking-wider">Thao tác</th>
+                                <th className="py-3 px-4 text-left text-base md:text-lg font-semibold uppercase tracking-wider">Tên danh mục</th>
+                                <th className="py-3 px-4 text-left text-base md:text-lg font-semibold uppercase tracking-wider">Mô tả</th>
+                                <th className="py-3 px-4 text-center text-base md:text-lg font-semibold uppercase tracking-wider">Sản phẩm liên quan</th>
+                                <th className="py-3 px-4 text-center text-base md:text-lg font-semibold uppercase tracking-wider">Thao tác</th>
                             </tr>
                         </thead>
                         <tbody className="divide-y divide-gray-200">
@@ -179,31 +179,31 @@ export default function CategoryPage({ categories }: Props) {
                                             <svg className="w-16 h-16 text-gray-400 mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1} d="M20 13V6a2 2 0 00-2-2H6a2 2 0 00-2 2v7m16 0v5a2 2 0 01-2 2H6a2 2 0 01-2-2v-5m16 0h-2.586a1 1 0 00-.707.293l-2.414 2.414a1 1 0 01-.707.293h-3.172a1 1 0 01-.707-.293l-2.414-2.414A1 1 0 006.586 13H4" />
                                             </svg>
-                                            <h3 className="text-lg font-medium text-gray-900 mb-2">Chưa có danh mục nào.</h3>
-                                            <p className="text-gray-500">Hãy thêm danh mục mới để bắt đầu.</p>
+                                            <h3 className="text-2xl md:text-3xl font-semibold text-gray-900 mb-2">Chưa có danh mục nào.</h3>
+                                            <p className="text-base md:text-lg text-gray-500">Hãy thêm danh mục mới để bắt đầu.</p>
                                         </div>
                                     </td>
                                 </tr>
                             ) : (
                                 categories.data.map(cat => (
                                     <tr key={cat.id} className="hover:bg-gray-50 transition-colors">
-                                        <td className="py-3 px-4 text-gray-900 font-medium">{cat.name}</td>
-                                        <td className="py-3 px-4 text-gray-700">{cat.description}</td>
-                                        <td className="py-3 px-4 text-center text-gray-700">
+                                        <td className="py-4 px-4 text-gray-900 font-semibold text-base md:text-lg">{cat.name}</td>
+                                        <td className="py-4 px-4 text-gray-700 text-base md:text-lg">{cat.description}</td>
+                                        <td className="py-4 px-4 text-center text-gray-700 text-base md:text-lg">
                                             {cat.products_count > 0 ? `${cat.products_count} sản phẩm` : 'Không có'}
                                         </td>
-                                        <td className="py-3 px-4 text-center">
-                                            <div className="flex items-center justify-center gap-2">
+                                        <td className="py-4 px-4 text-center">
+                                            <div className="flex items-center justify-center gap-3">
                                                 <button
                                                     onClick={() => handleEdit(cat)}
-                                                    className="bg-yellow-500 text-white px-3 py-1 rounded hover:bg-yellow-600 transition-colors"
+                                                    className="bg-yellow-500 text-white px-4 py-2 rounded-lg hover:bg-yellow-600 transition-colors text-base md:text-lg"
                                                 >
                                                     Sửa
                                                 </button>
                                                 <button
                                                     onClick={() => handleDeleteClick(cat)}
                                                     disabled={cat.products_count > 0}
-                                                    className={`px-3 py-1 rounded transition-colors ${
+                                                    className={`px-4 py-2 rounded-lg transition-colors text-base md:text-lg ${
                                                         cat.products_count > 0
                                                             ? 'bg-gray-400 text-gray-600 cursor-not-allowed'
                                                             : 'bg-red-600 text-white hover:bg-red-700'
@@ -221,12 +221,12 @@ export default function CategoryPage({ categories }: Props) {
                     </table>
                     {/* Phân trang */}
                     {categories.links && categories.links.length > 1 && (
-                        <div className="mt-4 flex justify-center gap-1 p-4 bg-gray-50">
+                        <div className="mt-4 flex justify-center gap-3 p-4 bg-gray-50">
                             {categories.links.map((link, idx) =>
                                 link.url ? (
                                     <button
                                         key={idx}
-                                        className={`px-3 py-1 rounded transition-all duration-200 ${
+                                        className={`px-4 py-2 rounded-lg transition-all duration-200 text-base md:text-lg ${
                                             link.active ? 'bg-[#0AC1EF] text-white' : 'bg-gray-200 text-gray-700 hover:bg-gray-300'
                                         }`}
                                         dangerouslySetInnerHTML={{ __html: link.label }}
@@ -235,7 +235,7 @@ export default function CategoryPage({ categories }: Props) {
                                 ) : (
                                     <span
                                         key={idx}
-                                        className="px-3 py-1 text-gray-400"
+                                        className="px-4 py-2 text-gray-400 text-base md:text-lg"
                                         dangerouslySetInnerHTML={{ __html: link.label }}
                                     />
                                 )
@@ -248,18 +248,18 @@ export default function CategoryPage({ categories }: Props) {
                 {showDeleteModal && selectedCategory && (
                     <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
                         <div className="bg-white p-6 rounded-lg shadow-lg max-w-md w-full">
-                            <h2 className="text-lg font-semibold mb-4 text-gray-800">Xác nhận xóa</h2>
-                            <p className="mb-4 text-gray-700">Bạn có chắc muốn xóa danh mục "{selectedCategory.name}"?</p>
+                            <h2 className="text-2xl md:text-3xl font-semibold mb-4 text-gray-800">Xác nhận xóa</h2>
+                            <p className="mb-4 text-base md:text-lg text-gray-700">Bạn có chắc muốn xóa danh mục "{selectedCategory.name}"?</p>
                             <div className="flex justify-end gap-2">
                                 <button
                                     onClick={cancelDelete}
-                                    className="bg-gray-300 text-gray-700 px-4 py-2 rounded hover:bg-gray-400 transition-colors"
+                                    className="bg-gray-300 text-gray-700 px-5 py-3 rounded-lg hover:bg-gray-400 transition-colors text-base md:text-lg"
                                 >
                                     Hủy
                                 </button>
                                 <button
                                     onClick={confirmDelete}
-                                    className="bg-red-600 text-white px-4 py-2 rounded hover:bg-red-500 transition-colors"
+                                    className="bg-red-600 text-white px-5 py-3 rounded-lg hover:bg-red-500 transition-colors text-base md:text-lg"
                                 >
                                     Xóa
                                 </button>

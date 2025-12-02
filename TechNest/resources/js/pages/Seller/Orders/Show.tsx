@@ -80,29 +80,29 @@ export default function Show({ order }: Props) {
         <AppLayout breadcrumbs={fallbackBreadcrumbs}>
             <Head title={`Đơn hàng #${order.id}`} />
 
-            <div className="p-6 bg-gradient-to-br from-blue-50 to-cyan-50 min-h-screen">
-                <div className="max-w-6xl mx-auto space-y-6">
+            <div className="p-8 md:p-10 bg-gradient-to-br from-blue-50 to-cyan-50 min-h-screen">
+                <div className="max-w-7xl mx-auto space-y-8">
                     {/* Flash */}
                     {flash?.success && (
-                        <div className="rounded-md bg-green-50 border border-green-100 p-3 text-sm text-green-800">
+                        <div className="rounded-md bg-green-50 border border-green-100 p-4 text-base md:text-lg text-green-800">
                             {flash.success}
                         </div>
                     )}
                     {flash?.error && (
-                        <div className="rounded-md bg-rose-50 border border-rose-100 p-3 text-sm text-rose-800">
+                        <div className="rounded-md bg-rose-50 border border-rose-100 p-4 text-base md:text-lg text-rose-800">
                             {flash.error}
                         </div>
                     )}
 
-                    <header className="mb-4 bg-white p-6 rounded-lg shadow-lg border-l-4 border-[#0AC1EF] flex items-start justify-between">
+                    <header className="mb-6 bg-white p-6 md:p-8 rounded-lg shadow-lg border-l-4 border-[#0AC1EF] flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
                         <div>
-                            <h1 className="text-2xl font-semibold text-gray-800">Đơn hàng #{order.id}</h1>
-                            <p className="text-sm text-gray-600">Ngày đặt: {order.placed_at ?? '—'}</p>
+                            <h1 className="text-2xl md:text-3xl lg:text-4xl font-semibold text-gray-800">Đơn hàng #{order.id}</h1>
+                            <p className="text-base md:text-lg text-gray-600 mt-2">Ngày đặt: <span className="font-medium">{order.placed_at ?? '—'}</span></p>
                         </div>
                         <div className="flex items-center gap-3">
                             <Link
                                 href="/seller/orders"
-                                className="inline-flex items-center rounded-md border border-gray-200 px-3 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50"
+                                className="inline-flex items-center rounded-md border border-gray-200 px-4 md:px-5 py-2 md:py-3 text-base md:text-lg font-medium text-gray-700 hover:bg-gray-50"
                             >
                                 Quay lại
                             </Link>
@@ -110,7 +110,7 @@ export default function Show({ order }: Props) {
                                 <button
                                     type="button"
                                     onClick={() => router.post(`/seller/orders/${order.id}/request-shipment`)}
-                                    className="inline-flex items-center rounded-md bg-indigo-600 px-3 py-2 text-sm font-medium text-white hover:bg-indigo-500"
+                                    className="inline-flex items-center rounded-md bg-indigo-600 px-5 md:px-6 py-2.5 md:py-3 text-base md:text-lg font-medium text-white hover:bg-indigo-500"
                                 >
                                     Lên đơn
                                 </button>
@@ -118,35 +118,35 @@ export default function Show({ order }: Props) {
                         </div>
                     </header>
 
-                    <div className="grid gap-6 lg:grid-cols-3">
-                        <div className="lg:col-span-2 bg-white rounded-lg border border-gray-200 p-4 shadow-sm">
-                            <h2 className="text-lg font-semibold text-gray-900">Sản phẩm</h2>
-                            <div className="mt-4 space-y-4">
+                    <div className="grid gap-8 lg:grid-cols-3">
+                        <div className="lg:col-span-2 bg-white rounded-lg border border-gray-200 p-6 md:p-8 shadow-sm">
+                            <h2 className="text-xl md:text-2xl font-semibold text-gray-900">Sản phẩm</h2>
+                            <div className="mt-6 space-y-6">
                                 {order.items.map((item) => (
-                                    <div key={item.id} className="flex gap-4">
+                                    <div key={item.id} className="flex gap-6 items-start">
                                         {item.product_image ? (
                                             <img
                                                 src={item.product_image}
                                                 alt={item.product_name ?? ''}
-                                                className="h-16 w-16 rounded border object-cover"
+                                                className="h-24 w-24 md:h-28 md:w-28 rounded border object-cover"
                                             />
                                         ) : (
-                                            <div className="flex h-16 w-16 items-center justify-center rounded border bg-gray-50 text-xs text-gray-400">
+                                            <div className="flex h-24 w-24 md:h-28 md:w-28 items-center justify-center rounded border bg-gray-50 text-sm md:text-base text-gray-400">
                                                 No image
                                             </div>
                                         )}
                                         <div className="flex flex-1 flex-col justify-between">
                                             <div>
-                                                <p className="font-medium text-gray-900">
+                                                <p className="font-semibold text-lg md:text-xl text-gray-900">
                                                     {item.product_name ?? 'Sản phẩm đã xoá'}
                                                 </p>
                                                 {item.variant_name && (
-                                                    <p className="text-sm text-gray-500">Phân loại: {item.variant_name}</p>
+                                                    <p className="text-base md:text-lg text-gray-600 mt-1">Phân loại: {item.variant_name}</p>
                                                 )}
                                             </div>
-                                            <div className="flex items-center justify-between text-sm text-gray-600">
-                                                <span>Số lượng: {item.quantity}</span>
-                                                <span>Đơn giá: {formatMoney(item.price)}</span>
+                                            <div className="flex flex-col md:flex-row md:items-center md:justify-between text-base md:text-lg text-gray-700 mt-3">
+                                                <span>Số lượng: <span className="font-medium">{item.quantity}</span></span>
+                                                <span>Đơn giá: <span className="font-medium">{formatMoney(item.price)}</span></span>
                                                 <span className="font-semibold text-gray-900">Tổng: {formatMoney(item.subtotal)}</span>
                                             </div>
                                         </div>
@@ -155,41 +155,41 @@ export default function Show({ order }: Props) {
                             </div>
                         </div>
 
-                        <div className="space-y-4">
-                            <div className="bg-white rounded-lg border border-gray-200 p-4 shadow-sm">
-                                <h2 className="text-lg font-semibold text-gray-900">Thông tin đơn</h2>
-                                <dl className="mt-3 space-y-2 text-sm text-gray-700">
+                        <div className="space-y-6">
+                            <div className="bg-white rounded-lg border border-gray-200 p-6 md:p-8 shadow-sm">
+                                <h2 className="text-xl md:text-2xl font-semibold text-gray-900">Thông tin đơn</h2>
+                                <dl className="mt-4 space-y-3 text-base md:text-lg text-gray-700">
                                     <div className="flex justify-between">
-                                        <dt>Trạng thái đơn</dt>
-                                        <dd>{translateStatus(order.status)}</dd>
+                                        <dt className="font-medium">Trạng thái đơn</dt>
+                                        <dd className="ml-4">{translateStatus(order.status)}</dd>
                                     </div>
                                     <div className="flex justify-between">
-                                        <dt>Thanh toán</dt>
-                                        <dd>{translatePayment(order.payment_status)}</dd>
+                                        <dt className="font-medium">Thanh toán</dt>
+                                        <dd className="ml-4">{translatePayment(order.payment_status)}</dd>
                                     </div>
                                     <div className="flex justify-between">
-                                        <dt>Doanh thu của bạn</dt>
-                                        <dd className="font-semibold text-gray-900">{formatMoney(order.subtotal)}</dd>
+                                        <dt className="font-medium">Doanh thu của bạn</dt>
+                                        <dd className="ml-4 font-semibold text-gray-900">{formatMoney(order.subtotal)}</dd>
                                     </div>
                                     {order.promotion && (
-                                        <div className="flex justify-between text-sm text-gray-600">
-                                            <dt>Khuyến mãi</dt>
-                                            <dd>{order.promotion.code}</dd>
+                                        <div className="flex justify-between text-base text-gray-600">
+                                            <dt className="font-medium">Khuyến mãi</dt>
+                                            <dd className="ml-4">{order.promotion.code}</dd>
                                         </div>
                                     )}
                                 </dl>
                             </div>
 
-                            <div className="bg-white rounded-lg border border-gray-200 p-4 shadow-sm">
-                                <h2 className="text-lg font-semibold text-gray-900">Địa chỉ giao hàng</h2>
+                            <div className="bg-white rounded-lg border border-gray-200 p-6 md:p-8 shadow-sm">
+                                <h2 className="text-xl md:text-2xl font-semibold text-gray-900">Địa chỉ giao hàng</h2>
                                 {order.shipping_address ? (
-                                    <div className="mt-3 space-y-1 text-sm text-gray-700">
-                                        <p className="font-medium">{order.shipping_address.recipient_name}</p>
-                                        <p>SĐT: {order.shipping_address.phone}</p>
-                                        <p>{order.shipping_address.full_address}</p>
+                                    <div className="mt-4 space-y-2 text-base md:text-lg text-gray-700">
+                                        <p className="font-semibold text-lg md:text-xl">{order.shipping_address.recipient_name}</p>
+                                        <p className="text-base">SĐT: <span className="font-medium">{order.shipping_address.phone}</span></p>
+                                        <p className="text-base">{order.shipping_address.full_address}</p>
                                     </div>
                                 ) : (
-                                    <p className="mt-3 text-sm text-gray-500">Không có thông tin địa chỉ.</p>
+                                    <p className="mt-4 text-base md:text-lg text-gray-500">Không có thông tin địa chỉ.</p>
                                 )}
                             </div>
                         </div>

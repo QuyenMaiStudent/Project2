@@ -184,9 +184,6 @@ export default function Header() {
                 <Link href="/products" className="text-lg font-semibold text-black hover:underline">
                     Sản phẩm
                 </Link>
-                <Link href="/support" className="text-lg font-semibold text-black hover:underline">
-                    Hỗ trợ
-                </Link>
 
                 <Link href="/live" className='text-lg font-semibold text-black hover:underline relative'>
                     Live
@@ -201,18 +198,26 @@ export default function Header() {
                 <CartIcon />
 
                 {auth.user ? (
-                    <Link
-                        href={
-                            auth.user.role === 'admin'
-                                ? '/admin/dashboard'
-                                : auth.user.role === 'seller'
-                                  ? '/seller/dashboard'
-                                  : '/settings/profile'
-                        }
-                        className="inline-block rounded-sm border border-white px-6 py-2 text-base leading-normal text-white hover:bg-[#0999c2]"
-                    >
-                        Giao diện
-                    </Link>
+                    <>
+                        <Link
+                            href={
+                                auth.user.role === 'admin'
+                                    ? '/admin/dashboard'
+                                    : auth.user.role === 'seller'
+                                      ? '/seller/dashboard'
+                                      : '/settings/profile'
+                            }
+                            className="inline-block rounded-sm border border-white px-6 py-2 text-base leading-normal text-white hover:bg-[#0999c2]"
+                        >
+                            Giao diện
+                        </Link>
+
+                        {auth.user.role === 'customer' && (
+                            <Link href="/support" className="text-lg font-semibold text-black hover:underline">
+                                Hỗ trợ
+                            </Link>
+                        )}
+                    </>
                 ) : (
                     <>
                         <Link

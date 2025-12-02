@@ -115,27 +115,29 @@ export default function Index() {
       <Head title="Quản lý khuyến mãi" />
       <div className="max-w-7xl mx-auto p-6 bg-gradient-to-br from-blue-50 to-cyan-50 min-h-screen">
         <div className="flex justify-between items-center mb-6 bg-white p-6 rounded-lg shadow-lg border-l-4 border-[#0AC1EF]">
-          <h1 className="text-3xl font-bold text-gray-800">Khuyến mãi</h1>
-          <Link href="/admin/promotions/create" className="bg-[#0AC1EF] hover:bg-[#0894c7] text-white px-6 py-3 rounded-lg shadow-md transition duration-200 transform hover:scale-105">
+          <h1 className="text-4xl md:text-5xl font-extrabold text-gray-800">Khuyến mãi</h1>
+          <Link href="/admin/promotions/create" className="bg-[#0AC1EF] hover:bg-[#0894c7] text-white px-6 py-3 rounded-lg shadow-md transition duration-200 transform hover:scale-105 text-base md:text-lg">
             Tạo mới
           </Link>
         </div>
 
         <div className="bg-white rounded-lg shadow-xl overflow-hidden">
-          <table className="w-full min-w-[1000px]">
-            <thead className="bg-gradient-to-r from-[#0AC1EF] to-[#0894c7] text-white">
-              <tr>
-                <th className="px-6 py-4 text-left font-semibold">Mã</th>
-                <th className="px-6 py-4 text-left font-semibold">Loại</th>
-                <th className="px-6 py-4 text-left font-semibold">Giá trị</th>
-                <th className="px-6 py-4 text-left font-semibold">Trạng thái</th>
-                <th className="px-6 py-4 text-left font-semibold">Áp dụng</th>
-                <th className="px-6 py-4 text-left font-semibold">Giới hạn sử dụng</th>
-                <th className="px-6 py-4 text-left font-semibold">Giá trị đơn hàng tối thiểu</th>
-                <th className="px-6 py-4 text-center font-semibold">Thao tác</th>
-              </tr>
-            </thead>
-            <tbody>
+          <table className="w-full min-w-[1000px] table-fixed">
+             <thead className="bg-gradient-to-r from-[#0AC1EF] to-[#0894c7] text-white">
+               <tr>
+                 <th className="px-6 py-3 text-left text-base md:text-lg font-semibold">Mã</th>
+                 <th className="px-6 py-3 text-left text-base md:text-lg font-semibold">Loại</th>
+                 <th className="px-6 py-3 text-left text-base md:text-lg font-semibold">Giá trị</th>
+                 <th className="px-6 py-3 text-left text-base md:text-lg font-semibold">Trạng thái</th>
+                 {/* tăng vùng cho cột "Áp dụng" */}
+                 <th className="px-6 py-3 text-left text-base md:text-lg font-semibold w-72">Áp dụng</th>
+                 <th className="px-6 py-3 text-left text-base md:text-lg font-semibold">Giới hạn sử dụng</th>
+                 {/* make min-order column narrow so apply/status/detail fit on one line */}
+                 <th className="px-4 py-3 text-right text-base md:text-lg font-semibold w-36">Giá trị đơn hàng tối thiểu</th>
+                 <th className="px-6 py-3 text-center text-base md:text-lg font-semibold">Thao tác</th>
+               </tr>
+             </thead>
+             <tbody>
               {promotions.data.length === 0 ? (
                 <tr><td colSpan={8} className="py-12 text-center text-gray-500 bg-gray-50">Chưa có khuyến mãi</td></tr>
               ) : promotions.data.map((p:any) => {
@@ -174,21 +176,23 @@ export default function Index() {
                  return (
                   <React.Fragment key={p.id}>
                     <tr className="odd:bg-white even:bg-gray-50 hover:bg-blue-50 transition duration-150">
-                      <td className="px-6 py-4 text-gray-800">{p.code}</td>
-                      <td className="px-6 py-4 text-gray-800">{p.type}</td>
-                      <td className="px-6 py-4 text-gray-800 font-medium">{valueDisplay}</td>
-                      <td className="px-6 py-4">
-                        <span className={`inline-flex items-center px-3 py-1 rounded-full text-sm font-medium ${p.is_active ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'}`}>
+                      <td className="px-6 py-3 text-base md:text-lg text-gray-800">{p.code}</td>
+                      <td className="px-6 py-3 text-base md:text-lg text-gray-800">{p.type}</td>
+                      <td className="px-6 py-3 text-base md:text-lg text-gray-800 font-medium">{valueDisplay}</td>
+                      {/* status + apply + detail - nowrap so they fit on one line */}
+                      <td className="px-4 py-3">
+                        <span className={`inline-flex items-center px-3 py-1 rounded-full text-sm md:text-base font-medium whitespace-nowrap ${p.is_active ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'}`}>
                           {p.is_active ? 'Hoạt động' : 'Tắt'}
                         </span>
                       </td>
-                      <td className="px-6 py-4 text-gray-800">
-                        <div className="flex items-center gap-2">
-                          <span>{applySummary}</span>
+                      {/* apply column - rộng hơn để chứa summary + số điều kiện + nút Chi tiết */}
+                      <td className="px-6 py-3 text-base md:text-lg text-gray-800 w-72 align-middle">
+                        <div className="flex items-center gap-3">
+                          <span className="truncate">{applySummary}</span>
                           {conds.length > 0 && (
                             <button
                               onClick={() => toggleExpand(p.id)}
-                              className="text-sm text-[#0AC1EF] hover:text-[#0894c7] hover:underline transition duration-200"
+                              className="text-base md:text-lg text-[#0AC1EF] hover:text-[#0894c7] hover:underline transition duration-200"
                               aria-expanded={!!expandedRows[p.id]}
                             >
                               Chi tiết
@@ -196,13 +200,14 @@ export default function Index() {
                           )}
                         </div>
                       </td>
-                      <td className="px-6 py-4 text-gray-800">{p.usage_limit === null ? 'Không giới hạn' : p.usage_limit}</td>
-                      <td className="px-6 py-4 text-gray-800">{minOrderDisplay}</td>
-                      <td className="px-6 py-4 text-center">
+                      <td className="px-4 py-3 text-base md:text-lg text-gray-800">{p.usage_limit === null ? 'Không giới hạn' : p.usage_limit}</td>
+                      {/* narrow min-order cell, right aligned and nowrap */}
+                      <td className="px-4 py-3 text-base md:text-lg text-gray-800 text-right w-36 whitespace-nowrap">{minOrderDisplay}</td>
+                      <td className="px-6 py-3 text-center">
                         <div className="relative inline-block text-left">
                           <button
                             onClick={(e) => toggleMenu(p.id, e)}
-                            className="px-4 py-2 bg-gray-100 hover:bg-[#0AC1EF] hover:text-white rounded-full transition duration-200 shadow-sm"
+                            className="px-4 py-2 bg-gray-100 hover:bg-[#0AC1EF] hover:text-white rounded-full transition duration-200 shadow-sm text-base md:text-lg"
                             aria-haspopup="true"
                             aria-expanded={!!openMenu[p.id]}
                           >
@@ -212,11 +217,11 @@ export default function Index() {
                           {openMenu[p.id] && (
                             <PortalMenu rect={menuAnchor.rect} onClose={() => closeMenu(p.id)}>
                               <div className="py-2 bg-white rounded-lg shadow-xl border border-gray-200">
-                                <Link href={`/admin/promotions/${p.id}/usage`} className="block px-4 py-3 text-sm text-gray-700 hover:bg-[#0AC1EF] hover:text-white transition duration-200" onClick={() => closeMenu(p.id)}>Lượt</Link>
-                                <button onClick={() => { toggle(p.id); closeMenu(p.id); }} className="w-full text-left px-4 py-3 text-sm text-gray-700 hover:bg-[#0AC1EF] hover:text-white transition duration-200">
+                                <Link href={`/admin/promotions/${p.id}/usage`} className="block px-4 py-3 text-base md:text-lg text-gray-700 hover:bg-[#0AC1EF] hover:text-white transition duration-200" onClick={() => closeMenu(p.id)}>Lượt</Link>
+                                <button onClick={() => { toggle(p.id); closeMenu(p.id); }} className="w-full text-left px-4 py-3 text-base md:text-lg text-gray-700 hover:bg-[#0AC1EF] hover:text-white transition duration-200">
                                   {p.is_active ? 'Tắt' : 'Bật'}
                                 </button>
-                                <button onClick={() => { askDelete(p.id, p.code); closeMenu(p.id); }} className="w-full text-left px-4 py-3 text-sm text-red-600 hover:bg-red-50 hover:text-red-800 transition duration-200">
+                                <button onClick={() => { askDelete(p.id, p.code); closeMenu(p.id); }} className="w-full text-left px-4 py-3 text-base md:text-lg text-red-600 hover:bg-red-50 hover:text-red-800 transition duration-200">
                                   Xóa
                                 </button>
                               </div>
@@ -229,7 +234,7 @@ export default function Index() {
                     {/* details row */}
                     {expandedRows[p.id] && (
                       <tr className="bg-gradient-to-r from-gray-50 to-blue-50">
-                        <td colSpan={8} className="px-6 py-4 text-sm text-gray-700 border-t border-gray-200">
+                        <td colSpan={8} className="px-6 py-4 text-base md:text-lg text-gray-700 border-t border-gray-200">
                           <strong className="text-[#0AC1EF]">Chi tiết áp dụng:</strong> {applyDetails}
                         </td>
                       </tr>
@@ -241,19 +246,19 @@ export default function Index() {
           </table>
         </div>
 
-        <div className="mt-6 flex justify-center gap-2 bg-white p-4 rounded-lg shadow-md">
+        <div className="mt-6 flex justify-center gap-3 bg-white p-4 rounded-lg shadow-md">
           {promotions.links?.map((link:any, idx:number) =>
             link.url ? (
-              <button key={idx} onClick={() => router.visit(link.url)} className={`px-4 py-2 rounded-lg transition duration-200 ${link.active ? 'bg-[#0AC1EF] text-white shadow-md' : 'bg-gray-200 hover:bg-gray-300'}`} dangerouslySetInnerHTML={{ __html: link.label }} />
+              <button key={idx} onClick={() => router.visit(link.url)} className={`px-4 py-2 rounded-lg transition duration-200 text-base md:text-lg ${link.active ? 'bg-[#0AC1EF] text-white shadow-md' : 'bg-gray-200 hover:bg-gray-300'}`} dangerouslySetInnerHTML={{ __html: link.label }} />
             ) : (
-              <span key={idx} className="px-4 py-2 text-gray-400" dangerouslySetInnerHTML={{ __html: link.label }} />
+              <span key={idx} className="px-4 py-2 text-gray-400 text-base md:text-lg" dangerouslySetInnerHTML={{ __html: link.label }} />
             )
           )}
         </div>
 
         {/* Success message */}
         {successMessage && (
-          <div className="fixed top-4 right-4 bg-green-500 text-white px-6 py-3 rounded-lg shadow-lg z-50 transition duration-300">
+          <div className="fixed top-4 right-4 bg-green-500 text-white px-6 py-3 rounded-lg shadow-lg z-50 transition duration-300 text-base md:text-lg">
             {successMessage}
           </div>
         )}
@@ -263,11 +268,11 @@ export default function Index() {
       {confirmModal.open && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50">
           <div className="bg-white rounded-xl shadow-2xl z-10 max-w-lg w-full p-8 border-t-4 border-[#0AC1EF]">
-            <h3 className="text-xl font-bold mb-4 text-gray-800">Xác nhận xóa</h3>
-            <p className="text-sm text-gray-700 mb-6">Bạn có chắc muốn xóa mã khuyến mãi <strong className="text-[#0AC1EF]">{confirmModal.code}</strong>? Hành động này không thể hoàn tác.</p>
+            <h3 className="text-2xl md:text-3xl font-semibold mb-4 text-gray-800">Xác nhận xóa</h3>
+            <p className="text-base md:text-lg text-gray-700 mb-6">Bạn có chắc muốn xóa mã khuyến mãi <strong className="text-[#0AC1EF]">{confirmModal.code}</strong>? Hành động này không thể hoàn tác.</p>
             <div className="flex justify-end gap-3">
-              <button onClick={cancelDelete} className="px-6 py-2 bg-gray-200 hover:bg-gray-300 text-gray-800 rounded-lg transition duration-200">Hủy</button>
-              <button onClick={() => confirmDelete(confirmModal.id)} className="px-6 py-2 bg-red-600 hover:bg-red-700 text-white rounded-lg transition duration-200">Xác nhận</button>
+              <button onClick={cancelDelete} className="px-6 py-3 bg-gray-200 hover:bg-gray-300 text-gray-800 rounded-lg transition duration-200 text-base md:text-lg">Hủy</button>
+              <button onClick={() => confirmDelete(confirmModal.id)} className="px-6 py-3 bg-red-600 hover:bg-red-700 text-white rounded-lg transition duration-200 text-base md:text-lg">Xác nhận</button>
             </div>
           </div>
         </div>

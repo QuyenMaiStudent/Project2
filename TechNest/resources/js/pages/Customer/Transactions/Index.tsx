@@ -36,7 +36,7 @@ export default function Index({ transactions }: { transactions: { data: Transact
       cancelled: { bg: 'bg-gray-100', text: 'text-gray-800', label: 'Đã hủy' },
     };
     const c = config[s] || { bg: 'bg-gray-100', text: 'text-gray-800', label: status || '-' };
-    return <span className={`inline-flex items-center px-2 py-1 rounded-full text-xs font-semibold ${c.bg} ${c.text}`}>{c.label}</span>;
+    return <span className={`inline-flex items-center px-3 py-1.5 rounded-full text-sm font-semibold ${c.bg} ${c.text}`}>{c.label}</span>;
   };
 
   const rows = transactions?.data || [];
@@ -45,26 +45,26 @@ export default function Index({ transactions }: { transactions: { data: Transact
     <AppLayout breadcrumbs={[{ title: 'Giao diện người dùng', href: '/' }, { title: 'Giao dịch', href: '/transactions' }]}>
       <Head title="Giao dịch của tôi" />
 
-      <div className="p-6 bg-gradient-to-br from-blue-50 to-cyan-50 min-h-screen">
+      <div className="p-8 md:p-10 bg-gradient-to-br from-blue-50 to-cyan-50 min-h-screen">
         <div className="max-w-7xl mx-auto space-y-6">
-          <div className="bg-white rounded-lg p-6 border border-slate-200 flex items-center justify-between">
+          <div className="bg-white rounded-lg p-6 md:p-8 border border-slate-200 flex items-center justify-between">
             <div>
-              <h1 className="text-2xl font-semibold flex items-center gap-3">
-                <CreditCard className="h-6 w-6 text-slate-600" /> Giao dịch của tôi
+              <h1 className="text-2xl md:text-3xl font-semibold flex items-center gap-3">
+                <CreditCard className="h-7 w-7 text-slate-600" /> Giao dịch của tôi
               </h1>
-              <p className="text-sm text-slate-500 mt-1">Lịch sử thanh toán và giao dịch của bạn</p>
+              <p className="text-sm md:text-base text-slate-500 mt-1">Lịch sử thanh toán và giao dịch của bạn</p>
             </div>
 
             <div className="flex items-center gap-3">
-              <Link href="/" className="px-3 py-2 rounded-md border border-slate-200 bg-white text-slate-700 hover:bg-slate-50 text-sm">Tiếp tục mua sắm</Link>
+              <Link href="/" className="px-4 py-3 rounded-md border border-slate-200 bg-white text-slate-700 hover:bg-slate-50 text-sm md:text-base">Tiếp tục mua sắm</Link>
             </div>
           </div>
 
           {rows.length === 0 ? (
             <div className="bg-white rounded-lg border border-slate-200 p-12 text-center">
-              <CreditCard className="mx-auto h-16 w-16 text-gray-300 mb-4" />
-              <p className="text-lg text-slate-600">Bạn chưa có giao dịch nào</p>
-              <p className="text-sm text-slate-500 mt-2">Mọi giao dịch thành công hoặc thất bại sẽ hiển thị tại đây.</p>
+              <CreditCard className="mx-auto h-20 w-20 text-gray-300 mb-4" />
+              <p className="text-xl md:text-2xl text-slate-600">Bạn chưa có giao dịch nào</p>
+              <p className="text-sm md:text-base text-slate-500 mt-2">Mọi giao dịch thành công hoặc thất bại sẽ hiển thị tại đây.</p>
             </div>
           ) : (
             <div className="bg-white rounded-lg border border-slate-200 overflow-hidden">
@@ -72,32 +72,32 @@ export default function Index({ transactions }: { transactions: { data: Transact
                 <table className="min-w-full">
                   <thead className="bg-slate-50">
                     <tr>
-                      <th className="px-6 py-3 text-left text-xs font-medium text-slate-500 uppercase tracking-wider">Mã giao dịch</th>
-                      <th className="px-6 py-3 text-left text-xs font-medium text-slate-500 uppercase tracking-wider">Đơn hàng</th>
-                      <th className="px-6 py-3 text-left text-xs font-medium text-slate-500 uppercase tracking-wider">Cổng</th>
-                      <th className="px-6 py-3 text-left text-xs font-medium text-slate-500 uppercase tracking-wider">Thời gian</th>
-                      <th className="px-6 py-3 text-right text-xs font-medium text-slate-500 uppercase tracking-wider">Số tiền</th>
-                      <th className="px-6 py-3 text-left text-xs font-medium text-slate-500 uppercase tracking-wider">Trạng thái</th>
-                      <th className="px-6 py-3 text-center text-xs font-medium text-slate-500 uppercase tracking-wider">Thao tác</th>
+                      <th className="px-6 md:px-8 py-4 text-left text-sm md:text-base font-medium text-slate-500 uppercase tracking-wider">Mã giao dịch</th>
+                      <th className="px-6 md:px-8 py-4 text-left text-sm md:text-base font-medium text-slate-500 uppercase tracking-wider">Đơn hàng</th>
+                      <th className="px-6 md:px-8 py-4 text-left text-sm md:text-base font-medium text-slate-500 uppercase tracking-wider">Cổng</th>
+                      <th className="px-6 md:px-8 py-4 text-left text-sm md:text-base font-medium text-slate-500 uppercase tracking-wider">Thời gian</th>
+                      <th className="px-6 md:px-8 py-4 text-right text-sm md:text-base font-medium text-slate-500 uppercase tracking-wider">Số tiền</th>
+                      <th className="px-6 md:px-8 py-4 text-left text-sm md:text-base font-medium text-slate-500 uppercase tracking-wider">Trạng thái</th>
+                      <th className="px-6 md:px-8 py-4 text-center text-sm md:text-base font-medium text-slate-500 uppercase tracking-wider">Thao tác</th>
                     </tr>
                   </thead>
 
                   <tbody className="bg-white divide-y divide-slate-100">
                     {rows.map((t: Transaction) => (
-                      <tr key={t.id} className="hover:bg-slate-50">
-                        <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-slate-900">#{t.transaction_code ?? t.id}</td>
-                        <td className="px-6 py-4 whitespace-nowrap text-sm text-slate-700">{t.order_id ? `#${t.order_id}` : '-'}</td>
-                        <td className="px-6 py-4 whitespace-nowrap text-sm text-slate-600">
-                          <span className="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
+                      <tr key={t.id} className="hover:bg-slate-50 min-h-[64px]">
+                        <td className="px-6 md:px-8 py-5 whitespace-nowrap text-sm md:text-base font-medium text-slate-900">#{t.transaction_code ?? t.id}</td>
+                        <td className="px-6 md:px-8 py-5 whitespace-nowrap text-sm md:text-base text-slate-700">{t.order_id ? `#${t.order_id}` : '-'}</td>
+                        <td className="px-6 md:px-8 py-5 whitespace-nowrap text-sm md:text-base text-slate-600">
+                          <span className="inline-flex items-center px-3 py-1.5 rounded-full text-sm md:text-base font-medium bg-blue-100 text-blue-800">
                             {t.gateway?.toUpperCase() ?? 'N/A'}
                           </span>
                         </td>
-                        <td className="px-6 py-4 whitespace-nowrap text-sm text-slate-500">{formatDate(t.processed_at)}</td>
-                        <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-semibold text-slate-900">{formatCurrency(t.amount)}</td>
-                        <td className="px-6 py-4 whitespace-nowrap">{getStatusBadge(t.status)}</td>
-                        <td className="px-6 py-4 whitespace-nowrap text-center">
-                          <Link href={`/transactions/${t.id}`} className="inline-flex items-center px-3 py-2 rounded-md bg-[#0AC1EF] text-white hover:bg-[#09b3db] text-sm">
-                            <Eye className="h-4 w-4 mr-1" /> Chi tiết
+                        <td className="px-6 md:px-8 py-5 whitespace-nowrap text-sm md:text-base text-slate-500">{formatDate(t.processed_at)}</td>
+                        <td className="px-6 md:px-8 py-5 whitespace-nowrap text-right text-sm md:text-base font-semibold text-slate-900">{formatCurrency(t.amount)}</td>
+                        <td className="px-6 md:px-8 py-5 whitespace-nowrap">{getStatusBadge(t.status)}</td>
+                        <td className="px-6 md:px-8 py-5 whitespace-nowrap text-center">
+                          <Link href={`/transactions/${t.id}`} className="inline-flex items-center px-4 py-2 rounded-md bg-[#0AC1EF] text-white hover:bg-[#09b3db] text-sm md:text-base">
+                            <Eye className="h-4 w-4 md:h-5 md:w-5 mr-2" /> Chi tiết
                           </Link>
                         </td>
                       </tr>
@@ -106,13 +106,12 @@ export default function Index({ transactions }: { transactions: { data: Transact
                 </table>
               </div>
 
-              {/* simple pagination */}
               {(transactions.prev_page_url || transactions.next_page_url) && (
-                <div className="px-4 py-3 border-t border-slate-100 flex items-center justify-between">
-                  <div className="text-sm text-slate-500">Trang <span className="font-semibold">{transactions.current_page}</span> / <span className="font-semibold">{transactions.last_page}</span></div>
+                <div className="px-4 md:px-6 py-4 border-t border-slate-100 flex items-center justify-between">
+                  <div className="text-sm md:text-base text-slate-500">Trang <span className="font-semibold">{transactions.current_page}</span> / <span className="font-semibold">{transactions.last_page}</span></div>
                   <div className="flex gap-2">
-                    {transactions.prev_page_url && <Link href={transactions.prev_page_url} className="px-3 py-1 bg-white border rounded text-sm">Trước</Link>}
-                    {transactions.next_page_url && <Link href={transactions.next_page_url} className="px-3 py-1 bg-white border rounded text-sm">Tiếp</Link>}
+                    {transactions.prev_page_url && <Link href={transactions.prev_page_url} className="px-4 py-2 bg-white border rounded text-sm md:text-base">Trước</Link>}
+                    {transactions.next_page_url && <Link href={transactions.next_page_url} className="px-4 py-2 bg-white border rounded text-sm md:text-base">Tiếp</Link>}
                   </div>
                 </div>
               )}

@@ -5,9 +5,11 @@ use App\Http\Controllers\Admin\AdminProductController;
 use App\Http\Controllers\Admin\CategoryController;
 use App\Http\Controllers\Admin\ManageUserController;
 use App\Http\Controllers\Admin\AdminPromotionController;
+use App\Http\Controllers\Admin\AdminStatisticsController;
 use App\Http\Controllers\Admin\BrandController;
 use App\Http\Controllers\Admin\ManageLocationController;
 use App\Http\Controllers\Admin\ManageShipperController;
+use App\Http\Controllers\Admin\SupportController;
 use App\Http\Controllers\Subscription\PackageController as AdminPackageController;
 use App\Http\Controllers\Subscription\RenewalController;
 use Illuminate\Support\Facades\Route;
@@ -76,5 +78,16 @@ Route::middleware(['auth', 'admin'])->group(function () {
         Route::get('/', [ManageShipperController::class, 'index'])->name('index');
         Route::get('/{shipper}', [ManageShipperController::class, 'show'])->name('show');
     });
+
+    // Support routes
+    Route::get('/admin/support', [SupportController::class, 'index'])->name('admin.support.index');
+    Route::get('/admin/support/{ticket}', [SupportController::class, 'show'])->name('admin.support.show');
+    Route::post('/admin/support/{ticket}/status', [SupportController::class, 'updateStatus'])->name('admin.support.updateStatus');
+    Route::post('/admin/support/{ticket}/reply', [SupportController::class, 'reply'])->name('admin.support.reply');
+
+    Route::get('/admin/statistics', [AdminStatisticsController::class, 'index'])
+        ->name('admin.statistics.index');
+    Route::get('/admin/statistics/data', [AdminStatisticsController::class, 'data'])
+        ->name('admin.statistics.data');
 });
 ?>

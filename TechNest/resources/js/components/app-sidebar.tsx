@@ -6,7 +6,8 @@ import { SharedData, type NavItem } from '@/types';
 import { Link, usePage } from '@inertiajs/react';
 import { BookOpen, CheckCircle, LayoutGrid, Package, Users, 
          Plus, Eye, Tag, ShoppingCart, MapPin, 
-         CreditCard, MessageCircle, Video, Settings, LogOut, Truck } from 'lucide-react';
+         CreditCard, MessageCircle, Video, Settings, LogOut, Truck, 
+         BarChart3} from 'lucide-react';
 import AppLogoIcon from './app-logo-icon';
 
 export function AppSidebar() {
@@ -64,6 +65,11 @@ export function AppSidebar() {
                 title: "Quản lý gói dịch vụ",
                 href: '/admin/packages',
                 icon: CheckCircle,
+            },
+            {
+                title: 'Thống kê',
+                href: '/admin/statistics',
+                icon: BarChart3,
             }
         ];
 
@@ -80,6 +86,11 @@ export function AppSidebar() {
     if (user?.isSeller) {
         mainNavItems = [
             ...mainNavItems,
+            {
+                title: 'Thống kê',
+                href: '/seller/statistics',
+                icon: BarChart3,
+            },
             {
                 title: 'Live Stream',
                 href: '/seller/live',
@@ -176,7 +187,7 @@ export function AppSidebar() {
     };
 
     return (
-        <Sidebar collapsible='icon' variant='inset'>
+        <Sidebar collapsible={false} variant='inset' className='w-64'>
             {/* Header với gradient đẹp hơn */}
             <SidebarHeader>
                 <div
@@ -187,7 +198,7 @@ export function AppSidebar() {
                     }}
                 >
                     <div className="absolute inset-0 bg-white/5"></div>
-                    <Link href={dashboardHref()} className="relative flex items-center gap-3 p-4">
+                    <Link href={"/"} className="relative flex items-center gap-3 p-5">
                         <div className="w-10 h-10 rounded-lg bg-white/20 backdrop-blur-sm flex items-center justify-center shadow-lg">
                             <AppLogoIcon className="h-6 w-6 text-white" />
                         </div>

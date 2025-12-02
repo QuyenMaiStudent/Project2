@@ -60,7 +60,13 @@ const PackagesIndex = () => {
 
   const formatCurrency = (v?: number, cur = "VND") => {
     if (v == null) return "-";
-    return new Intl.NumberFormat("vi-VN", { style: "currency", currency: cur }).format(Number(v));
+    // Hiển thị không có phần thập phân (VND không dùng decimals)
+    return new Intl.NumberFormat("vi-VN", {
+      style: "currency",
+      currency: cur,
+      minimumFractionDigits: 0,
+      maximumFractionDigits: 0,
+    }).format(Math.round(Number(v)));
   };
 
   // dịch trạng thái sang tiếng Việt
@@ -200,64 +206,63 @@ const PackagesIndex = () => {
           </div>
 
           {/* Recent payments with improved UI */}
-          <section className="bg-white border border-slate-200 rounded-lg p-5 shadow-sm">
-            <div className="flex items-center justify-between mb-4">
-              <div>
-                <h3 className="text-lg font-medium">Giao dịch gói gần đây</h3>
-                <p className="text-sm text-slate-500">Lịch sử thanh toán gói — hiển thị theo trang.</p>
-              </div>
-            </div>
-
-            {recent.length === 0 ? (
-              <div className="py-8 text-center text-slate-600">
-                Bạn chưa có giao dịch cho gói nào. <br />
-                <Link href="/" className="text-sm text-blue-600 hover:underline">Khám phá sản phẩm</Link>
-              </div>
-            ) : (
-              <div className="overflow-x-auto">
+          <section className="bg-white border border-slate-200 rounded-lg p-6 shadow-sm text-base md:text-lg">
+             <div className="flex items-center justify-between mb-4">
+               <div>
+                <h3 className="text-xl md:text-2xl font-semibold">Giao dịch gói gần đây</h3>
+                <p className="text-base md:text-lg text-slate-500">Lịch sử thanh toán gói — hiển thị theo trang.</p>
+               </div>
+             </div>
+ 
+             {recent.length === 0 ? (
+               <div className="py-8 text-center text-slate-600">
+                 Bạn chưa có giao dịch cho gói nào. <br />
+                 <Link href="/" className="text-sm text-blue-600 hover:underline">Khám phá sản phẩm</Link>
+               </div>
+             ) : (
+               <div className="overflow-x-auto">
                 <table className="min-w-full">
                   <thead className="bg-slate-50">
                     <tr>
-                      <th className="px-6 py-3 text-left text-xs font-medium text-slate-500 uppercase tracking-wider">Mã</th>
-                      <th className="px-6 py-3 text-left text-xs font-medium text-slate-500 uppercase tracking-wider">Gói</th>
-                      <th className="px-6 py-3 text-left text-xs font-medium text-slate-500 uppercase tracking-wider">Cổng</th>
-                      <th className="px-6 py-3 text-left text-xs font-medium text-slate-500 uppercase tracking-wider">Thời gian</th>
-                      <th className="px-6 py-3 text-right text-xs font-medium text-slate-500 uppercase tracking-wider">Số tiền</th>
-                      <th className="px-6 py-3 text-left text-xs font-medium text-slate-500 uppercase tracking-wider">Trạng thái</th>
+                      <th className="px-6 py-4 text-left text-sm md:text-base font-medium text-slate-500 uppercase tracking-wider">Mã</th>
+                      <th className="px-6 py-4 text-left text-sm md:text-base font-medium text-slate-500 uppercase tracking-wider">Gói</th>
+                      <th className="px-6 py-4 text-left text-sm md:text-base font-medium text-slate-500 uppercase tracking-wider">Cổng</th>
+                      <th className="px-6 py-4 text-left text-sm md:text-base font-medium text-slate-500 uppercase tracking-wider">Thời gian</th>
+                      <th className="px-6 py-4 text-right text-sm md:text-base font-medium text-slate-500 uppercase tracking-wider">Số tiền</th>
+                      <th className="px-6 py-4 text-left text-sm md:text-base font-medium text-slate-500 uppercase tracking-wider">Trạng thái</th>
                     </tr>
                   </thead>
 
                   <tbody className="bg-white divide-y divide-slate-100">
                     {recent.map((p) => (
                       <tr key={p.id} className="hover:bg-slate-50">
-                        <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-slate-900">#{p.transaction_code ?? p.id}</td>
-                        <td className="px-6 py-4 whitespace-nowrap text-sm text-slate-700">{p.package_name ?? "-"}</td>
-                        <td className="px-6 py-4 whitespace-nowrap text-sm text-slate-600">
-                          <span className="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
+                        <td className="px-6 py-5 whitespace-nowrap text-base md:text-lg font-medium text-slate-900">#{p.transaction_code ?? p.id}</td>
+                        <td className="px-6 py-5 whitespace-nowrap text-base md:text-lg text-slate-700">{p.package_name ?? "-"}</td>
+                        <td className="px-6 py-5 whitespace-nowrap text-base md:text-lg text-slate-600">
+                          <span className="inline-flex items-center px-3 py-1 rounded-full text-sm md:text-base font-medium bg-blue-100 text-blue-800">
                             {p.gateway?.toUpperCase() ?? 'N/A'}
                           </span>
                         </td>
-                        <td className="px-6 py-4 whitespace-nowrap text-sm text-slate-500">{p.paid_at ?? p.created_at}</td>
-                        <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-semibold text-slate-900">{formatCurrency(p.amount)}</td>
-                        <td className="px-6 py-4 whitespace-nowrap">{statusBadge(p.status)}</td>
+                        <td className="px-6 py-5 whitespace-nowrap text-base md:text-lg text-slate-500">{p.paid_at ?? p.created_at}</td>
+                        <td className="px-6 py-5 whitespace-nowrap text-right text-base md:text-lg font-semibold text-slate-900">{formatCurrency(p.amount)}</td>
+                        <td className="px-6 py-5 whitespace-nowrap">{statusBadge(p.status)}</td>
                       </tr>
                     ))}
                   </tbody>
                 </table>
-
-                {/* pagination */}
+ 
                 {(recentPaginated.prev_page_url || recentPaginated.next_page_url) && (
-                  <div className="px-4 py-3 border-t border-slate-100 flex items-center justify-between">
-                    <div className="text-sm text-slate-500">Trang <span className="font-semibold">{recentPaginated.current_page}</span> / <span className="font-semibold">{recentPaginated.last_page}</span></div>
-                    <div className="flex gap-2">
-                      {recentPaginated.prev_page_url && <Link href={recentPaginated.prev_page_url} className="px-3 py-1 bg-white border rounded text-sm">Trước</Link>}
-                      {recentPaginated.next_page_url && <Link href={recentPaginated.next_page_url} className="px-3 py-1 bg-white border rounded text-sm">Tiếp</Link>}
+                  <div className="px-4 py-4 border-t border-slate-100 flex items-center justify-between">
+                    <div className="text-base md:text-lg text-slate-500">Trang <span className="font-semibold">{recentPaginated.current_page}</span> / <span className="font-semibold">{recentPaginated.last_page}</span></div>
+                    <div className="flex gap-3">
+                      {recentPaginated.prev_page_url && <Link href={recentPaginated.prev_page_url} className="px-4 py-2 bg-white border rounded text-sm md:text-base">Trước</Link>}
+                      {recentPaginated.next_page_url && <Link href={recentPaginated.next_page_url} className="px-4 py-2 bg-white border rounded text-sm md:text-base">Tiếp</Link>}
                     </div>
                   </div>
                 )}
-              </div>
-            )}
-          </section>
+               </div>
+             )}
+           </section>
         </div>
       </div>
     </AppLayout>

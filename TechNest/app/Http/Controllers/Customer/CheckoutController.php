@@ -28,11 +28,37 @@ class CheckoutController extends Controller
             'items.variant.image'
         ])->firstOrCreate(['user_id' => Auth::id()]);
 
-        // Map toàn bộ items với đầy đủ thông tin
-        $allItems = $cart->items->map(function ($item) {
-            // Xác định giá chính xác cho variant
-            $price = $this->calculateItemPrice($item);
+        $cartItems = $itemId
+            ? $cart->items->where('id', $itemId)->values()
+            : $cart->items;
 
+        if ($cartItems->isEmpty()) {
+            return redirect()->route('cart.index')->withErrors(['msg' => 'Sản phẩm không có trong giỏ.']);
+        }
+
+        // Log từng item trước khi pluck
+        $cartItems->each(function ($ci) {
+            Log::debug('CartItem seller trace', [
+                'cart_item_id' => $ci->id,
+                'product_id' => $ci->product_id,
+                'product_loaded' => $ci->relationLoaded('product') && $ci->product ? true : false,
+                'product_created_by' => optional($ci->product)->created_by,
+            ]);
+        });
+
+        $sellerIds = $cartItems
+            ->pluck('product.created_by')
+            ->filter()
+            ->map(fn($id) => (int) $id)
+            ->unique()
+            ->values()
+            ->all();
+
+        Log::debug('Seller IDs from cartItems (raw)', ['seller_ids' => $sellerIds]);
+
+        // Map toàn bộ items với đầy đủ thông tin
+        $allItems = $cartItems->map(function ($item) {
+            $price = $this->calculateItemPrice($item);
             return (object)[
                 'id' => $item->id,
                 'product_id' => $item->product_id,
@@ -41,7 +67,7 @@ class CheckoutController extends Controller
                     'name' => $item->product->name ?? null,
                     'image' => $item->product->primaryImage->url ?? null,
                     'brand_id' => $item->product->brand_id ?? null,
-                    'seller_id' => $item->product->created_by ?? null,
+                    'seller_id' => $item->product->created_by ?? null, // giữ nguyên
                     'category_ids' => $item->product->categories->pluck('id')->toArray(),
                 ] : null,
                 'variant' => $item->variant ? [
@@ -98,19 +124,17 @@ class CheckoutController extends Controller
             });
 
         // Collect IDs cho promotion filtering
-        $productIds = $items->map(fn($it) => data_get($it, 'product.id'))
+        $productIds = $items->map(fn($it) => (int) data_get($it, 'product.id'))
             ->filter()
             ->unique()
             ->values()
             ->all();
-
-        $brandIds = $items->map(fn($it) => data_get($it, 'product.brand_id'))
+        $brandIds = $items->map(fn($it) => (int) data_get($it, 'product.brand_id'))
             ->filter()
             ->unique()
             ->values()
             ->all();
-
-        $categoryIds = $items->flatMap(fn($it) => data_get($it, 'product.category_ids', []))
+        $categoryIds = $items->flatMap(fn($it) => array_map('intval', data_get($it, 'product.category_ids', [])))
             ->unique()
             ->values()
             ->all();
@@ -131,13 +155,7 @@ class CheckoutController extends Controller
             ];
         });
 
-        // --- replaced: ensure we collect seller IDs from product.created_by and cast to int ---
-        $sellerIds = $items->map(fn($it) => data_get($it, 'product.seller_id'))
-            ->filter() // remove null/empty
-            ->map(fn($id) => (int) $id) // cast to int to avoid type mismatch
-            ->unique()
-            ->values()
-            ->all();
+        // --- bỏ khối thu thập sellerIds cũ vì đã lấy trước đó ---
 
         // Check Packages
         $hasActivePackage = (bool) optional(Auth::user())->hasActivePackageSubscription();
@@ -159,66 +177,68 @@ class CheckoutController extends Controller
             })
             ->where(function ($q) {
                 $q->whereNull('usage_limit')
-                  ->orWhereRaw('used_count < usage_limit');
+                  ->orWhereRaw('(usage_limit = 0 OR used_count < usage_limit)');
             });
 
-        // Filter by seller (include global promotions + promotions created by those sellers)
         if (!empty($sellerIds)) {
             $promotionsQuery->where(function ($q) use ($sellerIds) {
                 $q->whereNull('seller_id')
                   ->orWhereIn('seller_id', $sellerIds);
             });
         } else {
-            // no seller in cart -> only global promotions
             $promotionsQuery->whereNull('seller_id');
         }
 
-        Log::debug('Promotions query - sellers', ['seller_ids' => $sellerIds]);
+        // Áp dụng điều kiện thực sự
+        $promotionsQuery->where(function ($q) use ($productIds, $brandIds, $categoryIds, $sellerIds) {
+            $q->whereDoesntHave('conditions') // global
+              ->orWhereHas('conditions', function ($qc) use ($productIds, $brandIds, $categoryIds, $sellerIds) {
+                  $qc->where(function ($w) use ($productIds, $brandIds, $categoryIds, $sellerIds) {
+                      $w->where(function ($x) use ($productIds) {
+                          $x->where('condition_type', 'product')->whereIn('target_id', $productIds);
+                      })->orWhere(function ($x) use ($brandIds) {
+                          $x->where('condition_type', 'brand')->whereIn('target_id', $brandIds);
+                      })->orWhere(function ($x) use ($categoryIds) {
+                          $x->where('condition_type', 'category')->whereIn('target_id', $categoryIds);
+                      })->orWhere(function ($x) use ($sellerIds) {
+                          $x->where('condition_type', 'seller')->whereIn('target_id', $sellerIds);
+                      });
+                  });
+              });
+        });
 
         $allPromotions = $promotionsQuery->get();
 
-        // Filter applicable promotions (product/brand/category)
-        $applicable = $allPromotions->filter(function (Promotion $p) use ($productIds, $brandIds, $categoryIds) {
+        Log::info('Raw promotions fetched', $allPromotions->map(fn($p) => [
+            'id' => $p->id,
+            'code' => $p->code,
+            'seller_id' => $p->seller_id,
+            'starts_at' => $p->starts_at,
+            'expires_at' => $p->expires_at,
+            'conds' => $p->conditions->map(fn($c)=>[$c->condition_type,$c->target_id])->toArray()
+        ])->toArray());
+
+        // Filter applicable promotions
+        $applicable = $allPromotions->filter(function (Promotion $p) use ($productIds, $brandIds, $categoryIds, $sellerIds) {
             $conds = $p->conditions ?? collect();
-            
-            // Global promotion (no conditions) - áp dụng cho tất cả
-            if ($conds->isEmpty()) {
-                Log::debug("Promotion {$p->id} ({$p->code}) - Global, no conditions");
-                return true;
-            }
-
-            // Check conditions - chỉ cần 1 điều kiện match là OK
+            if ($conds->isEmpty()) return true;
             foreach ($conds as $c) {
-                if ($c->condition_type === 'product' && in_array((int)$c->target_id, $productIds, true)) {
-                    Log::debug("Promotion {$p->id} ({$p->code}) - Matched product {$c->target_id}");
-                    return true;
-                }
-                if ($c->condition_type === 'brand' && in_array((int)$c->target_id, $brandIds, true)) {
-                    Log::debug("Promotion {$p->id} ({$p->code}) - Matched brand {$c->target_id}");
-                    return true;
-                }
-                if ($c->condition_type === 'category' && in_array((int)$c->target_id, $categoryIds, true)) {
-                    Log::debug("Promotion {$p->id} ({$p->code}) - Matched category {$c->target_id}");
-                    return true;
-                }
+                if ($c->condition_type === 'product' && in_array((int)$c->target_id, $productIds, true)) return true;
+                if ($c->condition_type === 'brand' && in_array((int)$c->target_id, $brandIds, true)) return true;
+                if ($c->condition_type === 'category' && in_array((int)$c->target_id, $categoryIds, true)) return true;
+                if ($c->condition_type === 'seller' && in_array((int)$c->target_id, $sellerIds, true)) return true;
             }
-
-            Log::debug("Promotion {$p->id} ({$p->code}) - No match found", [
-                'conditions' => $conds->map(fn($c) => [
-                    'type' => $c->condition_type,
-                    'target_id' => $c->target_id
-                ])->toArray()
-            ]);
             return false;
         })->values();
 
-        Log::info('Promotions filtered', [
-            'total_fetched' => $allPromotions->count(),
-            'applicable' => $applicable->count(),
-            'applicable_ids' => $applicable->pluck('id')->toArray(),
+        Log::info('Applicable promotions summary', [
+            'seller_ids_cart' => $sellerIds,
+            'all_count' => $allPromotions->count(),
+            'applicable_count' => $applicable->count(),
+            'applicable_codes' => $applicable->pluck('code')->toArray(),
         ]);
 
-        // Format promotions for frontend
+        // Format chỉ promotion áp dụng
         $promotions = $applicable->map(function (Promotion $p) {
             return [
                 'id' => $p->id,
@@ -227,7 +247,7 @@ class CheckoutController extends Controller
                 'value' => (float) $p->value,
                 'description' => $p->description,
                 'min_order_amount' => (float) ($p->min_order_amount ?? 0),
-                'seller_id' => $p->seller_id ?? null,
+                'seller_id' => $p->seller_id,
             ];
         })->values();
 
@@ -245,6 +265,7 @@ class CheckoutController extends Controller
             'shippingFees' => $shippingFees,
             'hasFreeShipping' => $hasActivePackage,
             'shippingRatePerKm' => config('services.shipping.rate_per_km', 100),
+            'sellerIds' => $sellerIds, // expose to frontend
         ]);
     }
 
