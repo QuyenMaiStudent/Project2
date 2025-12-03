@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { Star } from 'lucide-react';
 
 interface Props {
     productId: number;
@@ -8,6 +9,7 @@ interface Props {
 
 export default function ReviewForm({ productId, onSaved, onCancel }: Props) {
     const [rating, setRating] = useState<number>(5);
+    const [hover, setHover] = useState<number | null>(null);
     const [content, setContent] = useState<string>('');
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState<string | null>(null);
@@ -33,10 +35,11 @@ export default function ReviewForm({ productId, onSaved, onCancel }: Props) {
                 setError(json.message || 'Có lỗi xảy ra');
             } else {
                 onSaved && onSaved(json.review);
-                // phát event để ProductDetail / CommentsSection có thể cập nhật ngay
                 try {
                     window.dispatchEvent(new CustomEvent('review:added', { detail: json.review }));
                 } catch (e) { /* ignore */ }
+                setContent('');
+                setRating(5);
             }
         } catch (e) {
             setError('Không thể kết nối tới server.');
@@ -46,28 +49,63 @@ export default function ReviewForm({ productId, onSaved, onCancel }: Props) {
     };
 
     return (
-        <div className="border rounded p-4 bg-white">
-            <div className="mb-2 font-semibold">Đánh giá sản phẩm</div>
-
-            <div className="mb-2">
-                <label className="block text-sm">Số sao</label>
-                <select value={rating} onChange={(e) => setRating(Number(e.target.value))} className="border rounded p-2">
-                    {[5,4,3,2,1].map(s => <option key={s} value={s}>{s} sao</option>)}
-                </select>
+        <div className="border rounded-lg p-4 bg-white shadow-sm">
+            <div className="mb-3 flex items-center justify-between">
+                <div className="font-semibold text-gray-800">Đánh giá sản phẩm</div>
+                <div className="text-sm text-gray-500">Chia sẻ trải nghiệm của bạn</div>
             </div>
 
             <div className="mb-3">
-                <label className="block text-sm">Nội dung</label>
-                <textarea value={content} onChange={(e) => setContent(e.target.value)} rows={4} className="w-full border rounded p-2" />
+                <label className="block text-sm mb-2">Số sao</label>
+                <div className="flex items-center gap-2">
+                    {Array.from({ length: 5 }).map((_, i) => {
+                        const idx = i + 1;
+                        const active = hover !== null ? idx <= hover : idx <= rating;
+                        return (
+                            <button
+                                key={idx}
+                                type="button"
+                                onClick={() => setRating(idx)}
+                                onMouseEnter={() => setHover(idx)}
+                                onMouseLeave={() => setHover(null)}
+                                aria-label={`${idx} sao`}
+                                className="p-1"
+                            >
+                                <Star className={`w-6 h-6 ${active ? 'text-[#0AC1EF]' : 'text-gray-200'}`} fill={active ? '#0AC1EF' : 'none'} />
+                            </button>
+                        );
+                    })}
+                    <div className="text-sm text-gray-600 ml-2">{rating} / 5</div>
+                </div>
             </div>
 
-            {error && <div className="text-red-600 mb-2">{error}</div>}
+            <div className="mb-3">
+                <label className="block text-sm mb-2">Nội dung</label>
+                <textarea
+                    value={content}
+                    onChange={(e) => setContent(e.target.value)}
+                    rows={4}
+                    className="w-full border border-gray-200 rounded-md p-3 focus:outline-none focus:ring-2 focus:ring-[#0AC1EF]/40 text-sm resize-none"
+                    placeholder="Viết nhận xét hữu ích cho người mua khác..."
+                />
+            </div>
+
+            {error && <div className="text-sm text-red-600 mb-3">{error}</div>}
 
             <div className="flex gap-2">
-                <button onClick={submit} disabled={loading} className="px-4 py-2 bg-[#ee4d2d] text-white rounded">
+                <button
+                    onClick={submit}
+                    disabled={loading}
+                    className="px-4 py-2 bg-[#0AC1EF] text-white rounded-md text-sm font-medium disabled:opacity-60"
+                >
                     {loading ? 'Đang gửi...' : 'Gửi đánh giá'}
                 </button>
-                <button onClick={() => onCancel && onCancel()} className="px-4 py-2 border rounded">Hủy</button>
+                <button
+                    onClick={() => onCancel && onCancel()}
+                    className="px-4 py-2 border rounded-md text-sm hover:bg-gray-50"
+                >
+                    Hủy
+                </button>
             </div>
         </div>
     );

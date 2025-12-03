@@ -263,32 +263,53 @@ export default function CommentsSection({ productId }: { productId: number }) {
     }
   };
 
+  const renderAvatar = (name?: string | null) => {
+    const display = (name || 'U').trim();
+    const char = display.charAt(0).toUpperCase();
+    return (
+      <div className="flex-shrink-0 h-10 w-10 rounded-full bg-gray-100 flex items-center justify-center text-sm font-semibold text-[#0AC1EF]">
+        {char}
+      </div>
+    );
+  };
+
   const renderReplies = (replies: Reply[] | undefined, depth = 1) => {
     if (!replies || replies.length === 0) return null;
     return (
-      <div className="ml-6 mt-2">
+      <div className="ml-6 mt-3 space-y-3">
         {replies.map(r => (
-          <div key={r.id} className="mb-3 p-3 bg-gray-50 rounded">
-            <div className="flex items-center justify-between">
-              <div className="text-sm font-medium">
-                {r.user_name || r.user?.name || 'Người dùng ẩn'} 
-                {r.is_product_seller && <span className="ml-2 text-xs px-2 py-0.5 bg-yellow-100 text-yellow-800 rounded">Người bán</span>}
+          <div key={r.id} className="p-3 bg-white border rounded-lg shadow-sm">
+            <div className="flex items-start justify-between gap-3">
+              <div className="flex items-start gap-3">
+                {renderAvatar(r.user_name || r.user?.name)}
+                <div>
+                  <div className="flex items-center gap-2">
+                    <div className="text-sm font-medium text-gray-800">
+                      {r.user_name || r.user?.name || 'Người dùng ẩn'}
+                    </div>
+                    {r.is_product_seller && <span className="text-xs px-2 py-0.5 bg-yellow-100 text-yellow-800 rounded">Người bán</span>}
+                  </div>
+                  <div className="text-xs text-gray-400">{new Date(r.created_at).toLocaleString('vi-VN')}</div>
+                </div>
               </div>
-              <div className="text-xs text-gray-500">{new Date(r.created_at).toLocaleString('vi-VN')}</div>
             </div>
-            <div className="mt-2 text-sm text-gray-800 whitespace-pre-line">{r.content}</div>
-            <div className="mt-2 flex gap-3 items-center">
+
+            <div className="mt-2 text-sm text-gray-700 whitespace-pre-line">{r.content}</div>
+
+            <div className="mt-3 flex items-center gap-3">
               {auth?.user && (
                 <>
                   <button 
-                    className={`flex items-center gap-1 text-xs ${likedComments.has(r.id) ? 'text-blue-600 font-semibold' : 'text-gray-600'}`}
+                    className={`flex items-center gap-2 text-sm px-2 py-1 rounded transition ${likedComments.has(r.id) ? 'text-white bg-[#0AC1EF] shadow' : 'text-gray-600 hover:bg-gray-50'}`}
                     onClick={() => handleLike(r.id)}
+                    aria-pressed={likedComments.has(r.id)}
                   >
-                    <ThumbsUp className={`w-4 h-4 ${likedComments.has(r.id) ? 'fill-current' : ''}`} />
+                    <ThumbsUp className={`w-4 h-4 ${likedComments.has(r.id) ? 'text-white' : 'text-[#0AC1EF]'}`} />
                     <span>{r.likes_count || 0}</span>
                   </button>
+
                   <button 
-                    className="text-xs text-blue-600" 
+                    className="text-sm text-[#0AC1EF] px-2 py-1 rounded hover:bg-[#e8fbff]" 
                     onClick={() => { 
                       setReplyTo(r.id); 
                       window.scrollTo({ top: document.body.scrollHeight, behavior: 'smooth' }); 
@@ -299,6 +320,7 @@ export default function CommentsSection({ productId }: { productId: number }) {
                 </>
               )}
             </div>
+
             {depth < 3 && renderReplies(r.replies || [], depth + 1)}
           </div>
         ))}
@@ -308,83 +330,104 @@ export default function CommentsSection({ productId }: { productId: number }) {
 
   return (
     <div className="mt-8">
-      <h2 className="text-xl font-semibold mb-4">Bình luận ({total})</h2>
+      <h2 className="text-xl font-semibold mb-4">Bình luận <span className="text-gray-500 font-medium">({total})</span></h2>
 
       {error && (
-        <div className="mb-4 p-3 bg-red-100 border border-red-400 text-red-700 rounded">
-          {error}
+        <div className="mb-4 p-3 bg-red-50 border border-red-200 text-red-700 rounded flex items-start justify-between">
+          <div className="text-sm">{error}</div>
           <button 
             onClick={() => setError(null)} 
-            className="ml-2 text-red-500 hover:text-red-700"
+            className="ml-4 text-red-500 hover:text-red-700"
+            aria-label="Đóng lỗi"
           >
             ×
           </button>
         </div>
       )}
 
-      <form onSubmit={postComment} className="mb-4">
-        <textarea
-          className="w-full border rounded p-2"
-          rows={3}
-          placeholder={auth?.user ? (replyTo ? 'Viết trả lời...' : 'Viết bình luận...') : 'Bạn cần đăng nhập để bình luận'}
-          value={content}
-          onChange={e => setContent(e.target.value)}
-          disabled={!auth?.user || submitting}
-        />
-        <div className="flex gap-2 mt-2">
-          <button 
-            type="submit" 
-            className="px-4 py-2 bg-[#0AC1EF] text-white rounded disabled:opacity-50" 
-            disabled={!auth?.user || !content.trim() || submitting}
-          >
-            {submitting ? 'Đang gửi...' : 'Gửi'}
-          </button>
-          {replyTo && (
-            <button 
-              type="button" 
-              onClick={() => setReplyTo(null)} 
-              className="px-3 py-2 border rounded"
-              disabled={submitting}
-            >
-              Hủy trả lời
-            </button>
-          )}
+      <form onSubmit={postComment} className="mb-6">
+        <div className="bg-white border rounded-lg p-4 shadow-sm">
+          <div className="flex items-start gap-3">
+            {renderAvatar(auth?.user?.name)}
+            <div className="flex-1">
+              <textarea
+                className="w-full border-0 focus:outline-none focus:ring-2 focus:ring-[#0AC1EF]/40 rounded-md resize-none text-sm placeholder-gray-400"
+                rows={3}
+                placeholder={auth?.user ? (replyTo ? 'Viết trả lời...' : 'Viết bình luận...') : 'Bạn cần đăng nhập để bình luận'}
+                value={content}
+                onChange={e => setContent(e.target.value)}
+                disabled={!auth?.user || submitting}
+              />
+              <div className="mt-3 flex items-center justify-between">
+                <div className="flex items-center gap-2">
+                  {replyTo && (
+                    <div className="text-xs text-gray-500 px-2 py-1 bg-gray-100 rounded">Trả lời ID: {replyTo}</div>
+                  )}
+                </div>
+                <div className="flex items-center gap-2">
+                  {replyTo && (
+                    <button 
+                      type="button" 
+                      onClick={() => setReplyTo(null)} 
+                      className="text-xs px-3 py-1 border rounded hover:bg-gray-50"
+                      disabled={submitting}
+                    >
+                      Hủy
+                    </button>
+                  )}
+                  <button 
+                    type="submit" 
+                    className="px-4 py-2 bg-[#0AC1EF] text-white rounded-md text-sm font-medium disabled:opacity-60"
+                    disabled={!auth?.user || !content.trim() || submitting}
+                  >
+                    {submitting ? 'Đang gửi...' : 'Gửi'}
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
         </div>
       </form>
 
-      <div>
+      <div className="space-y-4">
         {comments.map(c => (
-          <div key={c.id} className="mb-4 p-4 border rounded">
-            <div className="flex items-center justify-between">
-              <div className="text-sm font-semibold">
-                {c.user_name || c.user?.name || 'Người dùng ẩn'} 
-                {c.is_product_seller && <span className="ml-2 text-xs px-2 py-0.5 bg-yellow-100 text-yellow-800 rounded">Người bán</span>}
+          <div key={c.id} className="p-4 bg-white border rounded-lg shadow-sm">
+            <div className="flex items-start justify-between gap-3">
+              <div className="flex items-start gap-3">
+                {renderAvatar(c.user_name || c.user?.name)}
+                <div>
+                  <div className="flex items-center gap-2">
+                    <div className="text-sm font-semibold text-gray-800">{c.user_name || c.user?.name || 'Người dùng ẩn'}</div>
+                    {c.is_product_seller && <span className="text-xs px-2 py-0.5 bg-yellow-100 text-yellow-800 rounded">Người bán</span>}
+                  </div>
+                  <div className="text-xs text-gray-400">{new Date(c.created_at).toLocaleString('vi-VN')}</div>
+                </div>
               </div>
-              <div className="text-xs text-gray-500">{new Date(c.created_at).toLocaleString('vi-VN')}</div>
+
+              <div className="flex items-center gap-2">
+                {auth?.user && (
+                  <>
+                    <button 
+                      className={`flex items-center gap-1 text-sm px-2 py-1 rounded transition ${likedComments.has(c.id) ? 'text-white bg-[#0AC1EF] shadow' : 'text-gray-600 hover:bg-gray-50'}`}
+                      onClick={() => handleLike(c.id)}
+                      aria-pressed={likedComments.has(c.id)}
+                    >
+                      <ThumbsUp className={`w-4 h-4 ${likedComments.has(c.id) ? 'text-white' : 'text-[#0AC1EF]'}`} />
+                      <span>{c.likes_count || 0}</span>
+                    </button>
+
+                    <button 
+                      className="text-sm text-[#0AC1EF] px-2 py-1 rounded hover:bg-[#e8fbff]"
+                      onClick={() => { setReplyTo(c.id); window.scrollTo({ top: document.body.scrollHeight, behavior: 'smooth' }); }}
+                    >
+                      Trả lời
+                    </button>
+                  </>
+                )}
+              </div>
             </div>
-            <div className="mt-2 text-gray-800 whitespace-pre-line">{c.content}</div>
-            <div className="mt-3 flex gap-3 items-center">
-              {auth?.user && (
-                <>
-                  <button 
-                    className={`flex items-center gap-1 text-sm ${likedComments.has(c.id) ? 'text-blue-600 font-semibold' : 'text-gray-600'}`}
-                    onClick={() => handleLike(c.id)}
-                  >
-                    <ThumbsUp className={`w-4 h-4 ${likedComments.has(c.id) ? 'fill-current' : ''}`} />
-                    <span>{c.likes_count || 0}</span>
-                  </button>
-                  <button 
-                    className="text-sm text-blue-600" 
-                    onClick={() => { 
-                      setReplyTo(c.id); 
-                      window.scrollTo({ top: document.body.scrollHeight, behavior: 'smooth' }); 
-                    }}
-                  >
-                    Trả lời
-                  </button>
-                </>
-              )}
-            </div>
+
+            <div className="mt-3 text-sm text-gray-700 whitespace-pre-line">{c.content}</div>
 
             {renderReplies(c.replies)}
           </div>
@@ -392,14 +435,14 @@ export default function CommentsSection({ productId }: { productId: number }) {
       </div>
 
       {offset + limit < total && (
-        <div className="text-center mt-4">
-          <button onClick={handleShowMore} className="px-4 py-2 border rounded" disabled={loading}>
-            {loading ? 'Đang tải...' : 'Xem thêm'}
+        <div className="text-center mt-6">
+          <button onClick={handleShowMore} className="px-4 py-2 bg-white border rounded-md shadow-sm hover:bg-gray-50" disabled={loading}>
+            {loading ? 'Đang tải...' : 'Xem thêm bình luận'}
           </button>
         </div>
       )}
 
-      {loading && <div className="mt-2 text-sm text-gray-500">Đang tải...</div>}
+      {loading && <div className="mt-3 text-sm text-gray-500">Đang tải...</div>}
     </div>
   );
 }

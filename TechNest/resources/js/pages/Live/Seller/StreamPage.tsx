@@ -13,7 +13,9 @@ interface Props {
 }
 
 export default function StreamPage({ liveStream, zegoConfig }: Props) {
-    const { auth } = usePage().props as any;
+    const { auth, flash, errors } = usePage().props as any;
+    const success = flash?.success;
+    const errorFlash = flash?.error;
     const videoRef = useRef<HTMLDivElement>(null);
     const { createLiveStream, isInitialized, error } = useZego(zegoConfig);
     const { post } = useForm();
@@ -118,101 +120,109 @@ export default function StreamPage({ liveStream, zegoConfig }: Props) {
     return (
         <AppLayout breadcrumbs={breadcrumbs}>
             <Head title={`Live: ${liveStream.title}`} />
-            
-            <div className="max-w-7xl mx-auto p-6">
-                {/* Header */}
-                <div className="bg-white rounded-lg shadow-md p-6 mb-6">
-                    <div className="flex justify-between items-start">
-                        <div>
-                            <div className="flex items-center gap-3 mb-2">
-                                <h1 className="text-2xl font-semibold text-gray-800">{liveStream.title}</h1>
-                                <span className="px-3 py-1 bg-red-100 text-red-800 text-sm font-medium rounded-full border border-red-200">
-                                    🔴 LIVE
-                                </span>
-                            </div>
-                            
-                            {liveStream.description && (
-                                <p className="text-gray-600 mb-3">{liveStream.description}</p>
-                            )}
-                            
-                            <div className="flex items-center gap-6 text-sm text-gray-500">
-                                <div className="flex items-center gap-1">
-                                    <Users className="h-4 w-4" />
-                                    <span>{liveStream.viewer_count} người xem</span>
-                                </div>
-                                <div className="flex items-center gap-1">
-                                    <Clock className="h-4 w-4" />
-                                    <span>Bắt đầu: {liveStream.started_at ? formatDate(liveStream.started_at) : 'N/A'}</span>
-                                </div>
-                            </div>
-                        </div>
-                        
-                        <Button 
-                            onClick={handleEndStream}
-                            variant="destructive"
-                            className="bg-red-600 hover:bg-red-700"
-                        >
-                            <X className="h-4 w-4 mr-2" />
-                            Kết thúc Live
-                        </Button>
-                    </div>
-                </div>
 
-                {/* Error display */}
+            <div className="p-6 bg-gradient-to-br from-blue-50 to-cyan-50 min-h-screen">
+                {/* Notification giống Category */}
+                {(success || errorFlash) && (
+                    <div className={`mb-4 p-5 rounded-lg shadow-sm border ${
+                        success ? 'bg-green-50 border-green-200 text-green-700' : 'bg-red-50 border-red-200 text-red-700'
+                    } text-base`}>
+                        <div className="flex items-center">
+                            <svg className={`w-5 h-5 mr-2 ${success ? 'text-green-500' : 'text-red-500'}`} fill="currentColor" viewBox="0 0 20 20">
+                                {success ? (
+                                    <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd"></path>
+                                ) : (
+                                    <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clipRule="evenodd"></path>
+                                )}
+                            </svg>
+                            <span>{success || errorFlash}</span>
+                            <button className="ml-auto text-lg leading-none hover:opacity-70" onClick={() => {/* noop - flash cleared server side */}}>×</button>
+                        </div>
+                    </div>
+                )}
+
+                {/* Validation / Zego errors */}
                 {(error || localError) && (
-                    <div className="bg-red-100 border border-red-200 text-red-700 px-4 py-3 rounded-lg mb-6">
-                        <p>Lỗi: {error || localError}</p>
+                    <div className="mb-6 p-4 bg-red-50 border border-red-200 text-red-700 rounded-lg">
+                        <p className="font-medium">Lỗi: {error || localError}</p>
                         <p className="text-sm mt-2">
-                            Hãy kiểm tra:
-                            <br />- Zego App ID và Server Secret đã được cấu hình đúng
-                            <br />- Kết nối internet ổn định
-                            <br />- Camera và microphone đã được cho phép truy cập
+                            Hãy kiểm tra cấu hình và quyền truy cập camera/microphone.
                         </p>
                     </div>
                 )}
-
-                {/* Loading state */}
-                {!isInitialized && !error && !localError && (
-                    <div className="bg-blue-100 border border-blue-200 text-blue-700 px-4 py-3 rounded-lg mb-6">
-                        <p>Đang khởi tạo Zego SDK...</p>
-                    </div>
-                )}
-
-                {/* Video container */}
-                <div className="bg-black rounded-lg overflow-hidden shadow-lg">
-                    <div 
-                        ref={videoRef}
-                        className="w-full aspect-video"
-                        style={{ minHeight: '400px' }}
-                    >
-                        {!isInitialized && !error && !localError && (
-                            <div className="flex items-center justify-center h-full">
-                                <div className="text-white text-center">
-                                    <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-white mx-auto mb-4"></div>
-                                    <p>Đang khởi tạo live stream...</p>
+12
+                <div className="max-w-7xl mx-auto">
+                    <header className="mb-6 bg-white p-6 rounded-lg shadow-lg border-l-4 border-[#0AC1EF]">
+                        <div className="flex justify-between items-start">
+                            <div>
+                                <h1 className="text-4xl font-extrabold text-gray-800">{liveStream.title}</h1>
+                                {liveStream.description && (
+                                    <p className="text-gray-600 mt-2">{liveStream.description}</p>
+                                )}
+                                <div className="flex items-center gap-6 text-sm text-gray-500 mt-4">
+                                    <div className="flex items-center gap-1">
+                                        <Users className="h-4 w-4" />
+                                        <span>{liveStream.viewer_count} người xem</span>
+                                    </div>
+                                    <div className="flex items-center gap-1">
+                                        <Clock className="h-4 w-4" />
+                                        <span>Bắt đầu: {liveStream.started_at ? formatDate(liveStream.started_at) : 'N/A'}</span>
+                                    </div>
                                 </div>
                             </div>
-                        )}
-                    </div>
-                </div>
 
-                {/* Stream info */}
-                <div className="mt-6 bg-white rounded-lg shadow-md p-6">
-                    <h3 className="text-lg font-semibold mb-4">Thông tin Stream</h3>
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm">
-                        <div>
-                            <span className="font-medium text-gray-700">ID phòng:</span>
-                            <span className="ml-2 font-mono text-gray-600">{liveStream.room_id}</span>
+                            <div className="flex items-center gap-3">
+                                <span className="px-3 py-1 bg-red-100 text-red-800 text-sm font-medium rounded-full border border-red-200">🔴 LIVE</span>
+                                <Button 
+                                    onClick={handleEndStream}
+                                    variant="destructive"
+                                    className="bg-red-600 hover:bg-red-700 text-white"
+                                >
+                                    <X className="h-4 w-4 mr-2" />
+                                    Kết thúc Live
+                                </Button>
+                            </div>
                         </div>
-                        <div>
-                            <span className="font-medium text-gray-700">Trạng thái:</span>
-                            <span className="ml-2 text-red-600 font-medium">{liveStream.status}</span>
+                    </header>
+
+                    {/* Video card */}
+                    <div className="bg-white rounded-lg shadow-md overflow-hidden border border-gray-200 mb-6">
+                        <div className="bg-black">
+                            <div 
+                                ref={videoRef}
+                                className="w-full aspect-video"
+                                style={{ minHeight: '400px' }}
+                            >
+                                {!isInitialized && !error && !localError && (
+                                    <div className="flex items-center justify-center h-full">
+                                        <div className="text-white text-center">
+                                            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-white mx-auto mb-4"></div>
+                                            <p>Đang khởi tạo live stream...</p>
+                                        </div>
+                                    </div>
+                                )}
+                            </div>
                         </div>
-                        <div>
-                            <span className="font-medium text-gray-700">Chia sẻ Link:</span>
-                            <span className="ml-2 text-blue-600 break-all">
-                                {window.location.origin}/live/{liveStream.id}
-                            </span>
+                    </div>
+
+                    {/* Stream info card */}
+                    <div className="bg-white rounded-lg shadow-md p-6 border border-gray-200">
+                        <h3 className="text-lg font-semibold mb-4">Thông tin Stream</h3>
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm">
+                            <div>
+                                <span className="font-medium text-gray-700">ID phòng:</span>
+                                <span className="ml-2 font-mono text-gray-600">{liveStream.room_id}</span>
+                            </div>
+                            <div>
+                                <span className="font-medium text-gray-700">Trạng thái:</span>
+                                <span className="ml-2 text-red-600 font-medium">{liveStream.status}</span>
+                            </div>
+                            <div>
+                                <span className="font-medium text-gray-700">Chia sẻ Link:</span>
+                                <span className="ml-2 text-blue-600 break-all">
+                                    {window.location.origin}/live/{liveStream.id}
+                                </span>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -226,7 +236,7 @@ export default function StreamPage({ liveStream, zegoConfig }: Props) {
                         <p className='text-sm text-gray-600 mb-4'>Bạn có chắc muốn kết thúc buổi live này? Hành động này sẽ dừng phát trực tiếp và thông báo cho người xem.</p>
                         <div className='flex justify-end gap-3'>
                             <Button onClick={cancelEndStream} disabled={ending} className='bg-gray-100 text-gray-700'>Hủy</Button>
-                            <Button onClick={confirmEndStream} variant='destructive' disabled={ending} className='bg-red-600 hover:bg-red-700'>
+                            <Button onClick={confirmEndStream} variant='destructive' disabled={ending} className='bg-red-600 hover:bg-red-700 text-white'>
                                 {ending ? 'Đang xử lý...' : 'Kết thúc Live'}
                             </Button>
                         </div>

@@ -5,7 +5,7 @@ import CartIcon from '@/components/Cart/CartIcon';
 import PublicLayout from '@/layouts/public-layout';
 import CommentsSection from '@/components/comments/CommentsSection';
 import ReviewsList from '@/components/reviews/ReviewsList';
-import { MessageCircle } from 'lucide-react';
+import { MessageCircle, ChevronRight } from 'lucide-react';
 import ReviewForm from '@/components/reviews/ReviewForm';
 
 interface Image { url: string; alt_text?: string; is_primary?: boolean; }
@@ -236,6 +236,18 @@ export default function ProductDetail({ product }: Props) {
     return (
         <PublicLayout>
             <Head title={product.name} />
+
+            {/* Breadcrumbs */}
+            <div className="bg-white border-b">
+                <div className="max-w-6xl mx-auto px-6 py-4 flex items-center gap-3 text-sm text-gray-600">
+                    <Link href="/" className="hover:underline text-gray-500">Trang chủ</Link>
+                    <ChevronRight className="w-4 h-4 text-gray-400" />
+                    <Link href="/products" className="hover:underline text-[#0AC1EF] font-medium">Sản phẩm</Link>
+                    <ChevronRight className="w-4 h-4 text-gray-400" />
+                    <span className="text-gray-700 truncate max-w-[50%]">{product.name}</span>
+                </div>
+            </div>
+
             {/* toast UI */}
             {toast && (
                 <div className="fixed inset-0 z-50 flex items-center justify-center pointer-events-none">
@@ -276,45 +288,59 @@ export default function ProductDetail({ product }: Props) {
                 </div>
             )}
 
-            {/* Main content giữ nguyên */}
-            <div className="bg-[#f5f5f5] min-h-screen py-8">
-                <div className="max-w-6xl mx-auto bg-white rounded-lg shadow p-8 flex flex-col md:flex-row gap-8">
+            {/* Main content */}
+            <div className="bg-[#f5f7f8] min-h-screen py-8">
+                <div className="max-w-6xl mx-auto bg-white rounded-xl shadow-lg p-6 md:p-8 flex flex-col md:flex-row gap-8">
                     {/* Ảnh sản phẩm */}
                     <div className="md:w-2/5 flex flex-col items-center">
-                        <div className="w-full aspect-square bg-gray-100 flex items-center justify-center rounded border mb-4 overflow-hidden">
-                            <img src={mainImg} alt={product.name} className="object-contain w-full h-full" />
+                        <div className="w-full aspect-square bg-gray-50 flex items-center justify-center rounded-lg border mb-4 overflow-hidden">
+                            <img src={mainImg} alt={product.name} className="object-contain w-full h-full p-4" />
                         </div>
-                        <div className="flex gap-2 mt-2">
+                        <div className="flex gap-3 mt-2">
                             {(product.images && product.images.length > 0 ? product.images : [{ url: '/images/logo.png', alt_text: 'No image' }]).map((img, idx) => (
-                                <img
+                                <button
                                     key={idx}
-                                    src={img.url}
-                                    alt={img.alt_text || product.name}
-                                    className={`h-16 w-16 object-contain rounded border cursor-pointer ${mainImg === img.url ? 'border-[#0AC1EF] border-2' : 'border-gray-200'}`}
+                                    type="button"
+                                    className={`h-16 w-16 rounded-lg overflow-hidden flex items-center justify-center p-1 transition-shadow ${mainImg === img.url ? 'ring-2 ring-offset-1 ring-[#0AC1EF]' : 'shadow-sm'}`}
                                     onClick={() => setMainImg(img.url)}
-                                />
+                                >
+                                    <img
+                                        src={img.url}
+                                        alt={img.alt_text || product.name}
+                                        className="object-contain h-full w-full"
+                                    />
+                                </button>
                             ))}
                         </div>
                     </div>
+
                     {/* Thông tin sản phẩm */}
                     <div className="md:w-3/5 flex flex-col gap-4">
-                        <h1 className="text-2xl font-bold text-gray-900">{product.name}</h1>
-                        {product.brand && (
-                            <div className="text-base text-gray-500 mb-1">Thương hiệu: <span className="font-semibold">{product.brand}</span></div>
-                        )}
-                        <div className="text-[#ee4d2d] text-3xl font-bold mb-2">
-                            {price.toLocaleString()}₫
+                        <div className="flex items-start justify-between gap-4">
+                            <div>
+                                <h1 className="text-2xl font-extrabold text-gray-900">{product.name}</h1>
+                                {product.brand && (
+                                    <div className="text-sm text-gray-500 mt-1">Thương hiệu: <span className="font-semibold text-gray-700">{product.brand}</span></div>
+                                )}
+                            </div>
+                            <div className="text-right">
+                                <div className="text-[#0AC1EF] text-3xl font-extrabold mb-1">
+                                    {price.toLocaleString()}₫
+                                </div>
+                                <div className="text-sm text-gray-500">Tình trạng: <span className="font-medium text-gray-700">{maxStock > 0 ? `${maxStock} có sẵn` : 'Hết hàng'}</span></div>
+                            </div>
                         </div>
+
                         {/* Variant */}
                         {product.variants && product.variants.length > 0 && (
                             <div className="mb-2">
-                                <div className="font-semibold mb-1">Phân loại:</div>
+                                <div className="font-semibold mb-2 text-sm">Phân loại</div>
                                 <div className="flex gap-2 flex-wrap">
                                     {product.variants.map(variant => (
                                         <button
                                             key={variant.id}
                                             type="button"
-                                            className={`px-4 py-2 rounded border ${selectedVariant?.id === variant.id ? 'bg-[#0AC1EF] text-white border-[#0AC1EF]' : 'bg-white border-gray-300 text-gray-800'} font-medium`}
+                                            className={`px-4 py-2 rounded-lg border font-medium transition ${selectedVariant?.id === variant.id ? 'bg-[#0AC1EF] text-white border-[#0AC1EF]' : 'bg-white border-gray-200 text-gray-800 hover:shadow-sm'}`}
                                             onClick={() => setSelectedVariant(variant)}
                                         >
                                             {variant.variant_name}
@@ -323,50 +349,63 @@ export default function ProductDetail({ product }: Props) {
                                 </div>
                             </div>
                         )}
+
                         {/* Số lượng */}
                         <div className="flex items-center gap-3 mb-4">
                             <span className="font-semibold">Số lượng:</span>
                             <button
                                 type="button"
-                                className="w-8 h-8 rounded border border-gray-300 text-lg"
+                                className="w-9 h-9 rounded-lg border border-gray-300 text-lg bg-white"
                                 onClick={() => setQuantity(q => Math.max(1, q - 1))}
                                 disabled={quantity <= 1}
-                            >-</button>
+                            >−</button>
                             <input
                                 type="number"
                                 min={1}
                                 max={maxStock}
                                 value={quantity}
                                 onChange={e => setQuantity(Math.max(1, Math.min(maxStock, Number(e.target.value))))}
-                                className="w-14 text-center border rounded"
+                                className="w-16 text-center border rounded-lg py-2"
                             />
                             <button
                                 type="button"
-                                className="w-8 h-8 rounded border border-gray-300 text-lg"
+                                className="w-9 h-9 rounded-lg border border-gray-300 text-lg bg-white"
                                 onClick={() => setQuantity(q => Math.min(maxStock, q + 1))}
                                 disabled={quantity >= maxStock}
                             >+</button>
-                            <span className="text-gray-500 ml-2">({maxStock} có sẵn)</span>
+                            <span className="text-sm text-gray-500 ml-2">({maxStock} có sẵn)</span>
                         </div>
+
                         {/* Nút mua */}
                         <div className="flex gap-4 mt-2">
                             <button
-                                className="px-8 py-3 bg-[#ee4d2d] text-white rounded font-bold text-lg hover:bg-[#d73211] transition-colors"
+                                className="px-8 py-3 bg-[#0AC1EF] text-white rounded-lg font-bold text-lg hover:bg-[#089fcf] transition-colors shadow"
                                 onClick={handleAddToCart}
                             >
                                 Thêm vào giỏ hàng
                             </button>
-                            {/* Thêm nút chat */}
-                            {auth.user && auth.user.id !== product.created_by && (
+
+                            {auth.user && auth.user.id !== product.created_by ? (
                                 <button
                                     onClick={startChat}
-                                    className='flex items-center space-x-2 px-6 py-3 border-2 border-blue-500 text-blue-500 rounded font-bold text-lg hover:bg-blue-50 transition-colors'
+                                    className="flex items-center space-x-2 px-6 py-3 border-2 border-[#0AC1EF] text-[#0AC1EF] rounded-lg font-bold text-lg hover:bg-[#e8fbff] transition-colors"
                                 >
                                     <MessageCircle className='w-5 h-5' />
                                     <span>Chat với người bán</span>
                                 </button>
+                            ) : (
+                                !auth.user && (
+                                    <button
+                                        onClick={() => { showToast('error', 'Bạn cần đăng nhập để liên hệ người bán!'); router.visit('/login'); }}
+                                        className="flex items-center space-x-2 px-6 py-3 border-2 border-[#0AC1EF] text-[#0AC1EF] rounded-lg font-bold text-lg hover:bg-[#e8fbff] transition-colors"
+                                    >
+                                        <MessageCircle className='w-5 h-5' />
+                                        <span>Chat với người bán</span>
+                                    </button>
+                                )
                             )}
                         </div>
+
                         {/* Mô tả */}
                         {product.description && (
                             <div className="mt-6">
@@ -374,14 +413,15 @@ export default function ProductDetail({ product }: Props) {
                                 <div className="text-gray-700 whitespace-pre-line">{product.description}</div>
                             </div>
                         )}
+
                         {/* Thông số kỹ thuật */}
                         {product.specs && product.specs.length > 0 && (
                             <div className="mt-6">
                                 <div className="font-semibold mb-2 text-lg">Thông số kỹ thuật</div>
-                                <table className="w-full text-left border">
+                                <table className="w-full text-left border rounded-lg overflow-hidden">
                                     <tbody>
                                         {product.specs.map((spec, idx) => (
-                                            <tr key={idx} className="border-b">
+                                            <tr key={idx} className="border-b last:border-b-0">
                                                 <td className="py-2 px-3 font-medium w-1/3 bg-gray-50">{spec.key}</td>
                                                 <td className="py-2 px-3">{spec.value}</td>
                                             </tr>
@@ -406,7 +446,7 @@ export default function ProductDetail({ product }: Props) {
                          {!showReviewForm ? (
                              <button
                                  onClick={() => setShowReviewForm(true)}
-                                 className="px-4 py-2 bg-green-600 text-white rounded font-medium"
+                                 className="px-4 py-2 bg-[#0AC1EF] text-white rounded-lg font-medium"
                              >
                                  Viết đánh giá cho sản phẩm này
                              </button>

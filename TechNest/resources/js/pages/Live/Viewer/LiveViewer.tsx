@@ -149,7 +149,7 @@ export default function LiveViewer({ liveStream, zegoConfig }: Props) {
             
             <div className="max-w-7xl mx-auto p-6">
                 {/* Header */}
-                <div className="bg-white rounded-lg shadow-md p-6 mb-6">
+                <div className="bg-white rounded-lg shadow-md p-6 mb-6 border-l-4 border-[#0AC1EF]">
                     <div className="flex items-start justify-between">
                         <div>
                             <div className="flex items-center gap-3 mb-2">
@@ -165,15 +165,15 @@ export default function LiveViewer({ liveStream, zegoConfig }: Props) {
                             
                             <div className="flex items-center gap-6 text-sm text-gray-500">
                                 <div className="flex items-center gap-1">
-                                    <User className="h-4 w-4" />
+                                    <User className="h-4 w-4 text-[#0AC1EF]" />
                                     <span>Người bán: {liveStream.seller_name}</span>
                                 </div>
                                 <div className="flex items-center gap-1">
-                                    <Users className="h-4 w-4" />
-                                    <span>{liveStream.viewer_count} người xem</span>
+                                    <Users className="h-4 w-4 text-[#0AC1EF]" />
+                                    <span className="text-[#0AC1EF] font-medium">{liveStream.viewer_count} người xem</span>
                                 </div>
                                 <div className="flex items-center gap-1">
-                                    <Clock className="h-4 w-4" />
+                                    <Clock className="h-4 w-4 text-[#0AC1EF]" />
                                     <span>
                                         {liveStream.started_at ? formatDate(liveStream.started_at) : formatDate(liveStream.created_at)}
                                     </span>
@@ -195,13 +195,13 @@ export default function LiveViewer({ liveStream, zegoConfig }: Props) {
 
                 {/* Loading state */}
                 {!isInitialized && !error && !localError && (
-                    <div className="bg-blue-100 border border-blue-200 text-blue-700 px-4 py-3 rounded-lg mb-6">
+                    <div className="bg-blue-50 border border-blue-100 text-blue-700 px-4 py-3 rounded-lg mb-6">
                         <p>Đang khởi tạo Zego SDK...</p>
                     </div>
                 )}
 
                 {/* Video container */}
-                <div className="bg-black rounded-lg overflow-hidden shadow-lg">
+                <div className="bg-black rounded-lg overflow-hidden shadow-lg ring-1 ring-[#0AC1EF]/20">
                     <div 
                         ref={videoRef}
                         className="w-full aspect-video"
@@ -220,7 +220,7 @@ export default function LiveViewer({ liveStream, zegoConfig }: Props) {
 
                 {!auth?.user && (
                     <div className="mt-6 bg-yellow-50 border border-yellow-200 text-yellow-800 px-4 py-3 rounded-lg">
-                        <p>Bạn cần <a href="/login" className="underline font-medium">đăng nhập</a> để tham gia chat trong live stream.</p>
+                        <p>Bạn cần <a href="/login" className="underline font-medium text-[#0AC1EF]">đăng nhập</a> để tham gia chat trong live stream.</p>
                     </div>
                 )}
             </div>
