@@ -7,7 +7,8 @@ import { Link, usePage } from '@inertiajs/react';
 import { BookOpen, CheckCircle, LayoutGrid, Package, Users, 
          Plus, Eye, Tag, ShoppingCart, MapPin, 
          CreditCard, MessageCircle, Video, Settings, LogOut, Truck, 
-         BarChart3} from 'lucide-react';
+         BarChart3,
+         MessageSquare} from 'lucide-react';
 import AppLogoIcon from './app-logo-icon';
 
 export function AppSidebar() {
@@ -70,6 +71,11 @@ export function AppSidebar() {
                 title: 'Thống kê',
                 href: '/admin/statistics',
                 icon: BarChart3,
+            },
+            {
+                title: 'Hỗ trợ khách hàng',
+                href: '/admin/support',
+                icon: MessageSquare,
             }
         ];
 
@@ -167,6 +173,11 @@ export function AppSidebar() {
                 title: 'Gói vận chuyển',
                 href: '/packages',
                 icon: Package,
+            },
+            {
+                title: 'Hỗ trợ',
+                href: '/customer/support',
+                icon: MessageSquare,
             }
         ];
     }

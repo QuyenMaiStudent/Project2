@@ -79,7 +79,7 @@ Route::middleware(['auth', 'admin'])->group(function () {
         Route::get('/{shipper}', [ManageShipperController::class, 'show'])->name('show');
     });
 
-    // Support routes
+    // Support management
     Route::get('/admin/support', [SupportController::class, 'index'])->name('admin.support.index');
     Route::get('/admin/support/{ticket}', [SupportController::class, 'show'])->name('admin.support.show');
     Route::post('/admin/support/{ticket}/status', [SupportController::class, 'updateStatus'])->name('admin.support.updateStatus');

@@ -1,4 +1,5 @@
-import { useForm, Link, Head, usePage } from '@inertiajs/react';
+import { useState } from 'react';
+import { usePage, useForm, Link, Head } from '@inertiajs/react';
 import AppLayout from '@/layouts/app-layout';
 import { Button } from '@/components/ui/button';
 import { ArrowLeft, Send } from 'lucide-react';
@@ -6,7 +7,7 @@ import { ArrowLeft, Send } from 'lucide-react';
 interface Reply {
     id: number;
     message: string;
-    user: { name: string };
+    user: { id: number; name: string };
     created_at: string;
 }
 
@@ -16,6 +17,7 @@ interface Ticket {
     message: string;
     status: 'open' | 'closed';
     priority: string;
+    user: { id: number; name: string; email: string };
     replies: Reply[];
     created_at: string;
 }
@@ -24,30 +26,39 @@ interface Props {
     ticket: Ticket;
 }
 
-export default function CustomerSupportShow({ ticket }: Props) {
+export default function SupportShow({ ticket }: Props) {
     const { flash } = usePage().props as any;
+    const [currentStatus, setCurrentStatus] = useState<'open' | 'closed'>(ticket.status);
+
     const { data, setData, post, processing, errors } = useForm({ message: '' });
+    const statusForm = useForm<{ status: 'open' | 'closed' }>({ status: ticket.status });
 
     const handleSubmit = (e: React.FormEvent) => {
         e.preventDefault();
-        post(`/customer/support/${ticket.id}/reply`, {
+        post(`/admin/support/${ticket.id}/reply`, {
             onSuccess: () => setData('message', ''),
         });
+    };
+
+    const handleStatusChange = (newStatus: string) => {
+        const status = newStatus as 'open' | 'closed';
+        setCurrentStatus(status);
+        statusForm.post(`/admin/support/${ticket.id}/status`);
     };
 
     return (
         <AppLayout
             breadcrumbs={[
-                { title: 'Trang chủ', href: '/customer/dashboard' },
-                { title: 'Hỗ trợ', href: '/customer/support' },
-                { title: ticket.subject, href: `/customer/support/${ticket.id}` },
+                { title: 'Trang quản trị', href: '/admin/dashboard' },
+                { title: 'Hỗ trợ khách hàng', href: '/admin/support' },
+                { title: ticket.subject, href: `/admin/support/${ticket.id}` },
             ]}
         >
             <Head title={`Ticket: ${ticket.subject}`} />
             <div className="p-6 bg-gradient-to-br from-blue-50 to-cyan-50 min-h-screen">
                 <div className="max-w-4xl mx-auto space-y-4">
                     <div className="flex items-center justify-between">
-                        <Link href="/customer/support">
+                        <Link href="/admin/support">
                             <Button variant="outline" className="shadow-sm">
                                 <ArrowLeft className="w-4 h-4 mr-2" /> Quay lại
                             </Button>
@@ -62,7 +73,8 @@ export default function CustomerSupportShow({ ticket }: Props) {
                     <div className="bg-white rounded-lg shadow-lg border p-6 space-y-4">
                         <div className="flex justify-between items-start gap-4">
                             <div>
-                                <h1 className="text-2xl md:text-3xl font-extrabold text-gray-900">{ticket.subject}</h1>
+                                <p className="text-sm text-gray-500">Từ: <strong>{ticket.user.name}</strong> ({ticket.user.email})</p>
+                                <h1 className="text-2xl md:text-3xl font-extrabold text-gray-900 mt-1">{ticket.subject}</h1>
                                 <p className="text-gray-500 text-sm mt-1">
                                     Tạo: {new Date(ticket.created_at).toLocaleString('vi-VN')}
                                 </p>
@@ -75,11 +87,18 @@ export default function CustomerSupportShow({ ticket }: Props) {
                                 }`}>
                                     Ưu tiên: {ticket.priority === 'high' ? 'Cao' : ticket.priority === 'medium' ? 'Trung bình' : 'Thấp'}
                                 </span>
-                                <span className={`px-3 py-1 rounded-full text-xs font-semibold ${
-                                    ticket.status === 'open' ? 'bg-blue-100 text-blue-700' : 'bg-gray-100 text-gray-700'
-                                }`}>
-                                    {ticket.status === 'open' ? 'Mở' : 'Đã đóng'}
-                                </span>
+                                <select
+                                    value={currentStatus}
+                                    onChange={(e) => {
+                                        setCurrentStatus(e.target.value as 'open' | 'closed');
+                                        statusForm.setData('status', e.target.value as 'open' | 'closed');
+                                        handleStatusChange(e.target.value);
+                                    }}
+                                    className="px-3 py-2 border border-gray-300 rounded-lg text-sm font-medium hover:border-blue-400 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                >
+                                    <option value="open">Mở</option>
+                                    <option value="closed">Đã đóng</option>
+                                </select>
                             </div>
                         </div>
 
@@ -106,7 +125,7 @@ export default function CustomerSupportShow({ ticket }: Props) {
                             )}
                         </div>
 
-                        {ticket.status === 'open' ? (
+                        {currentStatus === 'open' ? (
                             <form onSubmit={handleSubmit} className="border-t pt-6 space-y-3">
                                 <textarea
                                     value={data.message}
@@ -116,7 +135,7 @@ export default function CustomerSupportShow({ ticket }: Props) {
                                     rows={4}
                                 />
                                 {errors.message && <p className="text-red-600 text-sm">{errors.message}</p>}
-                                <Button type="submit" disabled={processing} className="w-full bg-[#0AC1EF] hover:bg-[#09b3db]">
+                                <Button type="submit" disabled={processing} className="w-full">
                                     <Send className="w-4 h-4 mr-2" /> Gửi trả lời
                                 </Button>
                             </form>

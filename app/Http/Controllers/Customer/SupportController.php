@@ -5,7 +5,7 @@ namespace App\Http\Controllers\Customer;
 use App\Http\Controllers\Controller;
 use App\Models\SupportTicket;
 use App\Models\SupportTicketReply;
-use Illuminate\Container\Attributes\Auth;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
 
@@ -13,7 +13,7 @@ class SupportController extends Controller
 {
     public function index()
     {
-        $tickets = Auth::user()->SupportTickets()->with('replies')->latest()->paginate(10);
+        $tickets = Auth::user()->supportTickets()->with('replies')->latest()->paginate(10);
         return Inertia::render('Customer/Support/Index', [
             'tickets' => $tickets,
         ]);
@@ -29,7 +29,7 @@ class SupportController extends Controller
         $request->validate([
             'subject' => 'required|string|max:255',
             'message' => 'required|string',
-            'priority' => 'required|in:low,mdium,high',
+            'priority' => 'required|in:low,medium,high',
         ]);
 
         SupportTicket::create([
@@ -43,7 +43,14 @@ class SupportController extends Controller
         return redirect()->route('customer.support.index')->with('success', 'Ticket đã được tạo.');
     }
 
-    public function show(Request $request, SupportTicket $ticket)
+    public function show(SupportTicket $ticket)
+    {
+        $this->authorize('view', $ticket);
+        $ticket->load('replies.user');
+        return Inertia::render('Customer/Support/Show', ['ticket' => $ticket]);
+    }
+
+    public function reply(Request $request, SupportTicket $ticket)
     {
         $this->authorize('view', $ticket);
         $request->validate(['message' => 'required|string']);
